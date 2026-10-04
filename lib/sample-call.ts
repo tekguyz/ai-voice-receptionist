@@ -24,7 +24,7 @@ export const SAMPLE_CALL_EVENTS: readonly CallEvent[] = [
   { type: "detail", field: "address", value: "1207 Mango Tree Lane, Kendall", atMs: 19000 },
   { type: "line", speaker: "receptionist", text: "Thanks, Marco. I have tomorrow at 9 AM or tomorrow at 2 PM. Which works?", atMs: 21000 },
   { type: "line", speaker: "caller", text: "Nine in the morning, please.", atMs: 24500 },
-  { type: "booked", time: "Tomorrow, 9:00 AM", atMs: 25500 },
+  { type: "booked", time: "tomorrow, 9:00 AM", atMs: 25500 },
   { type: "line", speaker: "receptionist", text: "You're booked for tomorrow at 9 AM. You'll get a text to confirm. Stay cool, Marco!", atMs: 26500 },
   { type: "ended", reason: "receptionist-finished", atMs: 30000 },
 ];

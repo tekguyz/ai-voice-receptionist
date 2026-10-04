@@ -26,6 +26,7 @@ next-env.d.ts
 .impeccable/build/
 .impeccable/mocks/
 .impeccable/config.local.json
+.impeccable/questions/
 
 # Per-laptop Claude settings
 .claude/settings.local.json

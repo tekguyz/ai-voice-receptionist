@@ -1,0 +1,360 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-10-04T10:45:50.271Z",
+  "title": "Design System: AI Voice Receptionist",
+  "extensions": {
+    "colorMeta": {
+      "copy": {
+        "role": "neutral",
+        "displayName": "Canary Copy",
+        "canonical": "oklch(94.2% 0.124 103)",
+        "tonalRamp": [
+          "#160800",
+          "#312400",
+          "#4e4300",
+          "#6e6300",
+          "#8f851a",
+          "#b2a846",
+          "#d7cd6c",
+          "#f6f2ba"
+        ]
+      },
+      "copy-deep": {
+        "role": "neutral",
+        "displayName": "Canary Copy, Deep",
+        "canonical": "oklch(88.0% 0.149 104)",
+        "tonalRamp": [
+          "#150800",
+          "#302500",
+          "#4e4300",
+          "#6d6300",
+          "#8f851a",
+          "#b2a846",
+          "#d6cd6c",
+          "#f6f2ba"
+        ]
+      },
+      "sheet": {
+        "role": "neutral",
+        "displayName": "Top Sheet White",
+        "canonical": "oklch(100.0% 0.000 89)",
+        "tonalRamp": [
+          "#0b0b0b",
+          "#252525",
+          "#424242",
+          "#616161",
+          "#828282",
+          "#a5a5a5",
+          "#c9c9c9",
+          "#eeeeee"
+        ]
+      },
+      "form": {
+        "role": "primary",
+        "displayName": "Form Red",
+        "canonical": "oklch(47.7% 0.171 28)",
+        "tonalRamp": [
+          "#2d0000",
+          "#510000",
+          "#752018",
+          "#9a4238",
+          "#c06458",
+          "#e68779",
+          "#ffab9c",
+          "#ffddd3"
+        ]
+      },
+      "form-deep": {
+        "role": "primary",
+        "displayName": "Form Red, Deep",
+        "canonical": "oklch(41.4% 0.147 28)",
+        "tonalRamp": [
+          "#2d0000",
+          "#510000",
+          "#752018",
+          "#9a4237",
+          "#c06458",
+          "#e68779",
+          "#ffab9c",
+          "#ffddd3"
+        ]
+      },
+      "form-rule": {
+        "role": "neutral",
+        "displayName": "Faint Form Rule",
+        "canonical": "oklch(79.1% 0.078 24)",
+        "tonalRamp": [
+          "#230000",
+          "#431110",
+          "#65302c",
+          "#884f4b",
+          "#ac706b",
+          "#d2928d",
+          "#f8b6b0",
+          "#ffe3df"
+        ]
+      },
+      "carbon": {
+        "role": "secondary",
+        "displayName": "Carbon Blue",
+        "canonical": "oklch(38.0% 0.141 264)",
+        "tonalRamp": [
+          "#01003c",
+          "#071c5e",
+          "#213d81",
+          "#3f5ea5",
+          "#5e80ca",
+          "#80a3f1",
+          "#a2c8ff",
+          "#d7efff"
+        ]
+      },
+      "print": {
+        "role": "neutral",
+        "displayName": "Print Black",
+        "canonical": "oklch(20.6% 0.006 285)",
+        "tonalRamp": [
+          "#0b0b0e",
+          "#252528",
+          "#424245",
+          "#616164",
+          "#828286",
+          "#a4a4a9",
+          "#c9c9cd",
+          "#eeeef1"
+        ]
+      },
+      "print-muted": {
+        "role": "neutral",
+        "displayName": "Print Muted",
+        "canonical": "oklch(42.7% 0.015 285)",
+        "tonalRamp": [
+          "#0a0a11",
+          "#24242c",
+          "#41414a",
+          "#606069",
+          "#81818b",
+          "#a4a4ae",
+          "#c8c8d3",
+          "#eeeef4"
+        ]
+      },
+      "print-soft": {
+        "role": "neutral",
+        "displayName": "Print Soft",
+        "canonical": "oklch(41.6% 0.065 89)",
+        "tonalRamp": [
+          "#160800",
+          "#322300",
+          "#504013",
+          "#705f34",
+          "#928154",
+          "#b5a476",
+          "#dac899",
+          "#f9eed2"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Display",
+        "purpose": "Document title on the red band or the outlined copy header."
+      },
+      "headline": {
+        "displayName": "Headline",
+        "purpose": "The waiting line, sentence case."
+      },
+      "title": {
+        "displayName": "Title",
+        "purpose": "Call status and timer, uppercase."
+      },
+      "stamp": {
+        "displayName": "Stamp",
+        "purpose": "Stamp button words."
+      },
+      "form-line": {
+        "displayName": "Form Line",
+        "purpose": "Business line under the header band."
+      },
+      "label": {
+        "displayName": "Label",
+        "purpose": "Field labels, section headings, transcript speakers."
+      },
+      "hand": {
+        "displayName": "Hand",
+        "purpose": "Captured values on field rules only; capital first letter by display rule."
+      },
+      "body-lead": {
+        "displayName": "Body Lead",
+        "purpose": "Call Notes summary, max 44ch."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Transcript lines and preview text, max 60ch."
+      },
+      "small": {
+        "displayName": "Small",
+        "purpose": "Notes under controls; the demo banner."
+      }
+    },
+    "shadows": [
+      {
+        "name": "sheet-on-copy",
+        "value": "drop-shadow(0 2px 2px rgb(90 74 30 / 0.16)) drop-shadow(0 14px 24px rgb(90 74 30 / 0.22))",
+        "purpose": "CSS filter on the white top sheet only: the sheet lying on the canary copy."
+      }
+    ],
+    "motion": [
+      {
+        "name": "ease-out-expo",
+        "value": "cubic-bezier(0.16, 1, 0.3, 1)",
+        "purpose": "Easing for the write-in."
+      },
+      {
+        "name": "write-in",
+        "value": "clip-path inset(0 100% 0 0) to inset(0 0 0 0), 700ms ease-out-expo",
+        "purpose": "One per captured detail: the value is written onto its rule left to right. Reduced motion: none, shown at once."
+      },
+      {
+        "name": "sheet-away",
+        "value": "translateY(calc(-100% - 10vh)) rotate(-5deg), 900ms cubic-bezier(0.55, 0, 0.8, 0.2)",
+        "purpose": "Call end: the white top sheet lifts off; the copy never moves. Reduced motion: display none, the copy shows at once."
+      },
+      {
+        "name": "focus-ring",
+        "value": "outline: 3px solid var(--color-carbon); outline-offset: 3px",
+        "purpose": "Every focusable control."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "md",
+        "value": "768px"
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Demo Banner",
+      "kind": "nav",
+      "refersTo": "demo-banner",
+      "description": "Black print strip across the top of every demo screen.",
+      "html": "<aside class=\"ds-banner\"><p><b>Demo</b><span> · Made-up business</span></p><a href=\"#\">Built by TEKGUYZ</a></aside>",
+      "css": ".ds-banner { display: flex; justify-content: space-between; align-items: center; gap: 16px; background: var(--color-print, #17171a); color: #fff; padding: 8px 16px; font-family: var(--font-body, Barlow, system-ui, sans-serif); font-size: 0.875rem; } .ds-banner p { margin: 0; } .ds-banner b { font-family: var(--font-form, \"Barlow Condensed\", \"Arial Narrow\", sans-serif); text-transform: uppercase; font-weight: 700; letter-spacing: 0.025em; } .ds-banner span { color: rgb(255 255 255 / 0.8); } .ds-banner a { color: #fff; text-decoration: underline; text-underline-offset: 0.2em; text-decoration-thickness: 1px; } .ds-banner a:hover { color: var(--color-copy, #faf08a); } .ds-banner a:focus-visible { outline: 3px solid var(--color-carbon, #1b3a8c); outline-offset: 3px; }"
+    },
+    {
+      "name": "Ticket Header",
+      "kind": "custom",
+      "refersTo": "ticket-header",
+      "description": "Printed head of the work order: red band, title, ticket number, business line.",
+      "html": "<header class=\"ds-ticket\"><div class=\"ds-ticket-band\"><h1>Work order</h1><p>No. 04127</p></div><p class=\"ds-ticket-line\">Mangrove Air · AC repair · South Florida</p></header>",
+      "css": ".ds-ticket { color: var(--color-form, #a8221a); background: #fff; } .ds-ticket-band { display: flex; justify-content: space-between; align-items: flex-end; gap: 12px; background: var(--color-form, #a8221a); color: #fff; padding: 12px 20px 10px; } .ds-ticket-band h1 { font-family: var(--font-form, \"Barlow Condensed\", \"Arial Narrow\", sans-serif); text-transform: uppercase; margin: 0; font-size: 2.25rem; line-height: 1; font-weight: 800; letter-spacing: -0.025em; } .ds-ticket-band p { font-family: var(--font-form, \"Barlow Condensed\", \"Arial Narrow\", sans-serif); text-transform: uppercase; margin: 0; font-size: 1.25rem; line-height: 1; font-weight: 700; font-variant-numeric: tabular-nums; } .ds-ticket-line { font-family: var(--font-form, \"Barlow Condensed\", \"Arial Narrow\", sans-serif); text-transform: uppercase; margin: 0; padding: 6px 20px; border-bottom: 2px solid var(--color-form, #a8221a); font-size: 0.9375rem; font-weight: 600; letter-spacing: 0.025em; }"
+    },
+    {
+      "name": "Field",
+      "kind": "input",
+      "refersTo": "field-value",
+      "description": "Red printed label over a ruled line; the captured value in carbon-blue hand, written in.",
+      "html": "<dl class=\"ds-field\"><dt>Name</dt><dd><span>maria lopez</span></dd><dt>Address</dt><dd></dd></dl>",
+      "css": ".ds-field { display: grid; gap: 6px; margin: 0; background: #fff; padding: 20px; } .ds-field dt { font-family: var(--font-form, \"Barlow Condensed\", \"Arial Narrow\", sans-serif); text-transform: uppercase; color: var(--color-form, #a8221a); font-size: 0.875rem; line-height: 1.25; font-weight: 700; letter-spacing: 0.05em; } .ds-field dd { margin: 0; min-height: 1.875rem; border-bottom: 1px solid var(--color-form-rule, #e9a8a2); font-family: var(--font-hand, Kalam, \"Segoe Print\", cursive); font-size: 1.5rem; line-height: 1.25; color: var(--color-carbon, #1b3a8c); } .ds-field dd span { display: inline-block; animation: ds-write-in 700ms cubic-bezier(0.16, 1, 0.3, 1) both; } .ds-field dd span::first-letter { text-transform: uppercase; } @keyframes ds-write-in { from { clip-path: inset(0 100% 0 0); } to { clip-path: inset(0 0 0 0); } } @media (prefers-reduced-motion: reduce) { .ds-field dd span { animation: none; } }"
+    },
+    {
+      "name": "Transcript Line",
+      "kind": "custom",
+      "refersTo": "transcript-line",
+      "description": "Speaker in label caps (Receptionist red, caller black), the line in plain print.",
+      "html": "<ol class=\"ds-transcript\"><li><span class=\"ds-r\">Luna</span><span>Thanks for calling Mangrove Air. What can I help with?</span></li><li><span class=\"ds-c\">Caller</span><span>My AC stopped blowing cold this morning.</span></li></ol>",
+      "css": ".ds-transcript { list-style: none; margin: 0; padding: 20px; display: grid; gap: 12px; background: #fff; } .ds-transcript li { display: grid; grid-template-columns: 5.5rem 1fr; column-gap: 12px; } .ds-transcript li > span:first-child { font-family: var(--font-form, \"Barlow Condensed\", \"Arial Narrow\", sans-serif); text-transform: uppercase; padding-top: 2px; font-size: 0.875rem; font-weight: 700; letter-spacing: 0.05em; } .ds-transcript .ds-r { color: var(--color-form, #a8221a); } .ds-transcript .ds-c { color: var(--color-print, #17171a); } .ds-transcript li > span:last-child { max-width: 60ch; font-family: var(--font-body, Barlow, system-ui, sans-serif); font-size: 1.0625rem; line-height: 1.625; color: var(--color-print, #17171a); }"
+    },
+    {
+      "name": "Stamp Button",
+      "kind": "button",
+      "refersTo": "stamp-button",
+      "description": "Primary call control: a red rubber stamp, double rule, -1deg tilt; fills red only while pressed.",
+      "html": "<button class=\"ds-stamp\"><svg aria-hidden=\"true\" viewBox=\"0 0 20 20\" width=\"20\" height=\"20\" fill=\"currentColor\"><path d=\"M5 3.5v13l11-6.5z\"/></svg>Play the Sample Call</button>",
+      "css": ".ds-stamp { font-family: var(--font-form, \"Barlow Condensed\", \"Arial Narrow\", sans-serif); text-transform: uppercase; display: inline-flex; align-items: center; justify-content: center; gap: 12px; width: 100%; min-height: 56px; padding: 0 16px; transform: rotate(-1deg); border: 6px double var(--color-form, #a8221a); border-radius: 0; background: #fff; color: var(--color-form, #a8221a); font-size: 1.375rem; font-weight: 800; letter-spacing: 0.025em; white-space: nowrap; cursor: pointer; } .ds-stamp:hover { background: rgb(168 34 26 / 0.05); } .ds-stamp:active { background: var(--color-form, #a8221a); color: #fff; } .ds-stamp:focus-visible { outline: 3px solid var(--color-carbon, #1b3a8c); outline-offset: 3px; }"
+    },
+    {
+      "name": "Form Button",
+      "kind": "button",
+      "refersTo": "form-button",
+      "description": "Secondary control: printed red outline; fills red on hover.",
+      "html": "<button class=\"ds-formbtn\">Stop the Sample Call</button>",
+      "css": ".ds-formbtn { font-family: var(--font-form, \"Barlow Condensed\", \"Arial Narrow\", sans-serif); text-transform: uppercase; display: inline-flex; align-items: center; justify-content: center; min-height: 48px; padding: 0 20px; border: 2px solid var(--color-form, #a8221a); border-radius: 0; background: transparent; color: var(--color-form, #a8221a); font-size: 1.125rem; font-weight: 700; letter-spacing: 0.025em; cursor: pointer; } .ds-formbtn:hover { background: var(--color-form, #a8221a); color: #fff; } .ds-formbtn:focus-visible { outline: 3px solid var(--color-carbon, #1b3a8c); outline-offset: 3px; }"
+    },
+    {
+      "name": "Call Status",
+      "kind": "custom",
+      "refersTo": "on-the-line-lamp",
+      "description": "Live status line: a still red lamp, ON THE LINE, the timer in red.",
+      "html": "<p class=\"ds-status\"><span class=\"ds-lamp\" aria-hidden=\"true\"></span>On the line<span class=\"ds-time\">1:07</span></p>",
+      "css": ".ds-status { font-family: var(--font-form, \"Barlow Condensed\", \"Arial Narrow\", sans-serif); text-transform: uppercase; display: flex; align-items: center; gap: 12px; margin: 0; padding: 16px 20px; background: #fff; color: var(--color-print, #17171a); font-size: 1.5rem; font-weight: 700; } .ds-lamp { display: inline-block; width: 12px; height: 12px; border-radius: 9999px; background: var(--color-form, #a8221a); } .ds-time { margin-left: auto; color: var(--color-form, #a8221a); font-variant-numeric: tabular-nums; }"
+    },
+    {
+      "name": "Perforation",
+      "kind": "custom",
+      "description": "Red-dot tear line at the top of the Owner's copy.",
+      "html": "<div class=\"ds-perf\"></div>",
+      "css": ".ds-perf { height: 3px; background-image: radial-gradient(circle, var(--color-form, #a8221a) 1.5px, transparent 1.7px); background-size: 9px 3px; background-repeat: repeat-x; background-color: var(--color-copy, #faf08a); }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Service Ticket",
+    "overview": "The screen is a carbon-copy work order from a trade shop's counter pad. The page ground is the canary-yellow copy; the white top sheet lies on it. While the caller talks, the Receptionist writes each captured detail onto its ruled line in carbon-blue ballpoint. When the call ends, the white sheet is pulled off and the yellow copy underneath is the Owner's Call Notes.\n\nThree inks do all the work. Red form ink is everything printed on the pad: the header band, field labels, rules, the ticket number, the stamp. Carbon blue is only what the Receptionist captured. Black is plain print: the transcript, the summary, body copy. The world refuses the category default of a dark screen, a glowing orb and soft chat bubbles. Density is a working form's density: tight ruled fields, condensed caps, nothing ornamental.\n\nMotion has exactly two moves. A captured value is written onto its rule left to right, like a pen. At the end of the call the top sheet lifts off and away. Nothing else moves.",
+    "keyCharacteristics": [
+      "Canary copy ground, white top sheet, three inks (red form, carbon blue, black print).",
+      "Square corners, ruled lines, a perforated tear line; no cards.",
+      "Condensed industrial caps for the form, a workhorse sans for reading, one ballpoint hand for captured values.",
+      "One shadow only: the sheet lying on the copy.",
+      "Two motions only: the write-in and the sheet lift. Both stand down under reduced motion."
+    ],
+    "rules": [
+      {
+        "name": "The Three Inks Rule",
+        "body": "Every mark is red form ink, carbon blue or black print. A new component (the live sound wave, the red end button, the banner's way out) picks one of these three; it never brings a fourth.",
+        "section": "colors"
+      },
+      {
+        "name": "The Carbon Means Captured Rule",
+        "body": "Carbon blue marks what the Receptionist wrote down, plus the focus ring and selection. Never use it for labels, buttons or decoration.",
+        "section": "colors"
+      },
+      {
+        "name": "The No Purple Rule",
+        "body": "No purple anywhere, in any tint. A product commitment, not a taste.",
+        "section": "colors"
+      },
+      {
+        "name": "The One Hand Rule",
+        "body": "Kalam appears only on a field rule, for a value the Receptionist captured. Not for headings, not for flourish.",
+        "section": "typography"
+      },
+      {
+        "name": "The Printed Caps Rule",
+        "body": "Everything the form prints is Barlow Condensed in uppercase; everything spoken is Barlow in sentence case.",
+        "section": "typography"
+      },
+      {
+        "name": "The One Shadow Rule",
+        "body": "Only the top sheet casts a shadow. No cards, no lifted buttons, no floating panels.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "**Do** put every printed part of the form in Form Red (#a8221a) and every captured value in Carbon Blue (#1b3a8c) Kalam on a rule.",
+      "**Do** keep text at WCAG 2.2 AA: use Print Muted on the white sheet and Print Soft on the copy for secondary text, never the reverse untested.",
+      "**Do** keep corners square (0px); the lamp is the only circle.",
+      "**Do** give new live-call parts (sound wave, end button) the three inks, square corners and no motion beyond the write-in and the sheet lift.",
+      "**Do** show a captured value with a capital first letter by display rule, leaving the stored value as spoken.",
+      "**Do** honour reduced motion: no write-in, no lift, a still sound wave."
+    ],
+    "donts": [
+      "**Don't** use purple, in any tint.",
+      "**Don't** add a fourth ink, a gradient, a glow, a dark screen, an orb or chat bubbles.",
+      "**Don't** put a shadow on anything but the top sheet; no cards.",
+      "**Don't** use Carbon Blue or Kalam for anything the form prints.",
+      "**Don't** set Faint Form Rule (#e9a8a2) as text; it is a line colour only.",
+      "**Don't** add motion beyond one write-in per captured detail and the sheet lift: no pulsing lamp, no hover animation, no scroll effects."
+    ]
+  }
+}
