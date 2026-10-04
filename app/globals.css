@@ -1,0 +1,6 @@
+@import "tailwindcss";
+
+/* No look yet: step 2 of the rebuild picks it and writes DESIGN.md. */
+:root {
+  color-scheme: light dark;
+}
