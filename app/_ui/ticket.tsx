@@ -13,7 +13,7 @@ export function DemoBanner() {
           <span className="font-form font-bold tracking-wide uppercase">Demo</span>
           <span className="text-sheet/80"> · Made-up business</span>
         </p>
-        <a href="https://tekguyz.com" className="shrink-0 underline hover:text-copy">
+        <a href="https://tekguyz.com" className="shrink-0 underline hover:text-copy focus-visible:outline-copy">
           Built by TEKGUYZ
         </a>
       </div>
@@ -58,7 +58,7 @@ export function Field({ label, value, empty }: { label: string; value?: string |
 
 export function Transcript({ lines, receptionistName, live }: { lines: TranscriptLine[]; receptionistName: string; live?: boolean }) {
   return (
-    <ol aria-label="Transcript" aria-live={live ? "polite" : undefined} className="grid gap-3">
+    <ol aria-live={live ? "polite" : undefined} className="grid gap-3">
       {lines.map((line, i) => (
         <li key={i} className="grid grid-cols-[5.5rem_1fr] gap-x-3">
           <span
@@ -77,11 +77,22 @@ export function Transcript({ lines, receptionistName, live }: { lines: Transcrip
  * The main action, set like a red rubber stamp on the form: red ink in a
  * double rule, a slight tilt. It fills solid red only while pressed.
  */
-export function StampButton({ children, onClick, icon }: { children: ReactNode; onClick: () => void; icon?: ReactNode }) {
+export function StampButton({
+  children,
+  onClick,
+  icon,
+  autoFocus,
+}: {
+  children: ReactNode;
+  onClick: () => void;
+  icon?: ReactNode;
+  autoFocus?: boolean;
+}) {
   return (
     <button
       type="button"
       onClick={onClick}
+      autoFocus={autoFocus}
       className="inline-flex min-h-14 w-full -rotate-1 items-center justify-center gap-3 border-[6px] border-double border-form bg-sheet px-4 font-form text-[1.375rem] whitespace-nowrap font-extrabold tracking-wide text-form uppercase hover:bg-form/5 active:bg-form active:text-sheet"
     >
       {icon}
@@ -91,11 +102,12 @@ export function StampButton({ children, onClick, icon }: { children: ReactNode; 
 }
 
 /** A quieter control: printed outline, same ink. */
-export function FormButton({ children, onClick }: { children: ReactNode; onClick: () => void }) {
+export function FormButton({ children, onClick, autoFocus }: { children: ReactNode; onClick: () => void; autoFocus?: boolean }) {
   return (
     <button
       type="button"
       onClick={onClick}
+      autoFocus={autoFocus}
       className="inline-flex min-h-12 items-center justify-center border-2 border-form px-5 font-form text-lg font-bold tracking-wide text-form uppercase hover:bg-form hover:text-sheet"
     >
       {children}

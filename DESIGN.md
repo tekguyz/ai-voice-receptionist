@@ -162,7 +162,7 @@ Motion has exactly two moves. A captured value is written onto its rule left to 
 A printed counter pad: two papers and three inks, with no accent outside them.
 
 ### Primary
-- **Form Red** (#a8221a): the printed form. Header band fill, field labels, ruled borders on the copy, the ticket number, section headings, the Receptionist's speaker name, the stamp and form buttons, the on-the-line lamp, the perforation dots. 6.59:1 on the sheet, 6.15:1 on the copy; white on it 6.59:1.
+- **Form Red** (#a8221a): the printed form. Header band fill, field labels, ruled borders on the copy, the ticket number, section headings, the Receptionist's speaker name, the stamp and form buttons, the on-the-line lamp, the perforation dots. 7.22:1 on the sheet, 6.15:1 on the copy; white on it 7.22:1.
 - **Form Red, Deep** (#8a1b14): defined in the theme; no component uses it yet. Treat as unassigned until a build needs it.
 
 ### Secondary
@@ -180,7 +180,7 @@ A printed counter pad: two papers and three inks, with no accent outside them.
 ### Named Rules
 **The Three Inks Rule.** Every mark is red form ink, carbon blue or black print. A new component (the live sound wave, the red end button, the banner's way out) picks one of these three; it never brings a fourth.
 
-**The Carbon Means Captured Rule.** Carbon blue marks what the Receptionist wrote down, plus the focus ring and selection. Never use it for labels, buttons or decoration.
+**The Carbon Means Captured Rule.** Carbon blue marks what the Receptionist wrote down, plus the focus ring and selection. Never use it for labels, buttons or decoration. One exception: on the black banner strip the focus ring is canary (`outline-copy`), because carbon on black is only 1.73:1.
 
 **The No Purple Rule.** No purple anywhere, in any tint. A product commitment, not a taste.
 
@@ -213,7 +213,7 @@ A printed counter pad: two papers and three inks, with no accent outside them.
 
 Phone first. On a phone the top sheet is one column, max 420px, centred, in this order: header, status, fields, controls, transcript. The page holds a 16px side margin and starts 16px below the banner (48px from 768px up).
 
-From 768px the sheet becomes a three-column grid (`1fr | 420px | 1fr`, 32px gaps) inside a 1200px page. The call column (header, status, controls, transcript) sits in the middle at phone width; the job details are their own white sheet in the right column, max 22rem, top-aligned, headed "Job details · No." with a red rule under it. The left column stays empty paper.
+From 768px the job details move beside the call column (`420px | 22rem`, centred, 32px gap). From 1024px the sheet becomes a three-column grid (`1fr | 420px | 1fr`, 32px gaps) inside a 1200px page. The call column (header, status, controls, transcript) sits in the middle at phone width; the job details are their own white sheet in the right column, max 22rem, top-aligned, headed "Job details · No." with a red rule under it. The left column stays empty paper.
 
 The Owner's copy is a 960px document: perforation, an outlined header, then two columns from 768px (`1fr | 24rem`, 48px column gap, 32px row gap): summary and fields on the left, the text preview and transcript on the right. A red rule closes it above the actions.
 
@@ -272,7 +272,7 @@ A tear line of red dots at the top of the Owner's copy, marking where the white 
 
 ### Motion
 - **Write-in:** a captured value is revealed left to right with `clip-path`, 700ms, `cubic-bezier(0.16, 1, 0.3, 1)`. One per captured detail.
-- **Sheet lift:** at call end the white sheet rises and turns away (`translateY(-115vh) rotate(-5deg)`, 900ms, accelerating ease) and is removed; the copy underneath never moves.
+- **Sheet lift:** at call end the white sheet rises and turns away (`translateY(calc(-100% - 10vh)) rotate(-5deg)`, its own height plus a margin so a long sheet clears the screen, 900ms, accelerating ease) and is removed when its own animation ends; the copy underneath never moves, and neither the lifting sheet nor the copy replays its write-ins.
 - **Reduced motion:** the write-in shows the value at once; the sheet is simply gone and the copy shows at once.
 
 ## Do's and Don'ts

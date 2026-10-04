@@ -1,9 +1,9 @@
 "use client";
 
-// The Sample Call on the Service Ticket look (DESIGN.md). The screen takes a
-// call source and never knows it is the Sample Call.
+// The Sample Call on the Service Ticket look (DESIGN.md). The sheets below
+// read only the Call Story's view and notes, not the source behind them.
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 import { DemoBanner, Field, FormButton, OnTheLine, PlayIcon, StampButton, TicketHeader, Transcript } from "@/app/_ui/ticket";
 import type { CallSource, RunningCall } from "@/lib/call-source";
 import { tellCallStory, type CallDetails, type CallEvent, type CallNotes, type CallView } from "@/lib/call-story";
@@ -28,7 +28,7 @@ const END_REASONS = {
 // Decoration on a made-up work order; not a real record.
 const TICKET_NUMBER = "04127";
 
-const SECTION_LABEL = "font-form text-sm font-bold tracking-wider text-form uppercase";
+const SECTION_LABEL = "font-form text-sm leading-tight font-bold tracking-wider text-form uppercase";
 
 function formatTime(ms: number) {
   const seconds = Math.floor(ms / 1000);
@@ -40,6 +40,8 @@ export function SampleCallScreen() {
   const [events, setEvents] = useState<CallEvent[]>([]);
   // After the call ends, the white sheet is pulled off; then it is gone.
   const [sheetGone, setSheetGone] = useState(false);
+  // After Stop, focus goes back to the Play button.
+  const [stopped, setStopped] = useState(false);
   const call = useRef<RunningCall | null>(null);
 
   useEffect(() => () => call.current?.stop(), []);
@@ -48,6 +50,7 @@ export function SampleCallScreen() {
     call.current?.stop();
     setEvents([]);
     setSheetGone(false);
+    setStopped(false);
     call.current = source.start((event) => setEvents((soFar) => [...soFar, event]));
   }
 
@@ -55,6 +58,7 @@ export function SampleCallScreen() {
     call.current?.stop();
     call.current = null;
     setEvents([]);
+    setStopped(true);
   }
 
   const { view, notes } = tellCallStory(events);
@@ -68,14 +72,21 @@ export function SampleCallScreen() {
             <OwnersCopy notes={notes} onPlayAgain={play} />
             {!sheetGone && (
               // Reduced motion hides this at once (globals.css); otherwise it
-              // lifts away and is removed when the lift ends.
-              <div aria-hidden="true" inert className="sheet-away absolute inset-x-0 top-0" onAnimationEnd={() => setSheetGone(true)}>
+              // lifts away and is removed when its own lift ends.
+              <div
+                aria-hidden="true"
+                inert
+                className="sheet-away absolute inset-x-0 top-0"
+                onAnimationEnd={(e) => {
+                  if (e.target === e.currentTarget) setSheetGone(true);
+                }}
+              >
                 <TopSheet view={view} onPlay={play} onStop={stop} />
               </div>
             )}
           </div>
         ) : (
-          <TopSheet view={view} onPlay={play} onStop={stop} />
+          <TopSheet view={view} onPlay={play} onStop={stop} focusPlay={stopped} />
         )}
       </main>
     </>
@@ -84,20 +95,31 @@ export function SampleCallScreen() {
 
 /**
  * The white top sheet: the call as it happens. On a phone it is one sheet.
- * On a desktop the call column sits in the middle at phone width, and the
- * job details sit beside it on their own sheet.
+ * From md the job details sit beside it on their own sheet; from lg the call
+ * column sits in the middle of the screen at phone width.
  */
-function TopSheet({ view, onPlay, onStop }: { view: CallView; onPlay: () => void; onStop: () => void }) {
+function TopSheet({
+  view,
+  onPlay,
+  onStop,
+  focusPlay,
+}: {
+  view: CallView;
+  onPlay: () => void;
+  onStop: () => void;
+  focusPlay?: boolean;
+}) {
+  const talkId = useId();
   return (
     <article
       aria-label="Work order"
-      className="mx-auto grid max-w-[420px] [filter:drop-shadow(0_2px_2px_rgb(90_74_30/0.16))_drop-shadow(0_14px_24px_rgb(90_74_30/0.22))] [grid-template-areas:'head''status''fields''controls''talk'] md:max-w-none md:grid-cols-[minmax(0,1fr)_minmax(0,420px)_minmax(0,1fr)] md:gap-x-8 md:[grid-template-areas:'._head_fields''._status_fields''._controls_fields''._talk_fields']"
+      className="mx-auto grid max-w-[420px] [filter:drop-shadow(0_2px_2px_rgb(90_74_30/0.16))_drop-shadow(0_14px_24px_rgb(90_74_30/0.22))] [grid-template-areas:'head''status''fields''controls''talk'] md:max-w-none md:grid-cols-[minmax(0,420px)_minmax(0,22rem)] md:justify-center md:gap-x-8 md:[grid-template-areas:'head_fields''status_fields''controls_fields''talk_fields'] lg:grid-cols-[minmax(0,1fr)_minmax(0,420px)_minmax(0,1fr)] lg:[grid-template-areas:'._head_fields''._status_fields''._controls_fields''._talk_fields']"
     >
       <div className="bg-sheet [grid-area:head]">
         <TicketHeader number={TICKET_NUMBER} />
       </div>
 
-      <section aria-label="Call" className="-mt-px bg-sheet px-5 pt-4 [grid-area:status]">
+      <div className="-mt-px bg-sheet px-5 pt-4 [grid-area:status]">
         {view.status === "waiting" ? (
           <p className="font-form text-[1.875rem] leading-tight font-bold text-balance">Your receptionist is standing by</p>
         ) : (
@@ -107,7 +129,7 @@ function TopSheet({ view, onPlay, onStop }: { view: CallView; onPlay: () => void
             <span className="ml-auto text-form">{formatTime(view.elapsedMs)}</span>
           </p>
         )}
-      </section>
+      </div>
 
       <section
         aria-label="Job details"
@@ -125,7 +147,7 @@ function TopSheet({ view, onPlay, onStop }: { view: CallView; onPlay: () => void
       <div className="-mt-px bg-sheet px-5 pt-5 pb-5 [grid-area:controls]">
         {view.status === "waiting" && (
           <>
-            <StampButton onClick={onPlay} icon={<PlayIcon />}>
+            <StampButton onClick={onPlay} icon={<PlayIcon />} autoFocus={focusPlay}>
               Play the Sample Call
             </StampButton>
             <p className="mt-3 text-sm text-print-muted">
@@ -134,32 +156,49 @@ function TopSheet({ view, onPlay, onStop }: { view: CallView; onPlay: () => void
             </p>
           </>
         )}
-        {view.status === "live" && <FormButton onClick={onStop}>Stop the Sample Call</FormButton>}
+        {view.status === "live" && (
+          <FormButton onClick={onStop} autoFocus>
+            Stop the Sample Call
+          </FormButton>
+        )}
       </div>
 
-      {view.lines.length > 0 && (
-        <section aria-label="Transcript" className="-mt-px border-t border-form-rule bg-sheet px-5 pt-5 pb-8 [grid-area:talk]">
-          <h2 className={`${SECTION_LABEL} mb-4`}>What was said</h2>
-          <Transcript lines={view.lines} receptionistName={SAMPLE_BUSINESS.receptionistName} live={view.status === "live"} />
-        </section>
-      )}
+      {/* Always in the page, even empty, so a screen reader hears the first line too. */}
+      <section
+        aria-labelledby={view.lines.length > 0 ? talkId : undefined}
+        className={`-mt-px bg-sheet [grid-area:talk] ${view.lines.length > 0 ? "border-t border-form-rule px-5 pt-5 pb-8" : ""}`}
+      >
+        {view.lines.length > 0 && (
+          <h2 id={talkId} className={`${SECTION_LABEL} mb-4`}>
+            What was said
+          </h2>
+        )}
+        <Transcript lines={view.lines} receptionistName={SAMPLE_BUSINESS.receptionistName} live />
+      </section>
     </article>
   );
 }
 
 /** The yellow copy under the white sheet. It stays with the Owner: the Call Notes. */
 function OwnersCopy({ notes, onPlayAgain }: { notes: CallNotes; onPlayAgain: () => void }) {
-  // The white sheet comes off from the top; start the Owner's copy there too.
+  const title = useRef<HTMLHeadingElement>(null);
+  const [summaryId, textId, talkId] = [useId(), useId(), useId()];
+
+  // The white sheet comes off from the top: start the Owner's copy there,
+  // and move focus to its title so the change is announced.
   useEffect(() => {
     window.scrollTo({ top: 0 });
+    title.current?.focus({ preventScroll: true });
   }, []);
 
   return (
-    <article aria-label="Call Notes" className="mx-auto max-w-[960px]">
+    <article aria-label="Call Notes" className="copy-still mx-auto max-w-[960px]">
       <div className="perforation mb-4" />
       <header className="text-form">
         <div className="flex flex-wrap items-end justify-between gap-x-6 gap-y-1 border-2 border-form px-5 pt-3 pb-2.5">
-          <h1 className="font-form text-[2.25rem] leading-none font-extrabold uppercase">Call Notes</h1>
+          <h1 ref={title} tabIndex={-1} className="font-form text-[2.25rem] leading-none font-extrabold tracking-tight uppercase">
+            Call Notes
+          </h1>
           <p className="font-form text-lg leading-none font-bold uppercase">
             Owner&apos;s copy · No. {TICKET_NUMBER}
           </p>
@@ -171,8 +210,10 @@ function OwnersCopy({ notes, onPlayAgain }: { notes: CallNotes; onPlayAgain: () 
 
       <div className="grid gap-x-12 gap-y-8 pt-6 md:grid-cols-[minmax(0,1fr)_minmax(0,24rem)]">
         <div className="grid content-start gap-8">
-          <section aria-label="Summary">
-            <h2 className={SECTION_LABEL}>Summary</h2>
+          <section aria-labelledby={summaryId}>
+            <h2 id={summaryId} className={SECTION_LABEL}>
+              Summary
+            </h2>
             <p className="mt-2 max-w-[44ch] text-[1.375rem] leading-snug font-medium text-balance">{notes.summary}</p>
             <p className="mt-3 text-print-soft">
               {END_REASONS[notes.endReason]} after {formatTime(notes.durationMs)}.
@@ -190,14 +231,18 @@ function OwnersCopy({ notes, onPlayAgain }: { notes: CallNotes; onPlayAgain: () 
         </div>
 
         <div className="grid content-start gap-8">
-          <section aria-label="Confirmation text preview" className="border-2 border-form p-5">
-            <h2 className={SECTION_LABEL}>Text to the caller · preview</h2>
+          <section aria-labelledby={textId} className="border-2 border-form p-5">
+            <h2 id={textId} className={SECTION_LABEL}>
+              Text to the caller · preview
+            </h2>
             <p className="mt-2 text-[1.0625rem] leading-relaxed">{notes.confirmationText}</p>
             <p className="mt-4 border-t border-form pt-3 text-sm text-print-soft">Not available in the demo. Nothing is sent.</p>
           </section>
 
-          <section aria-label="Transcript">
-            <h2 className={`${SECTION_LABEL} mb-4`}>What was said</h2>
+          <section aria-labelledby={talkId}>
+            <h2 id={talkId} className={`${SECTION_LABEL} mb-4`}>
+              What was said
+            </h2>
             <Transcript lines={notes.lines} receptionistName={SAMPLE_BUSINESS.receptionistName} />
           </section>
         </div>

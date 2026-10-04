@@ -217,7 +217,7 @@
       },
       {
         "name": "sheet-away",
-        "value": "translateY(-115vh) rotate(-5deg), 900ms cubic-bezier(0.55, 0, 0.8, 0.2)",
+        "value": "translateY(calc(-100% - 10vh)) rotate(-5deg), 900ms cubic-bezier(0.55, 0, 0.8, 0.2)",
         "purpose": "Call end: the white top sheet lifts off; the copy never moves. Reduced motion: display none, the copy shows at once."
       },
       {

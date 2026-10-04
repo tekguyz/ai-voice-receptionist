@@ -22,31 +22,35 @@
   --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-:root {
-  color-scheme: light;
-}
+/* Base styles sit in the base layer, so utilities (like the banner's
+   canary focus ring) can override them. */
+@layer base {
+  :root {
+    color-scheme: light;
+  }
 
-body {
-  background: var(--color-copy);
-  color: var(--color-print);
-  font-family: var(--font-body);
-  font-variant-numeric: tabular-nums;
-  -webkit-font-smoothing: antialiased;
-}
+  body {
+    background: var(--color-copy);
+    color: var(--color-print);
+    font-family: var(--font-body);
+    font-variant-numeric: tabular-nums;
+    -webkit-font-smoothing: antialiased;
+  }
 
-::selection {
-  background: var(--color-carbon);
-  color: var(--color-sheet);
-}
+  ::selection {
+    background: var(--color-carbon);
+    color: var(--color-sheet);
+  }
 
-:focus-visible {
-  outline: 3px solid var(--color-carbon);
-  outline-offset: 3px;
-}
+  :focus-visible {
+    outline: 3px solid var(--color-carbon);
+    outline-offset: 3px;
+  }
 
-a {
-  text-underline-offset: 0.2em;
-  text-decoration-thickness: 1px;
+  a {
+    text-underline-offset: 0.2em;
+    text-decoration-thickness: 1px;
+  }
 }
 
 /* A perforated tear line: the stub edge between the sheets. */
@@ -74,11 +78,18 @@ a {
    yellow copy underneath never moves. */
 @keyframes sheet-away {
   to {
-    transform: translateY(-115vh) rotate(-5deg);
+    /* Its own height plus a margin, so even a long sheet clears the screen. */
+    transform: translateY(calc(-100% - 10vh)) rotate(-5deg);
   }
 }
 .sheet-away {
   animation: sheet-away 900ms cubic-bezier(0.55, 0, 0.8, 0.2) both;
+}
+
+/* Neither the lifting sheet nor the copy replays its write-ins. */
+.sheet-away .write-in,
+.copy-still .write-in {
+  animation: none;
 }
 
 @media (prefers-reduced-motion: reduce) {
