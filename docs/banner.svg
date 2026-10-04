@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="300" viewBox="0 0 1280 300" role="img" aria-label="AI Voice Receptionist">
+  <!-- Stand-in colors until DESIGN.md exists (step 2 picks the look). -->
+  <rect width="1280" height="300" fill="#14120e"/>
+  <g fill="none" stroke="#7fc8a9" stroke-width="8" stroke-linecap="round">
+    <line x1="110" y1="130" x2="110" y2="170"/>
+    <line x1="135" y1="105" x2="135" y2="195"/>
+    <line x1="160" y1="85" x2="160" y2="215"/>
+    <line x1="185" y1="115" x2="185" y2="185"/>
+    <line x1="210" y1="135" x2="210" y2="165"/>
+  </g>
+  <text x="270" y="155" font-family="Georgia, serif" font-size="64" fill="#7fc8a9">AI Voice Receptionist</text>
+  <text x="272" y="205" font-family="Arial, sans-serif" font-size="26" fill="#f5f0e4">Call it from your browser. Watch it take the job.</text>
+  <rect y="298" width="1280" height="2" fill="#7fc8a9"/>
+</svg>
