@@ -1,6 +1,92 @@
 @import "tailwindcss";
 
-/* No look yet: step 2 of the rebuild picks it and writes DESIGN.md. */
+/* The Service Ticket look. DESIGN.md is the rulebook; these are its tokens.
+   The page is the canary-yellow copy; the white top sheet lies on it.
+   Red is the printed form. Carbon blue is what the Receptionist captures. */
+@theme {
+  --color-copy: #faf08a;
+  --color-copy-deep: #e8dc5a;
+  --color-sheet: #ffffff;
+  --color-form: #a8221a;
+  --color-form-deep: #8a1b14;
+  --color-form-rule: #e9a8a2;
+  --color-carbon: #1b3a8c;
+  --color-print: #17171a;
+  --color-print-muted: #4e4e57;
+  --color-print-soft: #5a4a1e;
+
+  --font-form: var(--font-barlow-condensed), "Arial Narrow", sans-serif;
+  --font-body: var(--font-barlow), system-ui, sans-serif;
+  --font-hand: var(--font-kalam), "Segoe Print", cursive;
+
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
 :root {
-  color-scheme: light dark;
+  color-scheme: light;
+}
+
+body {
+  background: var(--color-copy);
+  color: var(--color-print);
+  font-family: var(--font-body);
+  font-variant-numeric: tabular-nums;
+  -webkit-font-smoothing: antialiased;
+}
+
+::selection {
+  background: var(--color-carbon);
+  color: var(--color-sheet);
+}
+
+:focus-visible {
+  outline: 3px solid var(--color-carbon);
+  outline-offset: 3px;
+}
+
+a {
+  text-underline-offset: 0.2em;
+  text-decoration-thickness: 1px;
+}
+
+/* A perforated tear line: the stub edge between the sheets. */
+.perforation {
+  height: 3px;
+  background-image: radial-gradient(circle, var(--color-form) 1.5px, transparent 1.7px);
+  background-size: 9px 3px;
+  background-repeat: repeat-x;
+}
+
+/* The signature: a captured value is written onto its rule, left to right. */
+@keyframes write-in {
+  from {
+    clip-path: inset(0 100% 0 0);
+  }
+  to {
+    clip-path: inset(0 0 0 0);
+  }
+}
+.write-in {
+  animation: write-in 700ms var(--ease-out-expo) both;
+}
+
+/* The end of the call: the white top sheet is pulled off and away. The
+   yellow copy underneath never moves. */
+@keyframes sheet-away {
+  to {
+    transform: translateY(-115vh) rotate(-5deg);
+  }
+}
+.sheet-away {
+  animation: sheet-away 900ms cubic-bezier(0.55, 0, 0.8, 0.2) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .write-in {
+    animation: none;
+  }
+  /* No lift: the white sheet is simply gone and the copy shows at once. */
+  .sheet-away {
+    display: none;
+  }
 }

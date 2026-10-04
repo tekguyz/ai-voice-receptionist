@@ -1,10 +1,10 @@
 <p align="center"><img src="docs/banner.svg" alt="AI Voice Receptionist" width="100%"></p>
 
 <p align="center">
-  <img alt="status" src="https://img.shields.io/badge/status-building-7fc8a9?style=flat&labelColor=14120e">
-  <img alt="Next.js" src="https://img.shields.io/badge/Next.js-16-f5f0e4?style=flat&labelColor=14120e">
-  <img alt="storage" src="https://img.shields.io/badge/storage-Upstash%20Redis%20(planned)-7fc8a9?style=flat&labelColor=14120e">
-  <img alt="tests" src="https://img.shields.io/badge/tests-Vitest-7fc8a9?style=flat&labelColor=14120e">
+  <img alt="status" src="https://img.shields.io/badge/status-building-a8221a?style=flat&labelColor=17171a">
+  <img alt="Next.js" src="https://img.shields.io/badge/Next.js-16-faf08a?style=flat&labelColor=17171a">
+  <img alt="storage" src="https://img.shields.io/badge/storage-Upstash%20Redis%20(planned)-a8221a?style=flat&labelColor=17171a">
+  <img alt="tests" src="https://img.shields.io/badge/tests-Vitest-a8221a?style=flat&labelColor=17171a">
 </p>
 
 **A show-off demo of an AI Receptionist that answers the phone for a made-up South Florida AC repair shop.**
@@ -76,7 +76,7 @@ CI (`.github/workflows/ci.yml`) runs typecheck, `test:unit` and build on every p
 - Product: [`PRODUCT.md`](PRODUCT.md)
 - Decisions: [`docs/adr/`](docs/adr/)
 - Design references: [`refs/`](refs/)
-- `DESIGN.md` comes with step 2.
+- Design rules: [`DESIGN.md`](DESIGN.md)
 
 ---
 
