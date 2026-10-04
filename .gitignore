@@ -1,0 +1,31 @@
+node_modules
+.next
+/out
+/build
+/coverage
+*.tsbuildinfo
+next-env.d.ts
+.DS_Store
+*.log
+
+# Secrets. Every env file is ignored except the example, which holds names
+# only, never values.
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# Machine-local tool state.
+.vercel
+.claude/worktrees
+.worktrees
+
+# Impeccable review captures and scratch builds (local only)
+.impeccable/review/
+.impeccable/build/
+.impeccable/mocks/
+.impeccable/config.local.json
+
+# Per-laptop Claude settings
+.claude/settings.local.json
