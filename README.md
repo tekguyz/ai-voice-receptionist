@@ -9,14 +9,14 @@
 
 **A show-off demo of an AI Receptionist that answers the phone for a made-up South Florida AC repair shop.**
 
-Live site (planned, not live yet): `ai-voice-receptionist.vercel.app` · press Try the demo
+Live site (planned, not live yet): `ai-voice-receptionist.vercel.app`
 
 ## Status
 
 | | |
 |---|---|
 | Phase | Building |
-| Shipped | [#2 Step 1: setup and the Call Story](https://github.com/tekguyz/ai-voice-receptionist/issues/2) (a plain Sample Call screen at `/demo`) |
+| Shipped | [#2 Step 1: setup and the Call Story](https://github.com/tekguyz/ai-voice-receptionist/issues/2) (a plain Sample Call screen at `/demo`; runs locally, not deployed yet) |
 | Next | [#3 Step 2: pick the look](https://github.com/tekguyz/ai-voice-receptionist/issues/3) |
 | Updated | 2026-10-04 |
 
