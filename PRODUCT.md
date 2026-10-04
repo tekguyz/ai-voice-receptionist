@@ -54,9 +54,9 @@ in live as they talk.
   Call, Sample Call, Call Notes, Owner, Dashboard.
 - Demo only: no sign-in, no accounts (ADR 0002).
 - Test Calls run in the browser; no phone number is dialled (ADR 0001).
-- A Test Call is 3 minutes at most; 3 per Visitor per hour, 30 per site per
-  hour, plus a daily limit. At a limit, or with no microphone, the Sample Call
-  plays.
+- A Test Call is 3 minutes at most. Limits (founder, 2026-10-04; cost comes
+  first): 1 per Visitor a day, also limited by IP address; 5 per site a day
+  and 30 a month. At a limit, or with no microphone, the Sample Call plays.
 - The Receptionist asks name, job, urgency and address, and books one of two
   made-up open times. No calendar is connected. Nothing is sent; the
   confirmation text is a preview with "Not available in the demo."
@@ -65,9 +65,8 @@ in live as they talk.
 - Only words are kept, for 7 days. Never a Visitor's voice (ADR 0004).
 - Follows `claude-config/DEMO-STANDARD.md`: landing page, link preview,
   "Try the demo", demo banner, "Built by TEKGUYZ", showcase pictures.
-- **Undecided:** the names of the Sample Business and the Receptionist
-  (proposed "Mangrove Air" and "Luna"); the daily Test Call limit (proposed
-  60).
+- Names (founder, 2026-10-04): the Sample Business is "Mangrove Air", the
+  Receptionist is "Luna".
 
 ## Brand Commitments
 

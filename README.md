@@ -16,8 +16,8 @@ Live site (planned, not live yet): `ai-voice-receptionist.vercel.app`
 | | |
 |---|---|
 | Phase | Building |
-| Shipped | [#2 Step 1: setup and the Call Story](https://github.com/tekguyz/ai-voice-receptionist/issues/2) (a plain Sample Call screen at `/demo`; runs locally, not deployed yet) |
-| Next | [#3 Step 2: pick the look](https://github.com/tekguyz/ai-voice-receptionist/issues/3) |
+| Shipped | [#2 Step 1: setup and the Call Story](https://github.com/tekguyz/ai-voice-receptionist/issues/2) · [#3 Step 2: the look](https://github.com/tekguyz/ai-voice-receptionist/issues/3) (the Sample Call screen at `/demo` on the Service Ticket look; runs locally, not deployed yet) |
+| Next | [#4 Step 3: live Test Call](https://github.com/tekguyz/ai-voice-receptionist/issues/4) (waits for Vapi keys and Upstash Redis) |
 | Updated | 2026-10-04 |
 
 ## What it does
