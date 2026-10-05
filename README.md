@@ -3,7 +3,7 @@
 <p align="center">
   <img alt="status" src="https://img.shields.io/badge/status-building-a8221a?style=flat&labelColor=17171a">
   <img alt="Next.js" src="https://img.shields.io/badge/Next.js-16-faf08a?style=flat&labelColor=17171a">
-  <img alt="storage" src="https://img.shields.io/badge/storage-Upstash%20Redis%20(planned)-a8221a?style=flat&labelColor=17171a">
+  <img alt="storage" src="https://img.shields.io/badge/storage-Upstash%20Redis-a8221a?style=flat&labelColor=17171a">
   <img alt="tests" src="https://img.shields.io/badge/tests-Vitest-a8221a?style=flat&labelColor=17171a">
 </p>
 
@@ -17,22 +17,22 @@ Live site (planned, not live yet): `ai-voice-receptionist.vercel.app`
 |---|---|
 | Phase | Building |
 | Shipped | [#2 Step 1: setup and the Call Story](https://github.com/tekguyz/ai-voice-receptionist/issues/2) · [#3 Step 2: the look](https://github.com/tekguyz/ai-voice-receptionist/issues/3) (the Sample Call screen at `/demo` on the Service Ticket look; runs locally, not deployed yet) |
-| Next | [#4 Step 3: live Test Call](https://github.com/tekguyz/ai-voice-receptionist/issues/4) (waits for Vapi keys and Upstash Redis) |
+| In review | [#4 Step 3: live Test Call](https://github.com/tekguyz/ai-voice-receptionist/issues/4) (runs locally; not deployed) |
+| Next | [#5 Step 4: Call Notes saved](https://github.com/tekguyz/ai-voice-receptionist/issues/5) |
 | Updated | 2026-10-04 |
 
 ## What it does
 
 Built so far:
 
+- A Visitor presses "Try the demo" (a cookie, no sign-in). Then "Call now" talks to Luna through the browser microphone. Words and tags fill in live. A call stops at 3 minutes. Limits are 1 Test Call per Visitor a day, 2 per IP address a day, 5 per site a day, and 30 a month. At a limit, with a blocked microphone, or when the call cannot connect, the Sample Call is offered.
 - Turns a call's events (lines, captured details, a booking, the end) into the live call view and the Call Notes. This is the Call Story, in `lib/call-story.ts`.
 - Plays a Sample Call on a plain screen at `/demo`: lines and detail tags appear in time, then the Call Notes show a summary, the details, the booked time and a preview of the confirmation text.
 
 Planned (spec [#1](https://github.com/tekguyz/ai-voice-receptionist/issues/1)):
 
-- A Visitor presses "Call now" and talks to the Receptionist through the browser microphone.
-- The live call screen shows the words and fills in tags as the Receptionist captures name, job, urgency, address and a booked time.
 - The Dashboard shows the Owner's side: totals and recent Call Notes.
-- The Receptionist answers in Spanish when the caller speaks Spanish.
+- The Receptionist answers in Spanish when the caller speaks Spanish (set up, not yet checked on a call).
 
 ## What it never does
 
@@ -41,21 +41,33 @@ Planned (spec [#1](https://github.com/tekguyz/ai-voice-receptionist/issues/1)):
 - Never keeps a Visitor's voice. Only words, for 7 days ([ADR 0004](docs/adr/0004-no-audio-kept.md)).
 - Never sends a text or email. The confirmation text is a preview.
 - Never uses a real business. The Sample Business is made up.
+- The browser never holds a Vapi key. The server makes each call with a 60-second token that only works for Luna.
 
 ## Stack
 
-Next.js (App Router), TypeScript, Tailwind CSS, Vitest, on Vercel. Planned: Vapi web SDK for voice, Upstash Redis for limits and Call Notes ([ADR 0003](docs/adr/0003-redis-not-supabase.md)).
+Next.js (App Router), TypeScript, Tailwind CSS, Vitest, on Vercel. Voice is the Vapi web SDK. Upstash Redis holds call limits and Call Notes ([ADR 0003](docs/adr/0003-redis-not-supabase.md)).
 
 ## Run it locally
 
-Prerequisites: Node 24.
+Prerequisites: Node 24, a Vapi account and an Upstash Redis database.
 
 ```bash
 npm install
+cp .env.example .env.local
+```
+
+Fill in `.env.local`. Then:
+
+```bash
+npm run vapi:sync
 npm run dev
 ```
 
-Then open `http://localhost:3000/demo`. No env file is needed yet.
+Open `http://localhost:3000` and press "Try the demo".
+
+Luna's settings live in `vapi/luna.ts`. Never edit Luna in the Vapi dashboard; the next sync overwrites it.
+
+To test what would be sent without sending: `npm run vapi:sync -- --dry-run`.
 
 The Sample Business and Receptionist names live in one file, `lib/sample-business.ts`.
 

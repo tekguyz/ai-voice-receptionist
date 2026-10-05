@@ -20,6 +20,7 @@ next-env.d.ts
 .vercel
 .claude/worktrees
 .worktrees
+.vitest/
 
 # Impeccable review captures and scratch builds (local only)
 .impeccable/review/
