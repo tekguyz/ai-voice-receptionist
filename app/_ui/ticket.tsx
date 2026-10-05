@@ -56,7 +56,7 @@ export function Field({ label, value, empty }: { label: string; value?: string |
   );
 }
 
-export function Transcript({ lines, receptionistName, live }: { lines: TranscriptLine[]; receptionistName: string; live?: boolean }) {
+export function Transcript({ lines, receptionistName, live }: { lines: readonly TranscriptLine[]; receptionistName: string; live?: boolean }) {
   return (
     <ol aria-live={live ? "polite" : undefined} className="grid gap-3">
       {lines.map((line, i) => (

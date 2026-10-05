@@ -6,7 +6,7 @@
 import { useEffect, useId, useRef, useState } from "react";
 import { DemoBanner, Field, FormButton, OnTheLine, PlayIcon, StampButton, TicketHeader, Transcript } from "@/app/_ui/ticket";
 import type { CallSource, RunningCall } from "@/lib/call-source";
-import { tellCallStory, type CallDetails, type CallEvent, type CallNotes, type CallView } from "@/lib/call-story";
+import { DETAIL_FIELDS, tellCallStory, type CallDetails, type CallEvent, type CallNotes, type CallView } from "@/lib/call-story";
 import { createSampleCallPlayer } from "@/lib/sample-call";
 import { SAMPLE_BUSINESS } from "@/lib/sample-business";
 
@@ -16,7 +16,6 @@ const DETAIL_LABELS: Record<keyof CallDetails, string> = {
   urgency: "Urgency",
   address: "Address",
 };
-const DETAIL_FIELDS = Object.keys(DETAIL_LABELS) as (keyof CallDetails)[];
 
 const END_REASONS = {
   "caller-hung-up": "Caller hung up",
@@ -51,7 +50,10 @@ export function SampleCallScreen() {
     setEvents([]);
     setSheetGone(false);
     setStopped(false);
-    call.current = source.start((event) => setEvents((soFar) => [...soFar, event]));
+    call.current = source.start({
+      onEvent: (event) => setEvents((soFar) => [...soFar, event]),
+      onFailed: () => {},
+    });
   }
 
   function stop() {
