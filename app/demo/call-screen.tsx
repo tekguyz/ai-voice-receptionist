@@ -44,6 +44,8 @@ const FAILURE_NOTICES: Record<StartFailure, string> = {
   limit: "The Test Calls for today are used up. You can still hear how it works.",
   unavailable: "The call couldn't connect. You can still hear how it works.",
   "connect-failed": "The call couldn't connect. You can still hear how it works.",
+  // The day's Test Call is already used, so there is no retry for this one.
+  "join-failed": "The call couldn't connect. You can still hear how it works.",
 };
 
 // Decoration on a made-up work order; not a real record.
@@ -140,9 +142,12 @@ export function CallScreen() {
   const elapsedMs = ticking && startedAt !== null ? Math.max(view.elapsedMs, now - startedAt) : view.elapsedMs;
   const mode: Mode = phase.kind === "running" ? phase.mode : "test";
 
+  // The phase word for screen readers; never the ticking timer.
+  const announcement = notes ? "Call ended" : phase.kind === "connecting" ? "Calling…" : phase.kind === "running" ? "On the line" : "";
+
   if (notes) {
     return (
-      <Page>
+      <Page announcement={announcement}>
         <div className="relative">
           <OwnersCopy
             notes={notes}
@@ -218,6 +223,7 @@ export function CallScreen() {
           <StampButton onClick={() => begin("sample")} icon={<PlayIcon />} autoFocus>
             Play the Sample Call
           </StampButton>
+          {/* Only a failure the server reports can be retried: after join-failed the day's call is used. */}
           {phase.failure === "connect-failed" && (
             <div className="mt-5">
               <FormButton onClick={() => begin("test")}>Try calling again</FormButton>
@@ -246,16 +252,20 @@ export function CallScreen() {
   }
 
   return (
-    <Page>
+    <Page announcement={announcement}>
       <TopSheet view={view} status={status} controls={controls} />
     </Page>
   );
 }
 
-function Page({ children }: { children: ReactNode }) {
+function Page({ children, announcement }: { children: ReactNode; announcement: string }) {
   return (
     <>
       <DemoBanner />
+      {/* Always in the page, so a screen reader hears each change of phase. */}
+      <div role="status" aria-live="polite" className="sr-only">
+        {announcement}
+      </div>
       <main className="mx-auto max-w-[1200px] px-4 pt-4 pb-10 md:pt-12">{children}</main>
     </>
   );

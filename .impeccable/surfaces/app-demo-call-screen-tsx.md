@@ -1,7 +1,7 @@
 ---
 version: 1
-slug: "app-demo-sample-call-screen-tsx"
-primary_target: "app/demo/sample-call-screen.tsx"
+slug: "app-demo-call-screen-tsx"
+primary_target: "app/demo/call-screen.tsx"
 related_targets: ["app/demo/page.tsx"]
 ---
 

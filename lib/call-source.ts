@@ -4,8 +4,14 @@
 
 import type { CallEvent } from "@/lib/call-story";
 
-/** Why a call never started. Each one leads the screen to offer the Sample Call. */
-export type StartFailure = "microphone-blocked" | "limit" | "unavailable" | "connect-failed";
+/**
+ * Why a call never started. Each one leads the screen to offer the Sample Call.
+ * `connect-failed`: the server could not start the call, so the Visitor's call
+ * for the day is not used and trying again can work. `join-failed`: the server
+ * started the call but the browser could not join it, so the day's call is
+ * used and trying again would hit the limit.
+ */
+export type StartFailure = "microphone-blocked" | "limit" | "unavailable" | "connect-failed" | "join-failed";
 
 export type CallHandlers = {
   onEvent(event: CallEvent): void;

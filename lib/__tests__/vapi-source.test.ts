@@ -67,10 +67,10 @@ describe("the Vapi source", () => {
     expect(createVapi).not.toHaveBeenCalled();
   });
 
-  it("reports a failed connect when the room cannot be joined", async () => {
+  it("reports a failed join when the room cannot be joined (the server already used the day's call)", async () => {
     const { failures, events } = harness({}, fakeVapi({ joinFails: true }));
     await settle();
-    expect(failures).toEqual(["connect-failed"]);
+    expect(failures).toEqual(["join-failed"]);
     expect(events).toEqual([]);
   });
 
@@ -157,6 +157,31 @@ describe("the Vapi source", () => {
     expect(events.filter((e) => e.type === "ended")).toEqual([{ type: "ended", reason: "error", atMs: 0 }]);
   });
 
+  it("counts a silence time-out as the caller hanging up, not a failed call", async () => {
+    const { vapi, events } = harness();
+    await settle();
+    vapi.emit("message", { type: "status-update", status: "ended", endedReason: "silence-timed-out" });
+    vapi.emit("call-end");
+    expect(events.at(-1)).toMatchObject({ type: "ended", reason: "caller-hung-up" });
+  });
+
+  it("ignores the SDK's non-fatal audio-processing errors: the call still ends as finished", async () => {
+    const { vapi, events } = harness();
+    await settle();
+    vapi.emit("error", { type: "audio-processing-setup-error", stage: "audio-processing-setup", error: { message: "KrispInitError: Canceled" } });
+    vapi.emit("error", { type: "audio-processor-recovery-error", stage: "audio-processor-recovery", error: { message: "x" } });
+    vapi.emit("call-end");
+    expect(events.filter((e) => e.type === "ended")).toEqual([{ type: "ended", reason: "receptionist-finished", atMs: 0 }]);
+  });
+
+  it("ends with an error after a Daily call error", async () => {
+    const { vapi, events } = harness();
+    await settle();
+    vapi.emit("error", { type: "daily-error", error: { message: "connection lost" } });
+    vapi.emit("call-end");
+    expect(events.filter((e) => e.type === "ended")).toEqual([{ type: "ended", reason: "error", atMs: 0 }]);
+  });
+
   describe("while the room is still being joined", () => {
     it("emits nothing when stopped mid-join, then the join finishes", async () => {
       const vapi = fakeVapi({ deferJoin: true });
@@ -178,7 +203,7 @@ describe("the Vapi source", () => {
       vapi.failJoin();
       await settle();
       expect(events).toEqual([]);
-      expect(failures).toEqual(["connect-failed"]);
+      expect(failures).toEqual(["join-failed"]);
     });
 
     it("keeps final lines that arrive before the join resolves, timed from the first message", async () => {

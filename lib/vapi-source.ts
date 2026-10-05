@@ -39,10 +39,26 @@ type Message = {
 
 function endReasonFrom(endedReason: string | undefined, sawError: boolean): EndReason {
   if (endedReason === "exceeded-max-duration") return "time-limit";
-  if (endedReason === "customer-ended-call") return "caller-hung-up";
+  // A Visitor who only listens is not a failed call.
+  if (endedReason === "customer-ended-call" || endedReason === "silence-timed-out") return "caller-hung-up";
   if (endedReason?.startsWith("assistant-")) return "receptionist-finished";
   if (sawError || endedReason) return "error";
   return "receptionist-finished";
+}
+
+// The SDK emits 'error' for audio-processing (Krisp) and optional-feature
+// setup problems while the call carries on. Every other error, Daily call
+// errors included, is fatal.
+const NON_FATAL_ERROR_TYPES = new Set([
+  "audio-processing-setup-error",
+  "audio-processor-recovery-error",
+  "audio-observer-setup-error",
+  "video-recording-setup-error",
+]);
+
+function isFatalError(error: unknown): boolean {
+  const type = (error as { type?: unknown } | null)?.type;
+  return !(typeof type === "string" && NON_FATAL_ERROR_TYPES.has(type));
 }
 
 function argumentsOf(raw: unknown): Record<string, unknown> {
@@ -115,8 +131,8 @@ export function createVapiSource(deps: VapiSourceDeps): CallSource {
           vapi = await deps.createVapi();
           if (stopped) return;
           vapi.on("message", onMessage);
-          vapi.on("error", () => {
-            sawError = true;
+          vapi.on("error", (error) => {
+            if (isFatalError(error)) sawError = true;
           });
           vapi.on("call-end", () => {
             if (started) end(endReasonFrom(endedReason, sawError));
@@ -130,7 +146,8 @@ export function createVapiSource(deps: VapiSourceDeps): CallSource {
           if (started) end("error");
           else {
             vapi = null;
-            onFailed("connect-failed");
+            // The server already started the call; only the join failed.
+            onFailed("join-failed");
           }
         }
       })();
