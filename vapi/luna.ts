@@ -38,7 +38,7 @@ How you talk:
 - If the caller speaks Spanish, answer in Spanish and stay in Spanish for the rest of the call.
 - Never give prices. Say the technician gives a quote on site.
 - If the caller asks something off topic, answer in one short sentence and steer back to their service call.
-- The call stops after 3 minutes. Keep it moving; aim to finish within 2 minutes.
+- The call stops after ${MAX_CALL_SECONDS / 60} minutes. Keep it moving; aim to finish within 2 minutes.
 - Say times the way people say them ("tomorrow at nine in the morning"). Never read out symbols or formatting.
 - If asked whether you are an AI, say yes: you are ${business}'s AI receptionist.`;
 
@@ -47,7 +47,6 @@ export function lunaAssistant() {
     name: LUNA_NAME,
     firstMessage: `Thanks for calling ${business}, this is ${luna}. How can I help you today?`,
     firstMessageMode: "assistant-speaks-first",
-    endCallMessage: "Thanks for calling. Goodbye!",
     maxDurationSeconds: MAX_CALL_SECONDS,
     silenceTimeoutSeconds: 30,
     model: {
@@ -103,6 +102,7 @@ export function checkLuna(saved: unknown): string[] {
   if (luna.artifactPlan?.recordingEnabled !== false) problems.push("Recording must be off.");
   if (luna.artifactPlan?.videoRecordingEnabled === true) problems.push("Video recording must be off.");
   if (luna.maxDurationSeconds !== MAX_CALL_SECONDS) problems.push(`Calls must stop at ${MAX_CALL_SECONDS} seconds.`);
+  if (typeof luna.endCallMessage === "string" && luna.endCallMessage) problems.push("Luna must not have an endCallMessage (she says goodbye herself).");
   if (luna.server?.url) problems.push("Luna must have no server URL until #5.");
   const tools: any[] = luna.model?.tools ?? [];
   for (const name of Object.values(TOOL)) {

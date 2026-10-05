@@ -26,4 +26,15 @@ describe("Luna's Vapi settings", () => {
     const noBooking = { ...luna, model: { ...luna.model, tools: luna.model.tools.filter((t: any) => t.function?.name !== TOOL.bookTime) } };
     expect(checkLuna(noBooking)).toContain(`Tool ${TOOL.bookTime} is missing or not async.`);
   });
+
+  it("say goodbye once: Luna does it herself, so Vapi adds no end-of-call message", () => {
+    const luna = lunaAssistant() as any;
+    expect(luna).not.toHaveProperty("endCallMessage");
+    expect(checkLuna({ ...luna, endCallMessage: "Goodbye!" })).toContain("Luna must not have an endCallMessage (she says goodbye herself).");
+  });
+
+  it("tell Luna the call limit from MAX_CALL_SECONDS", () => {
+    const prompt: string = (lunaAssistant() as any).model.messages[0].content;
+    expect(prompt).toContain(`The call stops after ${MAX_CALL_SECONDS / 60} minutes.`);
+  });
 });
