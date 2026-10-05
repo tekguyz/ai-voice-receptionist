@@ -12,7 +12,7 @@ export type VapiLike = {
   on(event: "call-end", listener: () => void): void;
   on(event: "error", listener: (error: unknown) => void): void;
   reconnect(call: { webCallUrl: string; id?: string }): Promise<void>;
-  stop(): void;
+  stop(): void | Promise<void>;
 };
 
 export type StartResult = { ok: true; webCallUrl: string; callId: string } | { ok: false; failure: StartFailure };
@@ -46,14 +46,15 @@ function endReasonFrom(endedReason: string | undefined, sawError: boolean): EndR
 }
 
 function argumentsOf(raw: unknown): Record<string, unknown> {
+  let value = raw;
   if (typeof raw === "string") {
     try {
-      return JSON.parse(raw);
+      value = JSON.parse(raw);
     } catch {
       return {};
     }
   }
-  return raw && typeof raw === "object" ? (raw as Record<string, unknown>) : {};
+  return value && typeof value === "object" ? (value as Record<string, unknown>) : {};
 }
 
 export function createVapiSource(deps: VapiSourceDeps): CallSource {
@@ -62,11 +63,13 @@ export function createVapiSource(deps: VapiSourceDeps): CallSource {
       let stopped = false;
       let vapi: VapiLike | null = null;
       let startedAt = 0;
+      // True once the room is joined. Until then no `ended` is ever emitted.
+      let started = false;
       let ended = false;
       let endedReason: string | undefined;
       let sawError = false;
 
-      const at = () => Math.max(0, deps.now() - startedAt);
+      const at = () => (started ? Math.max(0, deps.now() - startedAt) : 0);
       const end = (reason: EndReason) => {
         if (ended) return;
         ended = true;
@@ -106,9 +109,13 @@ export function createVapiSource(deps: VapiSourceDeps): CallSource {
           vapi.on("error", () => {
             sawError = true;
           });
-          vapi.on("call-end", () => end(endReasonFrom(endedReason, sawError)));
+          vapi.on("call-end", () => {
+            if (started) end(endReasonFrom(endedReason, sawError));
+          });
           await vapi.reconnect({ webCallUrl: result.webCallUrl, id: result.callId });
+          if (stopped) return;
           startedAt = deps.now();
+          started = true;
         } catch {
           vapi = null;
           if (!stopped) onFailed("connect-failed");
@@ -119,9 +126,14 @@ export function createVapiSource(deps: VapiSourceDeps): CallSource {
         stop() {
           if (stopped) return;
           stopped = true;
-          if (vapi) {
-            vapi.stop();
-            end("caller-hung-up");
+          if (!vapi) return;
+          // Only a call that started has an end to report. Say it first, so a
+          // throw from the SDK's stop() cannot skip it.
+          if (started) end("caller-hung-up");
+          try {
+            Promise.resolve(vapi.stop()).catch(() => {});
+          } catch {
+            // The call is over for the caller either way.
           }
         },
       };

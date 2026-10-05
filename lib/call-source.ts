@@ -16,7 +16,9 @@ export type CallHandlers = {
 export type RunningCall = {
   /**
    * Ends the call. If it had started and not yet ended, the source emits one
-   * `ended` with reason `caller-hung-up`, then nothing more. Safe to call twice.
+   * `ended` with reason `caller-hung-up`; no second `ended` follows. A late
+   * final transcript line may still arrive after it (the Call Story keeps it).
+   * The Sample Call player emits nothing after it. Safe to call twice.
    */
   stop(): void;
 };

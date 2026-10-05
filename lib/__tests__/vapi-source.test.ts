@@ -4,7 +4,8 @@ import type { CallEvent } from "@/lib/call-story";
 import { createVapiSource, type StartResult, type VapiLike, type VapiSourceDeps } from "@/lib/vapi-source";
 
 // A stand-in for the Vapi web SDK: the test plays Vapi's side by hand.
-function fakeVapi({ joinFails = false } = {}) {
+function fakeVapi({ joinFails = false, deferJoin = false } = {}) {
+  let settleJoin: { resolve(): void; reject(error: Error): void } | null = null;
   const listeners = new Map<string, ((arg?: unknown) => void)[]>();
   const vapi: VapiLike & { emit(event: string, arg?: unknown): void; stopped: number; joined: unknown[] } = {
     stopped: 0,
@@ -15,6 +16,7 @@ function fakeVapi({ joinFails = false } = {}) {
     async reconnect(call: { webCallUrl: string; id?: string }) {
       vapi.joined.push(call);
       if (joinFails) throw new Error("join failed");
+      if (deferJoin) await new Promise<void>((resolve, reject) => (settleJoin = { resolve, reject }));
     },
     stop() {
       vapi.stopped++;
@@ -23,7 +25,10 @@ function fakeVapi({ joinFails = false } = {}) {
       for (const listener of listeners.get(event) ?? []) listener(arg);
     },
   } as any;
-  return vapi;
+  return Object.assign(vapi, {
+    finishJoin: () => settleJoin?.resolve(),
+    failJoin: () => settleJoin?.reject(new Error("join failed")),
+  });
 }
 
 function harness(over: Partial<VapiSourceDeps> = {}, vapi = fakeVapi()) {
@@ -97,6 +102,7 @@ describe("the Vapi source", () => {
       toolCallList: [
         { function: { name: "recordDetail", arguments: '{"field":"job","value":"AC not cooling"}' } },
         { function: { name: "recordDetail", arguments: { field: "shoe size", value: "9" } } },
+        { function: { name: "recordDetail", arguments: "null" } },
         { function: { name: "bookTime", arguments: { time: "Tuesday, October 6 at 9 AM" } } },
       ],
     });
@@ -149,5 +155,41 @@ describe("the Vapi source", () => {
     vapi.emit("error", new Error("network"));
     vapi.emit("call-end");
     expect(events.filter((e) => e.type === "ended")).toEqual([{ type: "ended", reason: "error", atMs: 0 }]);
+  });
+
+  describe("while the room is still being joined", () => {
+    it("emits nothing when stopped mid-join, then the join finishes", async () => {
+      const vapi = fakeVapi({ deferJoin: true });
+      const { call, events, failures } = harness({}, vapi);
+      await settle();
+      call.stop();
+      vapi.finishJoin();
+      await settle();
+      expect(events).toEqual([]);
+      expect(failures).toEqual([]);
+      expect(vapi.stopped).toBe(1);
+    });
+
+    it("ignores a call-end the SDK fires before a join that then fails", async () => {
+      const vapi = fakeVapi({ deferJoin: true });
+      const { events, failures } = harness({}, vapi);
+      await settle();
+      vapi.emit("call-end");
+      vapi.failJoin();
+      await settle();
+      expect(events).toEqual([]);
+      expect(failures).toEqual(["connect-failed"]);
+    });
+
+    it("keeps a final line that arrives before the join resolves, at 0 ms", async () => {
+      const vapi = fakeVapi({ deferJoin: true });
+      const { events, tick } = harness({}, vapi);
+      await settle();
+      tick(700);
+      vapi.emit("message", finalLine("assistant", "Thanks for calling Mangrove Air."));
+      vapi.finishJoin();
+      await settle();
+      expect(events).toEqual([{ type: "line", speaker: "receptionist", text: "Thanks for calling Mangrove Air.", atMs: 0 }]);
+    });
   });
 });
