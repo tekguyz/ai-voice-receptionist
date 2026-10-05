@@ -4,7 +4,7 @@
 
 **Goal:** A Visitor presses "Call now", talks to Luna through the browser microphone, and watches the words and tags fill in; every refusal or failure leads to the Sample Call.
 
-**Architecture:** Luna's Vapi settings live in `vapi/luna.ts` and reach Vapi through `npm run vapi:sync`. "Call now" posts to `/api/test-call`; the server runs the Call Gate (Redis counters, fail closed), then creates one Vapi web call with the private key and returns only the room link. The browser joins that room with the Vapi web SDK's `reconnect()`, so it never holds a key that can start calls or change Luna. Both tools are client-side and async (no server URL in #4): the browser turns their calls into Call Story events. The webhook arrives in #5.
+**Architecture:** Luna's Vapi settings live in `vapi/luna.ts` and reach Vapi through `npm run vapi:sync`. "Call now" posts to `/api/test-call`; the server runs the Call Gate (Redis counters, fail closed), then signs a 60-second Luna-only token with the private key and creates one Vapi web call with it (Task 9 ruling: Vapi's /call/web takes only a public-scope key) and returns only the room link. The browser joins that room with the Vapi web SDK's `reconnect()`, so it never holds a key that can start calls or change Luna. Both tools are client-side and async (no server URL in #4): the browser turns their calls into Call Story events. The webhook arrives in #5.
 
 **Tech Stack:** Next.js 16 App Router, TypeScript 7, Tailwind 4, Vitest 5, `@vapi-ai/web` 2.x, `@upstash/redis` 1.x, Node 24 (runs `.ts` scripts directly).
 
