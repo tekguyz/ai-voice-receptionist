@@ -4,12 +4,13 @@ import { describe, expect, it, vi } from "vitest";
 vi.mock("server-only", () => ({}));
 
 import type { CallGate, GateAnswer } from "@/lib/call-gate";
-import { startTestCall, type StartTestCallDeps } from "@/lib/start-test-call";
+import { ipKeyFrom, startTestCall, type StartTestCallDeps } from "@/lib/start-test-call";
 import { vapiWebCallCreator } from "@/lib/vapi-web-call";
 import { VISITOR_COOKIE } from "@/lib/visitor";
 
 const VISITOR = "7b0c6d8e-1f2a-4b3c-8d4e-5f6a7b8c9d0e";
 const ORG_ID = "org-1";
+const IP_SECRET = "test-ip-secret";
 const PRIVATE_KEY = "test-private-key-never-leaves-the-server";
 const NOW = new Date("2026-10-05T16:00:00Z");
 
@@ -39,6 +40,7 @@ function deps(over: Partial<StartTestCallDeps> = {}): StartTestCallDeps {
     gate: gateAnswering({ allowed: true, release: async () => {} }),
     createWebCall: async () => ({ webCallUrl: VAPI_CALL.webCallUrl, callId: VAPI_CALL.id }),
     now: () => NOW,
+    ipSecret: IP_SECRET,
     ...over,
   };
 }
@@ -75,6 +77,15 @@ describe("Start Test Call", () => {
     expect(input.now).toBe(NOW);
     expect(input.ipKey).toMatch(/^[0-9a-f]{16}$/);
     expect(input.ipKey).not.toContain("203.0.113.7");
+    expect(input.ipKey).toBe(ipKeyFrom(request(), IP_SECRET));
+  });
+
+  it("keys the IP address with a server secret: a different secret gives a different key", () => {
+    const key = ipKeyFrom(request(), IP_SECRET);
+    expect(key).toMatch(/^[0-9a-f]{16}$/);
+    expect(key).not.toContain("203.0.113.7");
+    expect(key).toBe(ipKeyFrom(request(), IP_SECRET));
+    expect(ipKeyFrom(request(), "another-secret")).not.toBe(key);
   });
 
   it("gives the count back when Vapi cannot start the call", async () => {
