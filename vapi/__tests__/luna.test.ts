@@ -18,6 +18,14 @@ describe("Luna's Vapi settings", () => {
     expect(prompt).not.toMatch(/Sarah|Viora/);
   });
 
+  // From the founder's test calls on 2026-10-05.
+  it("read the address back, write names as first and last, and confirm before hanging up", () => {
+    const prompt: string = (lunaAssistant() as any).model.messages[0].content;
+    expect(prompt).toMatch(/read it back/i);
+    expect(prompt).toContain("a space between first and last name");
+    expect(prompt).toMatch(/Never call endCall in the same reply as/);
+  });
+
   it("flag recording, a longer call, a server URL or a missing tool", () => {
     const luna = lunaAssistant() as any;
     expect(checkLuna({ ...luna, artifactPlan: { recordingEnabled: true } })).toContain("Recording must be off.");
