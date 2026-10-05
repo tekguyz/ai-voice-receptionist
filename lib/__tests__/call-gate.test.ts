@@ -105,4 +105,28 @@ describe("the Call Gate", () => {
     for (const key of counts.keys()) expect(key.startsWith("avr:")).toBe(true);
     for (const ttl of ttls.values()) expect(ttl).toBeGreaterThan(0);
   });
+
+  it("refuses when the store returns a malformed result (empty array)", async () => {
+    const store: CounterStore = {
+      async increment() {
+        return [];
+      },
+      async decrement() {},
+    };
+    const gate = gateWith(store);
+    expect(await gate.check({ visitorId: "v1", ipKey: "ip1", now: NOON })).toEqual({ allowed: false, reason: "unavailable" });
+  });
+
+  it("release() is idempotent: a second call does not decrement again", async () => {
+    const { store } = fakeStore();
+    const gate = gateWith(store);
+    const answer = await gate.check({ visitorId: "v1", ipKey: "ip1", now: NOON });
+    if (!answer.allowed) throw new Error("expected allowed");
+    await answer.release();
+    await answer.release(); // second call should do nothing
+    // v1 should be allowed once more (the first release freed the slot)
+    expect((await gate.check({ visitorId: "v1", ipKey: "ip1", now: NOON })).allowed).toBe(true);
+    // and refused the second time
+    expect(await gate.check({ visitorId: "v1", ipKey: "ip1", now: NOON })).toEqual({ allowed: false, reason: "visitor-limit" });
+  });
 });

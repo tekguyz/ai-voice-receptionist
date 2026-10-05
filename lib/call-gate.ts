@@ -44,11 +44,20 @@ export function createCallGate({ store, limits, prefix }: { store: CounterStore;
         { key: `${prefix}gate:site:month:${month}`, ttlSeconds: MONTH_TTL, limit: limits.sitePerMonth, reason: "site-month-limit" },
       ] as const;
       const keys = counters.map((c) => c.key);
-      const giveBack = () => store.decrement(keys);
+      let released = false;
+      const giveBack = async () => {
+        if (released) return;
+        released = true;
+        await store.decrement(keys);
+      };
 
       try {
         const counts = await store.increment(counters);
-        const over = counters.find((c, i) => counts[i] > c.limit);
+        // Fail closed: validate the result is well-formed
+        if (counts.length !== counters.length || !counts.every((c) => Number.isFinite(c))) {
+          throw new Error("malformed count result");
+        }
+        const over = counters.find((c, i) => !(counts[i] <= c.limit));
         if (over) {
           await giveBack();
           return { allowed: false, reason: over.reason };
