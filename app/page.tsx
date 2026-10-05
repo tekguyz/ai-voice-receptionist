@@ -1,5 +1,3 @@
-import Link from "next/link";
-
 // Placeholder. The landing page comes in a later step of the rebuild.
 export default function Home() {
   return (
@@ -7,9 +5,11 @@ export default function Home() {
       <h1>AI Voice Receptionist</h1>
       <p>The landing page is not built yet.</p>
       <p>
-        <Link href="/demo" className="underline">
-          Play the Sample Call
-        </Link>
+        <form method="post" action="/api/visit">
+          <button type="submit" className="underline">
+            Try the demo
+          </button>
+        </form>
       </p>
     </main>
   );
