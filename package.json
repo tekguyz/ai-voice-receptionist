@@ -9,7 +9,8 @@
     "start": "next start",
     "typecheck": "tsc --noEmit",
     "test": "node -e \"console.error('Do not run the aggregate test command. Use: npm run test:unit.'); process.exit(1)\"",
-    "test:unit": "vitest run"
+    "test:unit": "vitest run",
+    "vapi:sync": "node --env-file-if-exists=.env.local scripts/vapi-sync.ts"
   },
   "dependencies": {
     "next": "16.3.8",
