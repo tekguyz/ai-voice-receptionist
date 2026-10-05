@@ -63,12 +63,20 @@ export function createVapiSource(deps: VapiSourceDeps): CallSource {
       let stopped = false;
       let vapi: VapiLike | null = null;
       let startedAt = 0;
-      // True once the room is joined. Until then no `ended` is ever emitted.
+      // True at the first message from the room or when the join resolves,
+      // whichever comes first (the SDK can deliver Luna's greeting before
+      // `reconnect` resolves). Until then no `ended` is ever emitted.
       let started = false;
       let ended = false;
       let endedReason: string | undefined;
       let sawError = false;
 
+      const markStarted = () => {
+        // A call stopped before it started never starts: it has no end to report.
+        if (started || stopped) return;
+        started = true;
+        startedAt = deps.now();
+      };
       const at = () => (started ? Math.max(0, deps.now() - startedAt) : 0);
       const end = (reason: EndReason) => {
         if (ended) return;
@@ -77,6 +85,7 @@ export function createVapiSource(deps: VapiSourceDeps): CallSource {
       };
 
       const onMessage = (raw: unknown) => {
+        markStarted();
         const message = (raw ?? {}) as Message;
         const type = message.type ?? "";
         if (type.startsWith("transcript")) {
@@ -114,11 +123,15 @@ export function createVapiSource(deps: VapiSourceDeps): CallSource {
           });
           await vapi.reconnect({ webCallUrl: result.webCallUrl, id: result.callId });
           if (stopped) return;
-          startedAt = deps.now();
-          started = true;
+          markStarted();
         } catch {
-          vapi = null;
-          if (!stopped) onFailed("connect-failed");
+          if (stopped) return;
+          // A call a message already started has to end; one that never started failed.
+          if (started) end("error");
+          else {
+            vapi = null;
+            onFailed("connect-failed");
+          }
         }
       })();
 

@@ -181,15 +181,62 @@ describe("the Vapi source", () => {
       expect(failures).toEqual(["connect-failed"]);
     });
 
-    it("keeps a final line that arrives before the join resolves, at 0 ms", async () => {
+    it("keeps final lines that arrive before the join resolves, timed from the first message", async () => {
       const vapi = fakeVapi({ deferJoin: true });
       const { events, tick } = harness({}, vapi);
       await settle();
       tick(700);
       vapi.emit("message", finalLine("assistant", "Thanks for calling Mangrove Air."));
+      tick(300);
+      vapi.emit("message", finalLine("user", "Hi."));
+      tick(400);
       vapi.finishJoin();
       await settle();
-      expect(events).toEqual([{ type: "line", speaker: "receptionist", text: "Thanks for calling Mangrove Air.", atMs: 0 }]);
+      expect(events).toEqual([
+        { type: "line", speaker: "receptionist", text: "Thanks for calling Mangrove Air.", atMs: 0 },
+        { type: "line", speaker: "caller", text: "Hi.", atMs: 300 },
+      ]);
+    });
+
+    it("counts the call as started at the first message: stop() then ends it once", async () => {
+      const vapi = fakeVapi({ deferJoin: true });
+      const { call, events, failures } = harness({}, vapi);
+      await settle();
+      vapi.emit("message", finalLine("assistant", "Thanks for calling Mangrove Air."));
+      call.stop();
+      vapi.emit("call-end");
+      vapi.finishJoin();
+      await settle();
+      expect(events.filter((e) => e.type === "ended")).toEqual([{ type: "ended", reason: "caller-hung-up", atMs: 0 }]);
+      expect(failures).toEqual([]);
+      expect(vapi.stopped).toBe(1);
+    });
+
+    it("emits no end for a call stopped before it started, even if a late message and call-end follow", async () => {
+      const vapi = fakeVapi({ deferJoin: true });
+      const { call, events } = harness({}, vapi);
+      await settle();
+      call.stop();
+      vapi.emit("message", finalLine("assistant", "Thanks for calling Mangrove Air."));
+      vapi.emit("call-end");
+      vapi.finishJoin();
+      await settle();
+      expect(events.filter((e) => e.type === "ended")).toEqual([]);
+    });
+
+    it("ends with an error when the join fails after a message already started the call", async () => {
+      const vapi = fakeVapi({ deferJoin: true });
+      const { events, failures, tick } = harness({}, vapi);
+      await settle();
+      vapi.emit("message", finalLine("assistant", "Thanks for calling Mangrove Air."));
+      tick(250);
+      vapi.failJoin();
+      await settle();
+      expect(events).toEqual([
+        { type: "line", speaker: "receptionist", text: "Thanks for calling Mangrove Air.", atMs: 0 },
+        { type: "ended", reason: "error", atMs: 250 },
+      ]);
+      expect(failures).toEqual([]);
     });
   });
 });
