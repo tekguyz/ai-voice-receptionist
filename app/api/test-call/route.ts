@@ -9,10 +9,13 @@ const production = process.env.NODE_ENV === "production";
 
 export async function POST(request: Request) {
   const privateKey = process.env.VAPI_PRIVATE_KEY;
+  const orgId = process.env.VAPI_ORG_ID;
   const assistantId = process.env.VAPI_ASSISTANT_ID;
-  if (!privateKey || !assistantId || !process.env.UPSTASH_REDIS_REST_URL) {
-    console.error("Start Test Call: VAPI_PRIVATE_KEY, VAPI_ASSISTANT_ID or Upstash settings are missing.");
-    return Response.json({ reason: "unavailable" }, { status: 503 });
+  if (!privateKey || !orgId || !assistantId || !process.env.UPSTASH_REDIS_REST_URL || !process.env.UPSTASH_REDIS_REST_TOKEN) {
+    console.error(
+      "Start Test Call: VAPI_PRIVATE_KEY, VAPI_ORG_ID, VAPI_ASSISTANT_ID, UPSTASH_REDIS_REST_URL or UPSTASH_REDIS_REST_TOKEN is missing.",
+    );
+    return Response.json({ reason: "unavailable" }, { status: 503, headers: { "Cache-Control": "no-store" } });
   }
   return startTestCall(request, {
     gate: createCallGate({
@@ -20,7 +23,7 @@ export async function POST(request: Request) {
       limits: production ? LIMITS : DEV_LIMITS,
       prefix: production ? "avr:" : "avr:dev:",
     }),
-    createWebCall: vapiWebCallCreator({ privateKey, assistantId }),
+    createWebCall: vapiWebCallCreator({ privateKey, orgId, assistantId }),
     now: () => new Date(),
   });
 }

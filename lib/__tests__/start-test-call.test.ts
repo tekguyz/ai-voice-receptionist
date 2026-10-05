@@ -1,10 +1,15 @@
+import { createHmac } from "node:crypto";
 import { describe, expect, it, vi } from "vitest";
+
+vi.mock("server-only", () => ({}));
+
 import type { CallGate, GateAnswer } from "@/lib/call-gate";
 import { startTestCall, type StartTestCallDeps } from "@/lib/start-test-call";
 import { vapiWebCallCreator } from "@/lib/vapi-web-call";
 import { VISITOR_COOKIE } from "@/lib/visitor";
 
 const VISITOR = "7b0c6d8e-1f2a-4b3c-8d4e-5f6a7b8c9d0e";
+const ORG_ID = "org-1";
 const PRIVATE_KEY = "test-private-key-never-leaves-the-server";
 const NOW = new Date("2026-10-05T16:00:00Z");
 
@@ -85,7 +90,7 @@ describe("Start Test Call", () => {
 
   it("returns only the room link and the call ID, never a secret or Vapi's control link", async () => {
     const fetchImpl = vi.fn(async () => new Response(JSON.stringify(VAPI_CALL), { status: 201 }));
-    const createWebCall = vapiWebCallCreator({ privateKey: PRIVATE_KEY, assistantId: "asst-1", fetchImpl });
+    const createWebCall = vapiWebCallCreator({ privateKey: PRIVATE_KEY, orgId: ORG_ID, assistantId: "asst-1", fetchImpl });
     const response = await startTestCall(request(), deps({ createWebCall }));
     expect(response.status).toBe(200);
     const text = await response.text();
@@ -96,25 +101,58 @@ describe("Start Test Call", () => {
 });
 
 describe("creating the Vapi web call", () => {
-  it("sends Luna's ID, the Visitor ID and the open times, with the key only in the header", async () => {
+  const OPEN_TIMES: [string, string] = ["Tuesday, October 6 at 9 AM", "Tuesday, October 6 at 2 PM"];
+  const CLOCK_MS = 1_790_000_000_500;
+
+  async function sendOne() {
     const fetchImpl = vi.fn(async (_url: string | URL | Request, _init?: RequestInit) => new Response(JSON.stringify(VAPI_CALL), { status: 201 }));
-    const create = vapiWebCallCreator({ privateKey: PRIVATE_KEY, assistantId: "asst-1", fetchImpl });
-    await create({ visitorId: VISITOR, openTimes: ["Tuesday, October 6 at 9 AM", "Tuesday, October 6 at 2 PM"] });
+    const create = vapiWebCallCreator({ privateKey: PRIVATE_KEY, orgId: ORG_ID, assistantId: "asst-1", fetchImpl, now: () => CLOCK_MS });
+    await create({ visitorId: VISITOR, openTimes: OPEN_TIMES });
     const [url, init] = fetchImpl.mock.calls[0];
-    expect(String(url)).toBe("https://api.vapi.ai/call/web");
-    expect(new Headers(init!.headers).get("authorization")).toBe(`Bearer ${PRIVATE_KEY}`);
-    const body = JSON.parse(String(init!.body));
-    expect(body.assistantId).toBe("asst-1");
-    expect(body.assistantOverrides.metadata).toEqual({ visitorId: VISITOR });
-    expect(body.assistantOverrides.variableValues).toEqual({
-      openTime1: "Tuesday, October 6 at 9 AM",
-      openTime2: "Tuesday, October 6 at 2 PM",
+    const authorization = new Headers(init!.headers).get("authorization") ?? "";
+    return { url: String(url), init: init!, authorization, jwt: authorization.replace(/^Bearer /, "") };
+  }
+
+  it("sends Luna's ID, the Visitor ID and the open times, and nothing else, in the body", async () => {
+    const { url, init } = await sendOne();
+    expect(url).toBe("https://api.vapi.ai/call/web");
+    expect(JSON.parse(String(init.body))).toEqual({
+      assistantId: "asst-1",
+      assistantOverrides: {
+        metadata: { visitorId: VISITOR },
+        variableValues: { openTime1: OPEN_TIMES[0], openTime2: OPEN_TIMES[1] },
+      },
     });
-    expect(String(init!.body)).not.toContain(PRIVATE_KEY);
+  });
+
+  it("authorizes with a Bearer token, and never sends the private key itself", async () => {
+    const { init, authorization, jwt } = await sendOne();
+    expect(authorization).toMatch(/^Bearer [\w-]+\.[\w-]+\.[\w-]+$/);
+    expect(authorization).not.toContain(PRIVATE_KEY);
+    expect(String(init.body)).not.toContain(PRIVATE_KEY);
+    expect(JSON.parse(Buffer.from(jwt.split(".")[0], "base64url").toString())).toEqual({ alg: "HS256", typ: "JWT" });
+  });
+
+  it("signs a 60-second public token locked to Luna, with no transient assistant", async () => {
+    const { jwt } = await sendOne();
+    const payload = JSON.parse(Buffer.from(jwt.split(".")[1], "base64url").toString());
+    expect(payload.orgId).toBe(ORG_ID);
+    expect(payload.token).toEqual({
+      tag: "public",
+      restrictions: { enabled: true, allowedAssistantIds: ["asst-1"], allowTransientAssistant: false },
+    });
+    expect(payload.iat).toBe(Math.floor(CLOCK_MS / 1000));
+    expect(payload.exp - payload.iat).toBe(60);
+  });
+
+  it("signs with the private key: the signature matches an HMAC of header.payload", async () => {
+    const { jwt } = await sendOne();
+    const [header, payload, signature] = jwt.split(".");
+    expect(signature).toBe(createHmac("sha256", PRIVATE_KEY).update(`${header}.${payload}`).digest("base64url"));
   });
 
   it("fails when Vapi refuses", async () => {
-    const create = vapiWebCallCreator({ privateKey: PRIVATE_KEY, assistantId: "asst-1", fetchImpl: async () => new Response("no", { status: 400 }) });
+    const create = vapiWebCallCreator({ privateKey: PRIVATE_KEY, orgId: ORG_ID, assistantId: "asst-1", fetchImpl: async () => new Response("no", { status: 400 }) });
     await expect(create({ visitorId: VISITOR, openTimes: ["a", "b"] })).rejects.toThrow();
   });
 });

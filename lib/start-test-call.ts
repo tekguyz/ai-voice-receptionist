@@ -1,6 +1,7 @@
 // Start Test Call: the one door to a Test Call. Checks the Visitor, runs the
 // Call Gate, then creates one Vapi web call. Deps are injected so the tests
 // need no Redis and no Vapi.
+import "server-only";
 
 import { createHash } from "node:crypto";
 import type { CallGate } from "@/lib/call-gate";
