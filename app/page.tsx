@@ -4,13 +4,11 @@ export default function Home() {
     <main className="p-4">
       <h1>AI Voice Receptionist</h1>
       <p>The landing page is not built yet.</p>
-      <p>
-        <form method="post" action="/api/visit">
-          <button type="submit" className="underline">
-            Try the demo
-          </button>
-        </form>
-      </p>
+      <form method="post" action="/api/visit">
+        <button type="submit" className="underline">
+          Try the demo
+        </button>
+      </form>
     </main>
   );
 }

@@ -21,6 +21,16 @@ describe("Try the demo", () => {
     );
     expect(response.headers.get("set-cookie")).toBeNull();
   });
+
+  it("gives a fresh ID when the cookie is made-up", async () => {
+    const response = await POST(
+      new Request("http://localhost/api/visit", { method: "POST", headers: { cookie: `${VISITOR_COOKIE}=not-an-id` } }),
+    );
+    expect(response.status).toBe(303);
+    const cookie = response.headers.get("set-cookie")!;
+    expect(cookie).toMatch(new RegExp(`^${VISITOR_COOKIE}=`));
+    expect(isVisitorId(visitorIdFrom(cookie.split(";")[0]))).toBe(true);
+  });
 });
 
 describe("reading the Visitor cookie", () => {
