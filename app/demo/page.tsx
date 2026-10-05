@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { VISITOR_COOKIE, isVisitorId } from "@/lib/visitor";
-import { SampleCallScreen } from "./sample-call-screen";
+import { CallScreen } from "./call-screen";
 
 export const metadata: Metadata = {
   title: "Test Call · AI Voice Receptionist",
@@ -12,5 +12,5 @@ export const metadata: Metadata = {
 export default async function DemoPage() {
   const visitorId = (await cookies()).get(VISITOR_COOKIE)?.value;
   if (!isVisitorId(visitorId)) redirect("/");
-  return <SampleCallScreen />;
+  return <CallScreen />;
 }
