@@ -1,12 +1,10 @@
 import { DEV_LIMITS, LIMITS, createCallGate } from "@/lib/call-gate";
 import { redisCounterStore } from "@/lib/redis-counter-store";
+import { isProduction, keyPrefix } from "@/lib/server-env";
 import { startTestCall } from "@/lib/start-test-call";
 import { vapiWebCallCreator } from "@/lib/vapi-web-call";
 
 export const dynamic = "force-dynamic";
-
-// Not NODE_ENV: Vercel Preview and a local `next start` are "production" builds but must use the dev limits and the avr:dev: keys.
-const production = process.env.VERCEL_ENV === "production";
 
 export async function POST(request: Request) {
   const privateKey = process.env.VAPI_PRIVATE_KEY;
@@ -21,8 +19,8 @@ export async function POST(request: Request) {
   return startTestCall(request, {
     gate: createCallGate({
       store: redisCounterStore(),
-      limits: production ? LIMITS : DEV_LIMITS,
-      prefix: production ? "avr:" : "avr:dev:",
+      limits: isProduction() ? LIMITS : DEV_LIMITS,
+      prefix: keyPrefix(),
     }),
     // Reuses a server secret so there is no new env var; a key change only resets the per-IP counts.
     ipSecret: privateKey,
