@@ -21,6 +21,7 @@ import {
 import type { CallSource, RunningCall, StartFailure } from "@/lib/call-source";
 import { DETAIL_FIELDS, tellCallStory, type CallDetails, type CallEvent, type CallNotes, type CallView } from "@/lib/call-story";
 import { createSampleCallPlayer } from "@/lib/sample-call";
+import { fetchSavedNotes, watchSavedNotes } from "@/lib/saved-notes";
 import { SAMPLE_BUSINESS } from "@/lib/sample-business";
 import { browserVapiSourceDeps } from "@/lib/vapi-browser";
 import { createVapiSource } from "@/lib/vapi-source";
@@ -68,11 +69,17 @@ type Phase =
   | { kind: "failed"; failure: StartFailure }
   | { kind: "running"; mode: Mode };
 
+// What the screen knows about the saved copy of a Test Call's notes.
+type Saved = { kind: "waiting" } | { kind: "ready"; notes: CallNotes } | { kind: "late" };
+
 export function CallScreen() {
   const [testCall] = useState<CallSource>(() => createVapiSource(browserVapiSourceDeps()));
   const [sampleCall] = useState<CallSource>(() => createSampleCallPlayer());
   const [phase, setPhase] = useState<Phase>({ kind: "ready" });
   const [events, setEvents] = useState<CallEvent[]>([]);
+  // The server's ID for the Test Call, and whether its notes are saved yet.
+  const [callId, setCallId] = useState<string | null>(null);
+  const [saved, setSaved] = useState<Saved>({ kind: "waiting" });
   // When the call's clock started, on the performance.now() clock.
   const [startedAt, setStartedAt] = useState<number | null>(null);
   const [now, setNow] = useState(0);
@@ -107,6 +114,8 @@ export function CallScreen() {
     setEvents([]);
     setStartedAt(null);
     setSheetGone(false);
+    setCallId(null);
+    setSaved({ kind: "waiting" });
     setPhase(next === "test" ? { kind: "connecting" } : { kind: "running", mode: next });
     call.current = (next === "test" ? testCall : sampleCall).start({
       onEvent: (event) => {
@@ -115,6 +124,10 @@ export function CallScreen() {
         setStartedAt((at) => at ?? arrived - event.atMs);
         setPhase({ kind: "running", mode: next });
         setEvents((soFar) => [...soFar, event]);
+      },
+      onCallId: (id) => {
+        if (number !== callNumber.current) return;
+        setCallId(id);
       },
       onFailed: (failure) => {
         if (number !== callNumber.current) return;
@@ -142,15 +155,44 @@ export function CallScreen() {
   const elapsedMs = ticking && startedAt !== null ? Math.max(view.elapsedMs, now - startedAt) : view.elapsedMs;
   const mode: Mode = phase.kind === "running" ? phase.mode : "test";
 
+  const ended = notes !== null;
+  // A Test Call's notes are saved by the server a moment after the call ends: ask until they are there.
+  useEffect(() => {
+    if (!ended || mode !== "test") return;
+    if (!callId) {
+      setSaved({ kind: "late" });
+      return;
+    }
+    const stop = new AbortController();
+    watchSavedNotes({
+      fetchOnce: () => fetchSavedNotes(callId),
+      sleep: (ms) => new Promise((resolve) => setTimeout(resolve, ms)),
+      now: () => performance.now(),
+      signal: stop.signal,
+      onReady: (found) => setSaved({ kind: "ready", notes: found }),
+      onGiveUp: () => setSaved({ kind: "late" }),
+    });
+    return () => stop.abort();
+  }, [ended, mode, callId]);
+
   // The phase word for screen readers; never the ticking timer.
-  const announcement = notes ? "Call ended" : phase.kind === "connecting" ? "Calling…" : phase.kind === "running" ? "On the line" : "";
+  const endedWord =
+    mode === "sample"
+      ? "Call ended"
+      : saved.kind === "ready"
+        ? "Call Notes ready"
+        : saved.kind === "late"
+          ? "Call ended. The summary did not arrive."
+          : "Call ended. Finishing the notes.";
+  const announcement = notes ? endedWord : phase.kind === "connecting" ? "Calling…" : phase.kind === "running" ? "On the line" : "";
 
   if (notes) {
     return (
       <Page announcement={announcement}>
         <div className="relative">
           <OwnersCopy
-            notes={notes}
+            notes={saved.kind === "ready" ? saved.notes : notes}
+            state={mode === "sample" ? "sample" : saved.kind === "ready" ? "saved" : saved.kind}
             againLabel={mode === "test" ? "Make another Test Call" : "Play the Sample Call again"}
             onAgain={() => begin(mode)}
           />
@@ -192,7 +234,7 @@ export function CallScreen() {
             Call now
           </StampButton>
           <p className="mt-3 text-sm text-print-muted">Make up your details. Don&apos;t give your real name or address.</p>
-          <p className="mt-1 text-sm text-print-muted">Only the words are kept, for 7 days. Never your voice.</p>
+          <p className="mt-1 text-sm text-print-muted">Only the words are kept, never your voice. Our copy is deleted after 7 days.</p>
           <div className="mt-5">
             <FormButton onClick={() => begin("sample")} autoFocus={phase.focus === "sample"}>
               Play the Sample Call
@@ -320,8 +362,15 @@ function TopSheet({ view, status, controls }: { view: CallView; status: ReactNod
   );
 }
 
+/**
+ * `sample`: the Sample Call's notes, whole at once. A Test Call's notes start
+ * as `waiting` (the browser's own copy, the summary still being written),
+ * become `saved` when the server's copy arrives, or `late` if it never does.
+ */
+type NotesState = "sample" | "waiting" | "late" | "saved";
+
 /** The yellow copy under the white sheet. It stays with the Owner: the Call Notes. */
-function OwnersCopy({ notes, againLabel, onAgain }: { notes: CallNotes; againLabel: string; onAgain: () => void }) {
+function OwnersCopy({ notes, state, againLabel, onAgain }: { notes: CallNotes; state: NotesState; againLabel: string; onAgain: () => void }) {
   const title = useRef<HTMLHeadingElement>(null);
   const [summaryId, textId, talkId] = [useId(), useId(), useId()];
 
@@ -356,10 +405,17 @@ function OwnersCopy({ notes, againLabel, onAgain }: { notes: CallNotes; againLab
             <h2 id={summaryId} className={SECTION_LABEL}>
               Summary
             </h2>
-            <p className="mt-2 max-w-[44ch] text-[1.375rem] leading-snug font-medium text-balance">{notes.summary}</p>
+            <p className="mt-2 max-w-[44ch] text-[1.375rem] leading-snug font-medium text-balance">
+              {state === "waiting"
+                ? "Finishing the summary…"
+                : state === "late"
+                  ? "The summary did not arrive. The details below are from the call."
+                  : notes.summary}
+            </p>
             <p className="mt-3 text-print-soft">
               {END_REASONS[notes.endReason]} after {formatTime(notes.durationMs)}.
             </p>
+            {state === "saved" && <p className="mt-1 text-print-soft">Saved. Our copy is deleted after 7 days.</p>}
           </section>
 
           <dl className="grid gap-4 [&_dd]:border-form">

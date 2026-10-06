@@ -204,6 +204,8 @@ A printed counter pad: two papers and three inks, with no accent outside them.
 - **Body** (Barlow, 400, 1.0625rem, 1.625, max 60ch): transcript lines and preview text.
 - **Small** (Barlow, 400, 0.875rem): notes under controls, the demo banner.
 
+**Summary, still being finished.** When a Test Call ends, the Owner's copy opens at once with the details and the transcript from the call. The Summary slot says "Finishing the summary…" in the same Body Lead type: no spinner, no new motion. The real summary replaces it by itself. If it has not come after 60 seconds, the slot says "The summary did not arrive. The details below are from the call." Once the server's copy is saved, a line in Print Soft under the end reason says "Saved. Our copy is deleted after 7 days." The Sample Call shows its notes whole, with no such line.
+
 ### Named Rules
 **The One Hand Rule.** Kalam appears only on a field rule, for a value the Receptionist captured. Not for headings, not for flourish.
 
