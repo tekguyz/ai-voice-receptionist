@@ -99,13 +99,17 @@ describe("Start Test Call", () => {
     expect(release).toHaveBeenCalledOnce();
   });
 
-  it("returns only the room link and the call ID, never a secret or Vapi's control link", async () => {
+  it("returns only the room link, the call ID and the open times, never a secret or Vapi's control link", async () => {
     const fetchImpl = vi.fn(async () => new Response(JSON.stringify(VAPI_CALL), { status: 201 }));
     const createWebCall = vapiWebCallCreator({ privateKey: PRIVATE_KEY, orgId: ORG_ID, assistantId: "asst-1", fetchImpl });
     const response = await startTestCall(request(), deps({ createWebCall }));
     expect(response.status).toBe(200);
     const text = await response.text();
-    expect(JSON.parse(text)).toEqual({ webCallUrl: VAPI_CALL.webCallUrl, callId: VAPI_CALL.id });
+    expect(JSON.parse(text)).toEqual({
+      webCallUrl: VAPI_CALL.webCallUrl,
+      callId: VAPI_CALL.id,
+      openTimes: ["Tuesday, October 6 at 9 AM", "Tuesday, October 6 at 2 PM"],
+    });
     expect(text).not.toContain(PRIVATE_KEY);
     expect(text).not.toContain("control");
   });

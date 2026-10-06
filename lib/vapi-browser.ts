@@ -21,8 +21,9 @@ export function browserVapiSourceDeps(): VapiSourceDeps {
       try {
         const response = await fetch("/api/test-call", { method: "POST" });
         if (!response.ok) return { ok: false, failure: FAILURE_BY_STATUS[response.status] ?? "unavailable" };
-        const { webCallUrl, callId } = await response.json();
-        return { ok: true, webCallUrl, callId };
+        const { webCallUrl, callId, openTimes } = await response.json();
+        const offered = Array.isArray(openTimes) ? openTimes.filter((time): time is string => typeof time === "string") : [];
+        return { ok: true, webCallUrl, callId, openTimes: offered };
       } catch {
         return { ok: false, failure: "connect-failed" };
       }

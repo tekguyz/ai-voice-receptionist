@@ -4,8 +4,9 @@
 // browser are injected (VapiSourceDeps) so tests play Vapi's side by hand.
 
 import type { CallHandlers, CallSource, StartFailure } from "@/lib/call-source";
-import { DETAIL_FIELDS, type CallEvent, type DetailField, type EndReason } from "@/lib/call-story";
-import { TOOL } from "@/lib/luna-tools";
+import type { EndReason } from "@/lib/call-story";
+import { endReasonFrom } from "@/lib/end-reason";
+import { eventFromToolCall } from "@/lib/tool-events";
 
 export type VapiLike = {
   on(event: "message", listener: (message: unknown) => void): void;
@@ -15,7 +16,7 @@ export type VapiLike = {
   stop(): void | Promise<void>;
 };
 
-export type StartResult = { ok: true; webCallUrl: string; callId: string } | { ok: false; failure: StartFailure };
+export type StartResult = { ok: true; webCallUrl: string; callId: string; openTimes: readonly string[] } | { ok: false; failure: StartFailure };
 
 export type VapiSourceDeps = {
   /** Asks for the microphone, then lets it go again. True when allowed. */
@@ -37,15 +38,6 @@ type Message = {
   toolCallList?: { function?: { name?: string; arguments?: unknown } }[];
 };
 
-function endReasonFrom(endedReason: string | undefined, sawError: boolean): EndReason {
-  if (endedReason === "exceeded-max-duration") return "time-limit";
-  // A Visitor who only listens is not a failed call.
-  if (endedReason === "customer-ended-call" || endedReason === "silence-timed-out") return "caller-hung-up";
-  if (endedReason?.startsWith("assistant-")) return "receptionist-finished";
-  if (sawError || endedReason) return "error";
-  return "receptionist-finished";
-}
-
 // The SDK emits 'error' for audio-processing (Krisp) and optional-feature
 // setup problems while the call carries on. Every other error, Daily call
 // errors included, is fatal.
@@ -61,21 +53,9 @@ function isFatalError(error: unknown): boolean {
   return !(typeof type === "string" && NON_FATAL_ERROR_TYPES.has(type));
 }
 
-function argumentsOf(raw: unknown): Record<string, unknown> {
-  let value = raw;
-  if (typeof raw === "string") {
-    try {
-      value = JSON.parse(raw);
-    } catch {
-      return {};
-    }
-  }
-  return value && typeof value === "object" ? (value as Record<string, unknown>) : {};
-}
-
 export function createVapiSource(deps: VapiSourceDeps): CallSource {
   return {
-    start({ onEvent, onFailed }: CallHandlers) {
+    start({ onEvent, onFailed, onCallId }: CallHandlers) {
       let stopped = false;
       let vapi: VapiLike | null = null;
       let startedAt = 0;
@@ -86,6 +66,7 @@ export function createVapiSource(deps: VapiSourceDeps): CallSource {
       let ended = false;
       let endedReason: string | undefined;
       let sawError = false;
+      let offered: readonly string[] = [];
 
       const markStarted = () => {
         // A call stopped before it started never starts: it has no end to report.
@@ -112,8 +93,7 @@ export function createVapiSource(deps: VapiSourceDeps): CallSource {
           }
         } else if (type === "tool-calls") {
           for (const call of message.toolCallList ?? []) {
-            const args = argumentsOf(call.function?.arguments);
-            const event = toEvent(call.function?.name, args, at());
+            const event = eventFromToolCall(call.function?.name, call.function?.arguments, at(), offered);
             if (event) onEvent(event);
           }
         } else if (type === "status-update" && message.status === "ended") {
@@ -127,6 +107,8 @@ export function createVapiSource(deps: VapiSourceDeps): CallSource {
         const result = await deps.startTestCall();
         if (stopped) return;
         if (!result.ok) return onFailed(result.failure);
+        offered = result.openTimes;
+        onCallId?.(result.callId);
         try {
           vapi = await deps.createVapi();
           if (stopped) return;
@@ -169,17 +151,4 @@ export function createVapiSource(deps: VapiSourceDeps): CallSource {
       };
     },
   };
-}
-
-function toEvent(name: string | undefined, args: Record<string, unknown>, atMs: number): CallEvent | null {
-  if (name === TOOL.recordDetail) {
-    const field = args.field as DetailField;
-    const value = typeof args.value === "string" ? args.value.trim() : "";
-    return DETAIL_FIELDS.includes(field) && value ? { type: "detail", field, value, atMs } : null;
-  }
-  if (name === TOOL.bookTime) {
-    const time = typeof args.time === "string" ? args.time.trim() : "";
-    return time ? { type: "booked", time, atMs } : null;
-  }
-  return null;
 }

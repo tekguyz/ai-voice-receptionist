@@ -15,6 +15,8 @@ export type StartFailure = "microphone-blocked" | "limit" | "unavailable" | "con
 
 export type CallHandlers = {
   onEvent(event: CallEvent): void;
+  /** The server made the call (a Test Call only). Called once, before the first event. */
+  onCallId?(callId: string): void;
   /** The call never started: no event came before this and none comes after. */
   onFailed(failure: StartFailure): void;
 };
