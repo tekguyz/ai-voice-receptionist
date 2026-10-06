@@ -16,10 +16,10 @@ Live site: https://ai-voice-receptionist-tekguyz.vercel.app (the landing page is
 | | |
 |---|---|
 | Phase | Building |
-| Shipped | [#2 Step 1: setup and the Call Story](https://github.com/tekguyz/ai-voice-receptionist/issues/2) · [#3 Step 2: the look](https://github.com/tekguyz/ai-voice-receptionist/issues/3) · [#4 Step 3: live Test Call](https://github.com/tekguyz/ai-voice-receptionist/issues/4) |
+| Shipped | [#2 Step 1: setup and the Call Story](https://github.com/tekguyz/ai-voice-receptionist/issues/2) · [#3 Step 2: the look](https://github.com/tekguyz/ai-voice-receptionist/issues/3) · [#4 Step 3: live Test Call](https://github.com/tekguyz/ai-voice-receptionist/issues/4) · [#5 Step 4: Call Notes saved](https://github.com/tekguyz/ai-voice-receptionist/issues/5) |
 | Known issues | [#15 Tune Luna: model, hang-up, speed](https://github.com/tekguyz/ai-voice-receptionist/issues/15) |
-| Next | [#5 Step 4: Call Notes saved](https://github.com/tekguyz/ai-voice-receptionist/issues/5) |
-| Updated | 2026-10-05 |
+| Next | [#6 Step 5: Dashboard](https://github.com/tekguyz/ai-voice-receptionist/issues/6) |
+| Updated | 2026-10-06 |
 
 ## What it does
 
@@ -28,6 +28,7 @@ Built so far:
 - A Visitor presses "Try the demo" (a cookie, no sign-in). Then "Call now" talks to Luna through the browser microphone. Words and tags fill in live. A call stops at 3 minutes. Limits are 1 Test Call per Visitor a day, 2 per IP address a day, 5 per site a day, and 30 a month. At a limit, with a blocked microphone, or when the call cannot connect, the Sample Call is offered.
 - Turns a call's events (lines, captured details, a booking, the end) into the live call view and the Call Notes. This is the Call Story, in `lib/call-story.ts`.
 - Plays a Sample Call on a plain screen at `/demo`: lines and detail tags appear in time, then the Call Notes show a summary, the details, the booked time and a preview of the confirmation text.
+- After a Test Call, the Call Notes are saved for the Visitor and the screen fills in from the saved copy. Each entry is deleted after 7 days. The Vapi webhook (`app/api/vapi/webhook`) refuses any request without Vapi's secret.
 
 Planned (spec [#1](https://github.com/tekguyz/ai-voice-receptionist/issues/1)):
 
@@ -38,7 +39,7 @@ Planned (spec [#1](https://github.com/tekguyz/ai-voice-receptionist/issues/1)):
 
 - Never dials a phone number. Test Calls run in the browser ([ADR 0001](docs/adr/0001-test-calls-run-in-the-browser.md)).
 - No sign-in and no accounts ([ADR 0002](docs/adr/0002-demo-only-no-sign-in.md)).
-- Never keeps a Visitor's voice. Only words, for 7 days ([ADR 0004](docs/adr/0004-no-audio-kept.md)).
+- Never keeps a Visitor's voice. Only words. This app deletes its copy after 7 days; Vapi keeps its own call logs under its own retention ([ADR 0004](docs/adr/0004-no-audio-kept.md)).
 - Never sends a text or email. The confirmation text is a preview.
 - Never uses a real business. The Sample Business is made up.
 - The browser never holds a Vapi key. The server makes each call with a 60-second token that only works for Luna.
@@ -56,7 +57,7 @@ npm install
 cp .env.example .env.local
 ```
 
-Fill in `.env.local`. Then:
+Fill in `.env.local`. Vapi can reach only a public address, so Call Notes are saved only on a deployed Preview or Production, not on localhost. Set `VAPI_WEBHOOK_SECRET` in `.env.local` and in Vercel. Then:
 
 ```bash
 npm run vapi:sync
