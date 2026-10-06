@@ -9,17 +9,17 @@
 
 **A show-off demo of an AI Receptionist that answers the phone for a made-up South Florida AC repair shop.**
 
-Live site (planned, not live yet): `ai-voice-receptionist.vercel.app`
+Live site: https://ai-voice-receptionist-ashen-five.vercel.app (the landing page is a placeholder until step 6)
 
 ## Status
 
 | | |
 |---|---|
 | Phase | Building |
-| Shipped | [#2 Step 1: setup and the Call Story](https://github.com/tekguyz/ai-voice-receptionist/issues/2) · [#3 Step 2: the look](https://github.com/tekguyz/ai-voice-receptionist/issues/3) (the Sample Call screen at `/demo` on the Service Ticket look; runs locally, not deployed yet) |
-| In review | [#4 Step 3: live Test Call](https://github.com/tekguyz/ai-voice-receptionist/issues/4) (runs locally; not deployed) |
+| Shipped | [#2 Step 1: setup and the Call Story](https://github.com/tekguyz/ai-voice-receptionist/issues/2) · [#3 Step 2: the look](https://github.com/tekguyz/ai-voice-receptionist/issues/3) · [#4 Step 3: live Test Call](https://github.com/tekguyz/ai-voice-receptionist/issues/4) |
+| Known issues | [#15 Tune Luna: model, hang-up, speed](https://github.com/tekguyz/ai-voice-receptionist/issues/15) |
 | Next | [#5 Step 4: Call Notes saved](https://github.com/tekguyz/ai-voice-receptionist/issues/5) |
-| Updated | 2026-10-04 |
+| Updated | 2026-10-05 |
 
 ## What it does
 
@@ -32,7 +32,7 @@ Built so far:
 Planned (spec [#1](https://github.com/tekguyz/ai-voice-receptionist/issues/1)):
 
 - The Dashboard shows the Owner's side: totals and recent Call Notes.
-- The Receptionist answers in Spanish when the caller speaks Spanish (set up, not yet checked on a call).
+- The Receptionist answers in Spanish when the caller speaks Spanish (checked on test calls, 2026-10-05).
 
 ## What it never does
 
