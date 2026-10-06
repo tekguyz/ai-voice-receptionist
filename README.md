@@ -9,7 +9,7 @@
 
 **A show-off demo of an AI Receptionist that answers the phone for a made-up South Florida AC repair shop.**
 
-Live site: https://ai-voice-receptionist-ashen-five.vercel.app (the landing page is a placeholder until step 6)
+Live site: https://ai-voice-receptionist-tekguyz.vercel.app (the landing page is a placeholder until step 6)
 
 ## Status
 
