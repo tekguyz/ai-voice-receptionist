@@ -16,6 +16,11 @@ export async function POST(request: Request) {
     );
     return Response.json({ reason: "unavailable" }, { status: 503, headers: { "Cache-Control": "no-store" } });
   }
+  // Vapi sends the tool calls and the end-of-call report here. It can only reach a public https address, so a local server saves no Call Notes.
+  const webhookSecret = process.env.VAPI_WEBHOOK_SECRET;
+  const origin = new URL(request.url).origin;
+  const webhook = webhookSecret && origin.startsWith("https://") ? { url: `${origin}/api/vapi/webhook`, secret: webhookSecret } : undefined;
+  if (!webhookSecret) console.error("Start Test Call: VAPI_WEBHOOK_SECRET is missing, so this call's Call Notes will not be saved.");
   return startTestCall(request, {
     gate: createCallGate({
       store: redisCounterStore(),
@@ -24,7 +29,7 @@ export async function POST(request: Request) {
     }),
     // Reuses a server secret so there is no new env var; a key change only resets the per-IP counts.
     ipSecret: privateKey,
-    createWebCall: vapiWebCallCreator({ privateKey, orgId, assistantId }),
+    createWebCall: vapiWebCallCreator({ privateKey, orgId, assistantId, webhook }),
     now: () => new Date(),
   });
 }

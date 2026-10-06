@@ -166,6 +166,31 @@ describe("creating the Vapi web call", () => {
     expect(signature).toBe(createHmac("sha256", PRIVATE_KEY).update(`${header}.${payload}`).digest("base64url"));
   });
 
+  it("tells Vapi where to send tool calls and the report, with the webhook secret in a header only", async () => {
+    const fetchImpl = vi.fn(async (_url: string | URL | Request, _init?: RequestInit) => new Response(JSON.stringify(VAPI_CALL), { status: 201 }));
+    const create = vapiWebCallCreator({
+      privateKey: PRIVATE_KEY,
+      orgId: ORG_ID,
+      assistantId: "asst-1",
+      fetchImpl,
+      webhook: { url: "https://demo.example/api/vapi/webhook", secret: "hook-secret" },
+    });
+    const result = await create({ visitorId: VISITOR, openTimes: OPEN_TIMES });
+    const [, init] = fetchImpl.mock.calls[0];
+    expect(JSON.parse(String(init!.body)).assistantOverrides).toEqual({
+      metadata: { visitorId: VISITOR },
+      variableValues: { openTime1: OPEN_TIMES[0], openTime2: OPEN_TIMES[1] },
+      server: { url: "https://demo.example/api/vapi/webhook", headers: { "X-Vapi-Secret": "hook-secret" } },
+    });
+    expect(new Headers(init!.headers).get("authorization")).not.toContain("hook-secret");
+    expect(JSON.stringify(result)).not.toContain("hook-secret");
+  });
+
+  it("sends no server override when there is no webhook address (a local server Vapi cannot reach)", async () => {
+    const { init } = await sendOne();
+    expect(JSON.parse(String(init.body)).assistantOverrides).not.toHaveProperty("server");
+  });
+
   it("fails when Vapi refuses", async () => {
     const create = vapiWebCallCreator({ privateKey: PRIVATE_KEY, orgId: ORG_ID, assistantId: "asst-1", fetchImpl: async () => new Response("no", { status: 400 }) });
     await expect(create({ visitorId: VISITOR, openTimes: ["a", "b"] })).rejects.toThrow();

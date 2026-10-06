@@ -2,8 +2,11 @@
 // `npm run vapi:sync` sends it to Vapi. Never edit Luna in the Vapi dashboard;
 // the next sync overwrites it.
 //
-// Both tools are client-side and async (no server URL): the browser sees each
-// tool call and turns it into a Call Story event. The webhook comes in #5.
+// Neither tool has a server URL of its own. The server gives each call its own
+// webhook address (lib/vapi-web-call.ts), and Vapi sends the tool calls and the
+// end-of-call report there. recordDetail is async: Luna does not wait. bookTime
+// waits for the answer, so the webhook can refuse a time that was not offered.
+// The browser still sees each tool call and turns it into a Call Story event.
 
 import { SAMPLE_BUSINESS } from "../lib/sample-business.ts";
 import { TOOL } from "../lib/luna-tools.ts";
@@ -30,7 +33,7 @@ On every call:
 
 Tools:
 - As soon as you learn the name, the job, the urgency or the address, call ${TOOL.recordDetail} with that one field. If the caller corrects a detail, call it again with the new value. Write values short, the way they would go on a work order. Write the job and the urgency in English. Write a name with capital letters and a space between first and last name (for example "Alejandro Zapatos"); if you only have a first name, write just that. Write addresses as the caller said them, with numbers as digits.
-- When the caller picks a time, call ${TOOL.bookTime} with that time exactly as written above. Never offer or book any other time. If neither time works, say a dispatcher will call back to find a time, and do not book.
+- When the caller picks a time, call ${TOOL.bookTime} with that time exactly as written above. Never offer or book any other time. If neither time works, say a dispatcher will call back to find a time, and do not book. If ${TOOL.bookTime} answers that the time was not offered, offer the two open times again.
 - Call endCall only after you have spoken the confirmation and the goodbye. Never call endCall in the same reply as ${TOOL.bookTime}.
 
 How you talk:
@@ -73,7 +76,6 @@ export function lunaAssistant() {
         },
         {
           type: "function",
-          async: true,
           function: {
             name: TOOL.bookTime,
             description: "Book the open time the caller picked. Use one of the two open times you offered, exactly as written in your instructions.",
@@ -91,7 +93,7 @@ export function lunaAssistant() {
     transcriber: { provider: "deepgram", model: "flux-general-multi", languages: ["en", "es"] },
     artifactPlan: { recordingEnabled: false, videoRecordingEnabled: false },
     clientMessages: ["transcript", "tool-calls", "status-update"],
-    serverMessages: [],
+    serverMessages: ["tool-calls", "end-of-call-report"],
   };
 }
 
@@ -103,11 +105,14 @@ export function checkLuna(saved: unknown): string[] {
   if (luna.artifactPlan?.videoRecordingEnabled === true) problems.push("Video recording must be off.");
   if (luna.maxDurationSeconds !== MAX_CALL_SECONDS) problems.push(`Calls must stop at ${MAX_CALL_SECONDS} seconds.`);
   if (typeof luna.endCallMessage === "string" && luna.endCallMessage) problems.push("Luna must not have an endCallMessage (she says goodbye herself).");
-  if (luna.server?.url) problems.push("Luna must have no server URL until #5.");
+  if (luna.server?.url) problems.push("Luna must have no saved server URL: the server gives each call its own webhook address.");
   const tools: any[] = luna.model?.tools ?? [];
   for (const name of Object.values(TOOL)) {
     const tool = tools.find((t) => t.function?.name === name);
-    if (!tool || tool.async !== true || tool.server?.url) problems.push(`Tool ${name} is missing or not async.`);
+    if (!tool) problems.push(`Tool ${name} is missing.`);
+    else if (tool.server?.url) problems.push(`Tool ${name} must have no server URL of its own.`);
+    else if (name === TOOL.recordDetail && tool.async !== true) problems.push(`Tool ${name} must be async.`);
+    else if (name === TOOL.bookTime && tool.async === true) problems.push(`Tool ${name} must wait for the server's answer (not async).`);
   }
   if (!tools.some((t) => t.type === "endCall")) problems.push("Luna must be able to end the call.");
   const prompt: string = luna.model?.messages?.[0]?.content ?? "";
@@ -115,6 +120,10 @@ export function checkLuna(saved: unknown): string[] {
   const messages: string[] = luna.clientMessages ?? [];
   for (const kind of ["transcript", "tool-calls", "status-update"]) {
     if (!messages.includes(kind)) problems.push(`The browser must get "${kind}" messages.`);
+  }
+  const serverMessages: string[] = luna.serverMessages ?? [];
+  for (const kind of ["tool-calls", "end-of-call-report"]) {
+    if (!serverMessages.includes(kind)) problems.push(`The server must get "${kind}" messages.`);
   }
   return problems;
 }
