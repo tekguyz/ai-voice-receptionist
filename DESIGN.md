@@ -163,7 +163,7 @@ A printed counter pad: two papers and three inks, with no accent outside them.
 
 ### Primary
 - **Form Red** (#a8221a): the printed form. Header band fill, field labels, ruled borders on the copy, the ticket number, section headings, the Receptionist's speaker name, the stamp and form buttons, the on-the-line lamp, the perforation dots. 7.22:1 on the sheet, 6.15:1 on the copy; white on it 7.22:1.
-- **Form Red, Deep** (#8a1b14): defined in the theme; no component uses it yet. Treat as unassigned until a build needs it.
+- **Form Red, Deep** (#8a1b14): the End button's hover. Nothing else uses it.
 
 ### Secondary
 - **Carbon Blue** (#1b3a8c): what the Receptionist captured, and nothing else. Handwritten field values, the focus ring, text selection. 10.34:1 on the sheet, 8.81:1 on the copy.
@@ -259,7 +259,7 @@ An ordered list, 12px apart. Speaker in Label caps in a 5.5rem column: the Recep
 - **Stamp Button (primary):** a red rubber stamp. White ground, red 6px double border, red Stamp caps, tilted -1deg, min-height 56px, full width in the call column. Hover tints the ground with 5% red; pressed fills it solid red with white words. An optional 20px inline SVG icon sits before the words.
 - **Form Button (secondary):** a printed outline. 2px red border, red Form caps 1.125rem bold, min-height 48px, 20px sides. Hover fills solid red with white words.
 - **Focus:** every control shows a 3px carbon-blue outline offset 3px.
-- **End button (Test Call, not yet built):** red form ink, square, on the same terms as these two; no glow, no pulse.
+- **End button (Test Call):** solid Form Red, white Form caps, square, min-height 56px, full width in the call column, phone icon. No glow, no pulse.
 
 ### On-the-Line Lamp
 A 12px solid red dot before "On the line". It holds still.
@@ -293,5 +293,7 @@ A tear line of red dots at the top of the Owner's copy, marking where the white 
 - **Don't** set Faint Form Rule (#e9a8a2) as text; it is a line colour only.
 - **Don't** add motion beyond one write-in per captured detail and the sheet lift: no pulsing lamp, no hover animation, no scroll effects.
 
-### Open item
+### Open items
 The yellow Call Notes copy does not yet reprint the top sheet's field positions, so the lift reveals a rearranged document rather than the same work order in carbon. Not yet resolved; do not treat the current copy layout as the finished carbon.
+
+The live sound wave (story 28) is not built yet.

@@ -56,7 +56,7 @@ export function Field({ label, value, empty }: { label: string; value?: string |
   );
 }
 
-export function Transcript({ lines, receptionistName, live }: { lines: TranscriptLine[]; receptionistName: string; live?: boolean }) {
+export function Transcript({ lines, receptionistName, live }: { lines: readonly TranscriptLine[]; receptionistName: string; live?: boolean }) {
   return (
     <ol aria-live={live ? "polite" : undefined} className="grid gap-3">
       {lines.map((line, i) => (
@@ -112,6 +112,29 @@ export function FormButton({ children, onClick, autoFocus }: { children: ReactNo
     >
       {children}
     </button>
+  );
+}
+
+/** Ends a Test Call: solid Form Red, square, white Form caps. No glow, no pulse (DESIGN.md). */
+export function EndCallButton({ onClick, autoFocus }: { onClick: () => void; autoFocus?: boolean }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      autoFocus={autoFocus}
+      className="inline-flex min-h-14 w-full items-center justify-center gap-3 bg-form px-4 font-form text-[1.375rem] font-extrabold tracking-wide text-sheet uppercase hover:bg-form-deep"
+    >
+      <PhoneIcon />
+      End call
+    </button>
+  );
+}
+
+export function PhoneIcon() {
+  return (
+    <svg aria-hidden="true" viewBox="0 0 20 20" className="size-5 fill-current">
+      <path d="M6.6 2.2 4.4 2c-.9 0-2 .9-1.9 2.2.4 6.6 6.7 12.9 13.3 13.3 1.3.1 2.2-1 2.2-1.9l-.2-2.2c0-.5-.4-.9-.9-1l-3-.7c-.4-.1-.9.1-1.1.5l-.9 1.5c-2-1-3.9-2.9-4.9-4.9l1.5-.9c.4-.2.6-.7.5-1.1l-.7-3c-.1-.5-.5-.9-1-.9Z" />
+    </svg>
   );
 }
 

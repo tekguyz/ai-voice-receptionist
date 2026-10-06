@@ -56,7 +56,7 @@ describe("the Sample Call player", () => {
   it("emits each event when playback reaches its time", () => {
     const clock = fakeScheduler();
     const heard: CallEvent[] = [];
-    createSampleCallPlayer(events, clock.schedule).start((event) => heard.push(event));
+    createSampleCallPlayer(events, clock.schedule).start({ onEvent: (event) => heard.push(event), onFailed: () => {} });
 
     clock.advanceTo(0);
     expect(heard).toEqual([events[0]]);
@@ -66,14 +66,24 @@ describe("the Sample Call player", () => {
     expect(heard).toEqual(events);
   });
 
-  it("emits nothing more once stopped", () => {
+  it("ends with the caller hanging up when stopped, then emits nothing more", () => {
     const clock = fakeScheduler();
     const heard: CallEvent[] = [];
-    const call = createSampleCallPlayer(events, clock.schedule).start((event) => heard.push(event));
+    const call = createSampleCallPlayer(events, clock.schedule).start({ onEvent: (event) => heard.push(event), onFailed: () => {} });
 
     clock.advanceTo(2000);
     call.stop();
+    call.stop();
     clock.advanceTo(10000);
-    expect(heard).toEqual([events[0], events[1]]);
+    expect(heard).toEqual([events[0], events[1], { type: "ended", reason: "caller-hung-up", atMs: 2000 }]);
+  });
+
+  it("does nothing when stopped after it ended", () => {
+    const clock = fakeScheduler();
+    const heard: CallEvent[] = [];
+    const call = createSampleCallPlayer(events, clock.schedule).start({ onEvent: (event) => heard.push(event), onFailed: () => {} });
+    clock.advanceTo(5000);
+    call.stop();
+    expect(heard).toEqual(events);
   });
 });

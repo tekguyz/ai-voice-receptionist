@@ -141,3 +141,27 @@ describe("Call Story", () => {
     expect(notes?.summary).toBe("Ana wants a tune-up next week.");
   });
 });
+
+describe("after the call ends", () => {
+  it("keeps a late final line, but the duration and reason come from the first end", () => {
+    const { view, notes } = tellCallStory([
+      { type: "line", speaker: "receptionist", text: "Hello", atMs: 0 },
+      { type: "ended", reason: "caller-hung-up", atMs: 4000 },
+      { type: "line", speaker: "caller", text: "Bye", atMs: 4600 },
+      { type: "ended", reason: "error", atMs: 5000 },
+    ]);
+    expect(view.lines.map((l) => l.text)).toEqual(["Hello", "Bye"]);
+    expect(notes!.endReason).toBe("caller-hung-up");
+    expect(notes!.durationMs).toBe(4000);
+  });
+});
+
+describe("a corrected detail", () => {
+  it("takes the value that arrived last, whatever its time stamp", () => {
+    const { view } = tellCallStory([
+      { type: "detail", field: "name", value: "Rosa", atMs: 6000 },
+      { type: "detail", field: "name", value: "Rose", atMs: 5000 },
+    ]);
+    expect(view.details.name).toBe("Rose");
+  });
+});

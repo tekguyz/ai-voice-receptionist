@@ -5,8 +5,9 @@
 // with the founder's real recorded call and plays its audio. Every caller
 // detail below is made up.
 
-import { realScheduler, type CallSource, type Scheduler } from "@/lib/call-source";
+import type { CallSource } from "@/lib/call-source";
 import type { CallEvent } from "@/lib/call-story";
+import { realScheduler, type Scheduler } from "@/lib/scheduler";
 import { SAMPLE_BUSINESS } from "@/lib/sample-business";
 
 const { name: business, receptionistName } = SAMPLE_BUSINESS;
@@ -35,11 +36,20 @@ export function createSampleCallPlayer(
   schedule: Scheduler = realScheduler,
 ): CallSource {
   return {
-    start(onEvent) {
-      const cancels = events.map((event) => schedule(() => onEvent(event), event.atMs));
+    start({ onEvent }) {
+      let lastAtMs = 0;
+      let ended = false;
+      const emit = (event: CallEvent) => {
+        if (ended) return;
+        lastAtMs = event.atMs;
+        if (event.type === "ended") ended = true;
+        onEvent(event);
+      };
+      const cancels = events.map((event) => schedule(() => emit(event), event.atMs));
       return {
         stop() {
           for (const cancel of cancels) cancel();
+          emit({ type: "ended", reason: "caller-hung-up", atMs: lastAtMs });
         },
       };
     },

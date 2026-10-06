@@ -1,7 +1,8 @@
 // The Call Story: turns a list of call events into what the screens show.
 // Pure: no I/O, no React, no clock. Every call source (the Sample Call
 // player now, the Vapi source later) speaks these events. Times are
-// milliseconds from the start of the call.
+// milliseconds from the start of the call. A later value for the same field
+// replaces the earlier one in **arrival order**, not by `atMs`.
 
 import { SAMPLE_BUSINESS } from "@/lib/sample-business";
 
@@ -15,29 +16,31 @@ export type CallEvent =
   | { type: "booked"; time: string; atMs: number }
   | { type: "ended"; reason: EndReason; atMs: number };
 
+export const DETAIL_FIELDS: readonly DetailField[] = ["name", "job", "urgency", "address"];
+
 export type CallDetails = Partial<Record<DetailField, string>>;
-export type TranscriptLine = { speaker: Speaker; text: string; atMs: number };
+export type TranscriptLine = { readonly speaker: Speaker; readonly text: string; readonly atMs: number };
 
 /** The live call screen: what has happened so far. */
 export type CallView = {
-  status: "waiting" | "live" | "ended";
-  lines: TranscriptLine[];
-  details: CallDetails;
-  booked: string | null;
-  endReason: EndReason | null;
-  elapsedMs: number;
+  readonly status: "waiting" | "live" | "ended";
+  readonly lines: readonly TranscriptLine[];
+  readonly details: CallDetails;
+  readonly booked: string | null;
+  readonly endReason: EndReason | null;
+  readonly elapsedMs: number;
 };
 
 /** What the Owner gets once the call ends. */
 export type CallNotes = {
-  summary: string;
-  lines: TranscriptLine[];
-  details: CallDetails;
-  booked: string | null;
-  endReason: EndReason;
-  durationMs: number;
+  readonly summary: string;
+  readonly lines: readonly TranscriptLine[];
+  readonly details: CallDetails;
+  readonly booked: string | null;
+  readonly endReason: EndReason;
+  readonly durationMs: number;
   /** A preview only. Nothing is ever sent. */
-  confirmationText: string;
+  readonly confirmationText: string;
 };
 
 export type CallStoryOptions = {
@@ -56,7 +59,7 @@ export function tellCallStory(
   let elapsedMs = 0;
 
   for (const event of events) {
-    elapsedMs = Math.max(elapsedMs, event.atMs);
+    if (!endReason) elapsedMs = Math.max(elapsedMs, event.atMs);
     switch (event.type) {
       case "line":
         lines.push({ speaker: event.speaker, text: event.text, atMs: event.atMs });
@@ -68,7 +71,9 @@ export function tellCallStory(
         booked = event.time;
         break;
       case "ended":
-        endReason = event.reason;
+        // The first end wins: Vapi can send a last final line, or a second
+        // end, after the call has already ended.
+        endReason ??= event.reason;
         break;
     }
   }
