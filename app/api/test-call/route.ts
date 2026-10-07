@@ -3,6 +3,7 @@ import { redisCounterStore } from "@/lib/redis-counter-store";
 import { isProduction, keyPrefix } from "@/lib/server-env";
 import { startTestCall } from "@/lib/start-test-call";
 import { vapiWebCallCreator } from "@/lib/vapi-web-call";
+import { webhookTarget } from "@/lib/webhook-target";
 
 export const dynamic = "force-dynamic";
 
@@ -16,14 +17,8 @@ export async function POST(request: Request) {
     );
     return Response.json({ reason: "unavailable" }, { status: 503, headers: { "Cache-Control": "no-store" } });
   }
-  // Vapi sends the tool calls and the end-of-call report here. It can only reach a public https address, so a local server saves no Call Notes.
-  const webhookSecret = process.env.VAPI_WEBHOOK_SECRET;
-  const origin = new URL(request.url).origin;
-  // Vercel sets this when Protection Bypass for Automation is on; without it, Deployment Protection stops Vapi at a Preview.
-  const protectionBypass = process.env.VERCEL_AUTOMATION_BYPASS_SECRET;
-  const webhook =
-    webhookSecret && origin.startsWith("https://") ? { url: `${origin}/api/vapi/webhook`, secret: webhookSecret, protectionBypass } : undefined;
-  if (!webhookSecret) console.error("Start Test Call: VAPI_WEBHOOK_SECRET is missing, so this call's Call Notes will not be saved.");
+  const webhook = webhookTarget(new URL(request.url).origin, process.env);
+  if (!process.env.VAPI_WEBHOOK_SECRET) console.error("Start Test Call: VAPI_WEBHOOK_SECRET is missing, so this call's Call Notes will not be saved.");
   return startTestCall(request, {
     gate: createCallGate({
       store: redisCounterStore(),
