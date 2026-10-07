@@ -5,12 +5,13 @@
 // The sheets below read only the Call Story's view and notes, not the source
 // behind them.
 
-import { useEffect, useId, useLayoutEffect, useRef, useState, type ReactNode } from "react";
+import { useEffect, useId, useRef, useState, type ReactNode } from "react";
 import {
   DemoBanner,
   EndCallButton,
   Field,
   FormButton,
+  FormLink,
   OnTheLine,
   PhoneIcon,
   PlayIcon,
@@ -18,27 +19,14 @@ import {
   TicketHeader,
   Transcript,
 } from "@/app/_ui/ticket";
+import { CallNotesSheet, DETAIL_LABELS, SECTION_LABEL, formatTime } from "@/app/_ui/call-notes";
 import type { CallSource, RunningCall, StartFailure } from "@/lib/call-source";
-import { DETAIL_FIELDS, tellCallStory, type CallDetails, type CallEvent, type CallNotes, type CallView } from "@/lib/call-story";
+import { DETAIL_FIELDS, tellCallStory, type CallEvent, type CallNotes, type CallView } from "@/lib/call-story";
 import { createSampleCallPlayer } from "@/lib/sample-call";
 import { fetchSavedNotes, watchSavedNotes } from "@/lib/saved-notes";
-import { SAMPLE_BUSINESS } from "@/lib/sample-business";
+import { SAMPLE_BUSINESS, TEST_CALL_TICKET } from "@/lib/sample-business";
 import { browserVapiSourceDeps } from "@/lib/vapi-browser";
 import { createVapiSource } from "@/lib/vapi-source";
-
-const DETAIL_LABELS: Record<keyof CallDetails, string> = {
-  name: "Name",
-  job: "Job",
-  urgency: "Urgency",
-  address: "Address",
-};
-
-const END_REASONS = {
-  "caller-hung-up": "Caller hung up",
-  "receptionist-finished": "Receptionist finished",
-  "time-limit": "Time limit reached",
-  error: "Call failed",
-} as const;
 
 const FAILURE_NOTICES: Record<StartFailure, string> = {
   "microphone-blocked": "Your microphone is blocked, so the call can't start. You can still hear how it works.",
@@ -49,17 +37,8 @@ const FAILURE_NOTICES: Record<StartFailure, string> = {
   "join-failed": "The call couldn't connect. You can still hear how it works.",
 };
 
-// Decoration on a made-up work order; not a real record.
-const TICKET_NUMBER = "04127";
-
-const SECTION_LABEL = "font-form text-sm leading-tight font-bold tracking-wider text-form uppercase";
 const CALL_STATUS = "flex items-center gap-3 font-form text-2xl font-bold uppercase";
 const WAITING_LINE = "font-form text-[1.875rem] leading-tight font-bold text-balance";
-
-function formatTime(ms: number) {
-  const seconds = Math.floor(ms / 1000);
-  return `${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, "0")}`;
-}
 
 type Mode = "test" | "sample";
 type Phase =
@@ -190,11 +169,16 @@ export function CallScreen() {
     return (
       <Page announcement={announcement}>
         <div className="relative">
-          <OwnersCopy
+          <CallNotesSheet
             notes={saved.kind === "ready" ? saved.notes : notes}
             state={mode === "sample" ? "sample" : saved.kind === "ready" ? "saved" : saved.kind}
-            againLabel={mode === "test" ? "Make another Test Call" : "Play the Sample Call again"}
-            onAgain={() => begin(mode)}
+            number={TEST_CALL_TICKET}
+            actions={
+              <>
+                <FormButton onClick={() => begin(mode)}>{mode === "test" ? "Make another Test Call" : "Play the Sample Call again"}</FormButton>
+                <FormLink href="/demo/dashboard">Open the Dashboard</FormLink>
+              </>
+            }
           />
           {!sheetGone && (
             // Reduced motion hides this at once (globals.css); otherwise it
@@ -326,7 +310,7 @@ function TopSheet({ view, status, controls }: { view: CallView; status: ReactNod
       className="mx-auto grid max-w-[420px] [filter:drop-shadow(0_2px_2px_rgb(90_74_30/0.16))_drop-shadow(0_14px_24px_rgb(90_74_30/0.22))] [grid-template-areas:'head''status''fields''controls''talk'] md:max-w-none md:grid-cols-[minmax(0,420px)_minmax(0,22rem)] md:justify-center md:gap-x-8 md:[grid-template-areas:'head_fields''status_fields''controls_fields''talk_fields'] lg:grid-cols-[minmax(0,1fr)_minmax(0,420px)_minmax(0,1fr)] lg:[grid-template-areas:'._head_fields''._status_fields''._controls_fields''._talk_fields']"
     >
       <div className="bg-sheet [grid-area:head]">
-        <TicketHeader number={TICKET_NUMBER} />
+        <TicketHeader number={TEST_CALL_TICKET} />
       </div>
 
       <div className="-mt-px bg-sheet px-5 pt-4 [grid-area:status]">{status}</div>
@@ -335,7 +319,7 @@ function TopSheet({ view, status, controls }: { view: CallView; status: ReactNod
         aria-label="Job details"
         className="-mt-px bg-sheet px-5 pt-3 pb-1 [grid-area:fields] md:mt-0 md:max-w-[22rem] md:self-start md:pt-5 md:pb-6"
       >
-        <h2 className={`${SECTION_LABEL} mb-3 hidden border-b-2 border-form pb-2 md:block`}>Job details · No. {TICKET_NUMBER}</h2>
+        <h2 className={`${SECTION_LABEL} mb-3 hidden border-b-2 border-form pb-2 md:block`}>Job details · No. {TEST_CALL_TICKET}</h2>
         <dl className="grid gap-1.5 md:gap-4">
           {DETAIL_FIELDS.map((field) => (
             <Field key={field} label={DETAIL_LABELS[field]} value={view.details[field]} />
@@ -358,97 +342,6 @@ function TopSheet({ view, status, controls }: { view: CallView; status: ReactNod
         )}
         <Transcript lines={view.lines} receptionistName={SAMPLE_BUSINESS.receptionistName} live />
       </section>
-    </article>
-  );
-}
-
-/**
- * `sample`: the Sample Call's notes, whole at once. A Test Call's notes start
- * as `waiting` (the browser's own copy, the summary still being written),
- * become `saved` when the server's copy arrives, or `late` if it never does.
- */
-type NotesState = "sample" | "waiting" | "late" | "saved";
-
-/** The yellow copy under the white sheet. It stays with the Owner: the Call Notes. */
-function OwnersCopy({ notes, state, againLabel, onAgain }: { notes: CallNotes; state: NotesState; againLabel: string; onAgain: () => void }) {
-  const title = useRef<HTMLHeadingElement>(null);
-  const [summaryId, textId, talkId] = [useId(), useId(), useId()];
-
-  // The white sheet comes off from the top: start the Owner's copy there,
-  // and move focus to its title so the change is announced. Before paint, so
-  // the copy never shows at the old scroll position.
-  useLayoutEffect(() => {
-    window.scrollTo({ top: 0 });
-    title.current?.focus({ preventScroll: true });
-  }, []);
-
-  return (
-    <article aria-label="Call Notes" className="copy-still mx-auto max-w-[960px]">
-      <div className="perforation mb-4" />
-      <header className="text-form">
-        <div className="flex flex-wrap items-end justify-between gap-x-6 gap-y-1 border-2 border-form px-5 pt-3 pb-2.5">
-          <h1 ref={title} tabIndex={-1} className="font-form text-[2.25rem] leading-none font-extrabold tracking-tight uppercase">
-            Call Notes
-          </h1>
-          <p className="font-form text-lg leading-none font-bold uppercase">
-            Owner&apos;s copy · No. {TICKET_NUMBER}
-          </p>
-        </div>
-        <p className="border-x-2 border-b-2 border-form px-5 py-1.5 font-form text-[0.9375rem] font-semibold tracking-wide uppercase">
-          {SAMPLE_BUSINESS.name} · {SAMPLE_BUSINESS.trade} · {SAMPLE_BUSINESS.area}
-        </p>
-      </header>
-
-      <div className="grid gap-x-12 gap-y-8 pt-6 md:grid-cols-[minmax(0,1fr)_minmax(0,24rem)]">
-        <div className="grid content-start gap-8">
-          <section aria-labelledby={summaryId}>
-            <h2 id={summaryId} className={SECTION_LABEL}>
-              Summary
-            </h2>
-            <p className="mt-2 max-w-[44ch] text-[1.375rem] leading-snug font-medium text-balance">
-              {state === "waiting"
-                ? "Finishing the summary…"
-                : state === "late"
-                  ? "The summary did not arrive. The details below are from the call."
-                  : notes.summary}
-            </p>
-            <p className="mt-3 text-print-soft">
-              {END_REASONS[notes.endReason]} after {formatTime(notes.durationMs)}.
-            </p>
-            {state === "saved" && <p className="mt-1 text-print-soft">Saved. Our copy is deleted after 7 days.</p>}
-          </section>
-
-          <dl className="grid gap-4 [&_dd]:border-form">
-            {DETAIL_FIELDS.map((field) => (
-              <Field key={field} label={DETAIL_LABELS[field]} value={notes.details[field]} empty="Not captured" />
-            ))}
-            <Field label="Booked" value={notes.booked} empty="Nothing booked" />
-            <Field label="Taken by" value={`${SAMPLE_BUSINESS.receptionistName}, Receptionist`} />
-          </dl>
-          <p className="text-print-soft">In a real setup, the booking lands in the business&apos;s calendar.</p>
-        </div>
-
-        <div className="grid content-start gap-8">
-          <section aria-labelledby={textId} className="border-2 border-form p-5">
-            <h2 id={textId} className={SECTION_LABEL}>
-              Text to the caller · preview
-            </h2>
-            <p className="mt-2 text-[1.0625rem] leading-relaxed">{notes.confirmationText}</p>
-            <p className="mt-4 border-t border-form pt-3 text-sm text-print-soft">Not available in the demo. Nothing is sent.</p>
-          </section>
-
-          <section aria-labelledby={talkId}>
-            <h2 id={talkId} className={`${SECTION_LABEL} mb-4`}>
-              What was said
-            </h2>
-            <Transcript lines={notes.lines} receptionistName={SAMPLE_BUSINESS.receptionistName} />
-          </section>
-        </div>
-      </div>
-
-      <div className="mt-10 flex flex-wrap gap-3 border-t-2 border-form pt-6">
-        <FormButton onClick={onAgain}>{againLabel}</FormButton>
-      </div>
     </article>
   );
 }

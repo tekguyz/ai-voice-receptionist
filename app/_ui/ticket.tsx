@@ -1,6 +1,7 @@
 // The Service Ticket parts (DESIGN.md). Red is the printed form; carbon blue
 // is what the Receptionist captured; black is plain print.
 
+import Link from "next/link";
 import type { ReactNode } from "react";
 import type { TranscriptLine } from "@/lib/call-story";
 import { SAMPLE_BUSINESS } from "@/lib/sample-business";
@@ -101,17 +102,24 @@ export function StampButton({
   );
 }
 
+const FORM_BUTTON =
+  "inline-flex min-h-12 items-center justify-center border-2 border-form px-5 font-form text-lg font-bold tracking-wide text-form uppercase hover:bg-form hover:text-sheet";
+
 /** A quieter control: printed outline, same ink. */
 export function FormButton({ children, onClick, autoFocus }: { children: ReactNode; onClick: () => void; autoFocus?: boolean }) {
   return (
-    <button
-      type="button"
-      onClick={onClick}
-      autoFocus={autoFocus}
-      className="inline-flex min-h-12 items-center justify-center border-2 border-form px-5 font-form text-lg font-bold tracking-wide text-form uppercase hover:bg-form hover:text-sheet"
-    >
+    <button type="button" onClick={onClick} autoFocus={autoFocus} className={FORM_BUTTON}>
       {children}
     </button>
+  );
+}
+
+/** A link to another screen. It looks exactly like a Form Button. */
+export function FormLink({ href, children }: { href: string; children: ReactNode }) {
+  return (
+    <Link href={href} className={FORM_BUTTON}>
+      {children}
+    </Link>
   );
 }
 
