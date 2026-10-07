@@ -15,11 +15,12 @@ import {
   OnTheLine,
   PhoneIcon,
   PlayIcon,
+  SECTION_LABEL,
   StampButton,
   TicketHeader,
   Transcript,
 } from "@/app/_ui/ticket";
-import { CallNotesSheet, DETAIL_LABELS, SECTION_LABEL, formatTime } from "@/app/_ui/call-notes";
+import { CallNotesSheet, DETAIL_LABELS, formatTime } from "@/app/_ui/call-notes";
 import type { CallSource, RunningCall, StartFailure } from "@/lib/call-source";
 import { DETAIL_FIELDS, tellCallStory, type CallEvent, type CallNotes, type CallView } from "@/lib/call-story";
 import { createSampleCallPlayer } from "@/lib/sample-call";

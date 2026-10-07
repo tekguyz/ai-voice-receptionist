@@ -4,7 +4,7 @@
 // it when a call ends; the Dashboard shows it for any call in its list.
 
 import { useId, useLayoutEffect, useRef, type ReactNode } from "react";
-import { Field, Transcript } from "@/app/_ui/ticket";
+import { Field, SECTION_LABEL, Transcript } from "@/app/_ui/ticket";
 import { DETAIL_FIELDS, type CallDetails, type CallNotes } from "@/lib/call-story";
 import { SAMPLE_BUSINESS } from "@/lib/sample-business";
 
@@ -21,8 +21,6 @@ const END_REASONS = {
   "time-limit": "Time limit reached",
   error: "Call failed",
 } as const;
-
-export const SECTION_LABEL = "font-form text-sm leading-tight font-bold tracking-wider text-form uppercase";
 
 export function formatTime(ms: number) {
   const seconds = Math.floor(ms / 1000);

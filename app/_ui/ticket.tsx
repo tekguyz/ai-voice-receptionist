@@ -102,6 +102,9 @@ export function StampButton({
   );
 }
 
+/** Printed section headings and labels: red Label caps. */
+export const SECTION_LABEL = "font-form text-sm leading-tight font-bold tracking-wider text-form uppercase";
+
 const FORM_BUTTON =
   "inline-flex min-h-12 items-center justify-center border-2 border-form px-5 font-form text-lg font-bold tracking-wide text-form uppercase hover:bg-form hover:text-sheet";
 
