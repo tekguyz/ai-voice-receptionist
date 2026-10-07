@@ -3,6 +3,7 @@
 
 import Link from "next/link";
 import type { ReactNode } from "react";
+import { BusinessMark } from "@/app/_ui/logo";
 import type { TranscriptLine } from "@/lib/call-story";
 import { SAMPLE_BUSINESS } from "@/lib/sample-business";
 
@@ -33,9 +34,19 @@ export function TicketHeader({ number }: { number: string }) {
         </p>
       </div>
       <p className="border-b-2 border-form px-5 py-1.5 font-form text-[0.9375rem] font-semibold tracking-wide uppercase">
-        {SAMPLE_BUSINESS.name} · {SAMPLE_BUSINESS.trade} · {SAMPLE_BUSINESS.area}
+        <BusinessLine />
       </p>
     </header>
+  );
+}
+
+/** The Sample Business's mark and name, printed under every header. */
+export function BusinessLine() {
+  return (
+    <span className="inline-flex items-center gap-2">
+      <BusinessMark className="size-5 shrink-0" />
+      {SAMPLE_BUSINESS.name} · {SAMPLE_BUSINESS.trade} · {SAMPLE_BUSINESS.area}
+    </span>
   );
 }
 

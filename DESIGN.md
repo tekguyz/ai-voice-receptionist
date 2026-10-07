@@ -240,6 +240,12 @@ Square corners throughout (0px): the band, the sheets, buttons, the outlined pre
 ### Demo Banner
 A black print strip across the top of every demo screen. Print Black ground, white text, 8px by 16px, content max 960px. "Demo" in Form caps bold, then "· Made-up business" in white at 80%. "Built by TEKGUYZ" links to tekguyz.com, underlined, turning canary on hover. When it gains a way out of the demo (landing-page step), that control lives inside the same black strip, in white or canary, square.
 
+### Logo and icons
+Option B, "Ticket band", picked by the founder on 2026-10-07 from `docs/design/logos.html`. Both marks are a Form Red square with white drawing, square corners, on a 32 × 32 grid.
+- **Product mark ("AI Voice Receptionist"):** the phone handset over a white ruled line, a field filled in. With the name in Form caps 800, it is the product logo on the landing page. It is the favicon (`app/icon.svg`), the home-screen icon (`app/apple-icon.tsx`, the mark fills the 180 px tile) and the mark on the link preview picture.
+- **Business mark ("Mangrove Air"):** a mangrove tree in white strokes, its roots in the water. It sits at 20 px before the business line on every header: the work order, the Owner's copy and the Dashboard.
+- **One source:** both marks live in `app/_ui/logo.tsx`. Every icon and picture draws from there; a test keeps `app/icon.svg` the same as the code. The product logo names the product only, never TEKGUYZ.
+
 ### Ticket Header (top of the phone frame)
 - **Band:** Form Red fill, white Display title left, the ticket number right ("No. 04127", 1.25rem bold), 12px 20px 10px.
 - **Business line:** Form line type in red, under the band, closed by a 2px red rule.

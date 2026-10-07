@@ -4,7 +4,7 @@
 // it when a call ends; the Dashboard shows it for any call in its list.
 
 import { useId, useLayoutEffect, useRef, type ReactNode } from "react";
-import { Field, SECTION_LABEL, Transcript } from "@/app/_ui/ticket";
+import { BusinessLine, Field, SECTION_LABEL, Transcript } from "@/app/_ui/ticket";
 import { DETAIL_FIELDS, type CallDetails, type CallNotes } from "@/lib/call-story";
 import { SAMPLE_BUSINESS } from "@/lib/sample-business";
 
@@ -77,7 +77,7 @@ export function CallNotesSheet({
           </p>
         </div>
         <p className="border-x-2 border-b-2 border-form px-5 py-1.5 font-form text-[0.9375rem] font-semibold tracking-wide uppercase">
-          {SAMPLE_BUSINESS.name} · {SAMPLE_BUSINESS.trade} · {SAMPLE_BUSINESS.area}
+          <BusinessLine />
         </p>
       </header>
 
