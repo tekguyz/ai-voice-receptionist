@@ -7,12 +7,29 @@ colors:
   sheet: "#ffffff"
   form: "#a8221a"
   form-deep: "#8a1b14"
-  form-rule: "#e9a8a2"
+  form-rule: "#d4776e"
   carbon: "#1b3a8c"
   print: "#17171a"
   print-muted: "#4e4e57"
   print-soft: "#5a4a1e"
 typography:
+  hero:
+    fontFamily: "Barlow Condensed, Arial Narrow, sans-serif"
+    fontSize: "2.75rem"
+    fontWeight: 800
+    lineHeight: 1.02
+    letterSpacing: "-0.025em"
+  hero-wide:
+    fontFamily: "Barlow Condensed, Arial Narrow, sans-serif"
+    fontSize: "3.5rem"
+    fontWeight: 800
+    lineHeight: 1.02
+    letterSpacing: "-0.025em"
+  logo:
+    fontFamily: "Barlow Condensed, Arial Narrow, sans-serif"
+    fontSize: "1.75rem"
+    fontWeight: 800
+    lineHeight: 1
   display:
     fontFamily: "Barlow Condensed, Arial Narrow, sans-serif"
     fontSize: "2.25rem"
@@ -172,7 +189,7 @@ A printed counter pad: two papers and three inks, with no accent outside them.
 - **Canary Copy** (#faf08a): the page ground and the Owner's copy. Also the browser theme colour.
 - **Canary Copy, Deep** (#e8dc5a): defined in the theme; no component uses it yet. Treat as unassigned until a build needs it.
 - **Top Sheet White** (#ffffff): the white top sheet the call is written on; also text on the red band and the black banner.
-- **Faint Form Rule** (#e9a8a2): the field rules and dividers on the white sheet. Decorative lines, never text.
+- **Faint Form Rule** (#d4776e): the field rules and dividers on the white sheet. Decorative lines, never text. 3.15:1 on the sheet, so an empty work order still reads as a ruled form in bright daylight (raised from #e9a8a2, 1.98:1, in the 2026-10-07 design pass).
 - **Print Black** (#17171a): transcript, summary and body text; the demo banner strip. 17.89:1 on the sheet, 15.24:1 on the copy.
 - **Print Muted** (#4e4e57): secondary notes on the white sheet (the line under the stamp). Well above 4.5:1 on white.
 - **Print Soft** (#5a4a1e): secondary notes on the yellow copy (end reason, "Not captured", the demo disclaimer). 7.36:1 on the copy. A warm brown so it reads as print on yellow paper.
@@ -193,9 +210,11 @@ A printed counter pad: two papers and three inks, with no accent outside them.
 **Character:** The condensed caps are the printed form, industrial and tight. Barlow is the plain print the transcript is read in. Kalam is the single ballpoint hand, used only for captured values. Numbers use tabular figures everywhere, so the timer and ticket number hold still.
 
 ### Hierarchy
+- **Hero** (Form, 800, 2.75rem, 3.5rem from 768px, line-height 1.02, tracking -0.025em, uppercase, balanced): the landing page headline only.
+- **Logo** (Form, 800, 1.75rem, uppercase): the product name beside its mark on the landing page.
 - **Display** (Form, 800, 2.25rem, line-height 1, tracking -0.025em, uppercase): the document title on the red band ("Work order", "Call Notes").
 - **Headline** (Form, 700, 1.875rem, 1.25, balanced): the waiting line "Your receptionist is standing by". Sentence case.
-- **Title** (Form, 700, 1.5rem, uppercase): call status ("On the line", "Call ended") with the timer in red at its right end. The ticket number on the band sits at 1.25rem, 700.
+- **Title** (Form, 700, 1.5rem, uppercase): call status ("On the line", "Sample Call", "Call ended") with the timer in red at its right end. The ticket number on the band sits at 1.25rem, 700.
 - **Stamp** (Form, 800, 1.375rem, tracking 0.025em, uppercase): the stamp button's words. Form buttons use 700 at 1.125rem.
 - **Form line** (Form, 600, 0.9375rem, tracking 0.025em, uppercase): the business line under the header band.
 - **Label** (Form, 700, 0.875rem, tracking 0.05em, uppercase): field labels, section headings, transcript speaker names.
@@ -238,7 +257,10 @@ Square corners throughout (0px): the band, the sheets, buttons, the outlined pre
 ## Components
 
 ### Demo Banner
-A black print strip across the top of every demo screen. Print Black ground, white text, 8px by 16px, content max 960px. "Demo" in Form caps bold, then "· Made-up business" in white at 80%. "Built by TEKGUYZ" links to tekguyz.com, underlined, turning canary on hover. When it gains a way out of the demo (landing-page step), that control lives inside the same black strip, in white or canary, square.
+A black print strip across the top of every demo screen. Print Black ground, white text, 8px by 16px, content max 960px. "Demo" in Form caps bold, then "· Made-up business" in white at 80%. "Leave the demo" links to `/` and "Built by TEKGUYZ" links to tekguyz.com, underlined, turning canary on hover. Each link is at least 32px tall to tap (WCAG 2.2 asks 24px); on a narrow phone the links wrap to a second row.
+
+### Demo Closing
+The end of the demo, in the TEKGUYZ voice: the same black strip as the banner, at the foot of the Call Notes and the Dashboard, so it reads as TEKGUYZ speaking, not the Sample Business. "Want this answering for your shop?" in Form caps 1.5rem bold, white; "Talk to TEKGUYZ" as a canary outline button (2px, Form caps, min-height 48px) linking to tekguyz.com, filled canary with black words on hover. Copy approved by the founder on 2026-10-07.
 
 ### Logo and icons
 Option B, "Ticket band", picked by the founder on 2026-10-07 from `docs/design/logos.html`. Both marks are a Form Red square with white drawing, square corners, on a 32 × 32 grid.
@@ -252,7 +274,7 @@ Option B, "Ticket band", picked by the founder on 2026-10-07 from `docs/design/l
 - **On the copy:** the same header outlined in 2px red instead of filled, with "Owner's copy · No." at right.
 
 ### Call Column (the phone frame)
-The white top sheet, 420px wide. Status reads "Your receptionist is standing by" while waiting; once live, the red lamp, "On the line" and the timer in red. Controls sit within thumb reach below the fields. The transcript section is divided off by a faint rule and headed "What was said".
+The white top sheet, 420px wide. Status reads "Your receptionist is standing by" while waiting; once live, the red lamp, "On the line" and the timer in red. The Sample Call is a playback, not an open line: a play icon and "Sample Call" in place of the lamp. Controls sit within thumb reach below the fields. The transcript section is divided off by a faint rule and headed "What was said".
 
 ### Fields (captured-detail tags)
 - **Style:** a red Label over a ruled line, min-height 1.875rem. No box, no fill, no chip.
@@ -261,7 +283,7 @@ The white top sheet, 420px wide. Status reads "Your receptionist is standing by"
 - **Order:** Name, Job, Urgency, Address, Booked; the copy adds "Taken by".
 
 ### Transcript Lines
-An ordered list, 12px apart. Speaker in Label caps in a 5.5rem column: the Receptionist in red, the caller in black. The line in Body, black, max 60ch. Live transcripts announce politely to screen readers.
+An ordered list, 12px apart. Speaker in Label caps in a 5.5rem column: the Receptionist in red, the caller in black. The line in Body, black, max 60ch. Live transcripts announce politely to screen readers. On a phone during a call, only the two newest lines show, so they sit on screen with the fields; the page scrolls only enough to keep the newest line in view. The earlier lines stay for screen readers, and the Call Notes show them all.
 
 ### Buttons (call controls)
 - **Stamp Button (primary):** a red rubber stamp. White ground, red 6px double border, red Stamp caps, tilted -1deg, min-height 56px, full width in the call column. Hover tints the ground with 5% red; pressed fills it solid red with white words. An optional 20px inline SVG icon sits before the words.
@@ -280,7 +302,7 @@ Drawn in Form Red only, square-ended, inside the call column. It moves only with
 A tear line of red dots at the top of the Owner's copy, marking where the white sheet came off.
 
 ### Dashboard (the Owner's view)
-The yellow copy as a 960px page with no white sheet: the Owner reads it; nothing is being written. The outlined header says "Dashboard" with "Owner's view" at right, over the business line. One Body Lead line says what the Receptionist handled. The answering row sits between two 2px red rules: the lamp (solid red while answering, a red ring when not), the status in Title caps, and a square switch at right (2px red frame and a square knob; filled red when on). A Small line in Print Soft says the switch changes only this screen. The three totals are one outlined box split in three by 2px red rules: a red Label over a Form 800 number at 2.25rem in Print Black. Recent calls are rows ruled in 1px solid red, each a link: the time in Small Print Soft, the caller in Body 600, the job in Print Soft, and square marks at right in red Label caps ("Booked", "Spam" outlined; "Your call" filled red with white caps). Hover tints a row with 5% red. A call opens on its own page as the Owner's copy, with its time before the end reason. A spam call's copy shows "Spam blocked" where the text preview would be.
+The yellow copy as a 960px page with no white sheet: the Owner reads it; nothing is being written. The outlined header says "Dashboard" with "Owner's view" at right, over the business line. One Body Lead line says what the Receptionist handled. The answering row sits between two 2px red rules: the lamp (solid red while answering, a red ring when not), the status in Title caps, and a square switch at right (2px red frame and a square knob; filled red when on). A Small line in Print Soft says the switch changes only this screen. The three totals are one outlined box split in three by 2px red rules: a red Label over a Form 800 number at 2.25rem in Print Black. Recent calls are rows ruled in 1px solid red, each a link: the time in Small Print Soft, the caller in Body 600, the job in Print Soft, and square marks at right in red Label caps ("Booked", "Spam" outlined; "Your call" filled red with white caps). Hover tints a row with 5% red. A call opens on its own page as the Owner's copy, with its time before the end reason. A spam call's copy shows "Spam blocked" where the text preview would be, and only "Taken by" in its fields: a column of empty rules would read as a failure. A Small Print Soft line under "Recent calls" says they are sample calls plus the Visitor's own. Each total's number sits at the bottom of its box, so the three line up when a label wraps.
 
 ### Motion
 - **Write-in:** a captured value is revealed left to right with `clip-path`, 700ms, `cubic-bezier(0.16, 1, 0.3, 1)`. One per captured detail.
@@ -302,7 +324,7 @@ The yellow copy as a 960px page with no white sheet: the Owner reads it; nothing
 - **Don't** add a fourth ink, a gradient, a glow, a dark screen, an orb or chat bubbles.
 - **Don't** put a shadow on anything but the top sheet; no cards.
 - **Don't** use Carbon Blue or Kalam for anything the form prints.
-- **Don't** set Faint Form Rule (#e9a8a2) as text; it is a line colour only.
+- **Don't** set Faint Form Rule (#d4776e) as text; it is a line colour only.
 - **Don't** add motion beyond one write-in per captured detail and the sheet lift: no pulsing lamp, no hover animation, no scroll effects.
 
 ### Open items

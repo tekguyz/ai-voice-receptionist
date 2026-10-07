@@ -82,7 +82,7 @@
       "form-rule": {
         "role": "neutral",
         "displayName": "Faint Form Rule",
-        "canonical": "oklch(79.1% 0.078 24)",
+        "canonical": "oklch(67.0% 0.118 26)",
         "tonalRamp": [
           "#230000",
           "#431110",
@@ -256,7 +256,7 @@
       "refersTo": "field-value",
       "description": "Red printed label over a ruled line; the captured value in carbon-blue hand, written in.",
       "html": "<dl class=\"ds-field\"><dt>Name</dt><dd><span>maria lopez</span></dd><dt>Address</dt><dd></dd></dl>",
-      "css": ".ds-field { display: grid; gap: 6px; margin: 0; background: #fff; padding: 20px; } .ds-field dt { font-family: var(--font-form, \"Barlow Condensed\", \"Arial Narrow\", sans-serif); text-transform: uppercase; color: var(--color-form, #a8221a); font-size: 0.875rem; line-height: 1.25; font-weight: 700; letter-spacing: 0.05em; } .ds-field dd { margin: 0; min-height: 1.875rem; border-bottom: 1px solid var(--color-form-rule, #e9a8a2); font-family: var(--font-hand, Kalam, \"Segoe Print\", cursive); font-size: 1.5rem; line-height: 1.25; color: var(--color-carbon, #1b3a8c); } .ds-field dd span { display: inline-block; animation: ds-write-in 700ms cubic-bezier(0.16, 1, 0.3, 1) both; } .ds-field dd span::first-letter { text-transform: uppercase; } @keyframes ds-write-in { from { clip-path: inset(0 100% 0 0); } to { clip-path: inset(0 0 0 0); } } @media (prefers-reduced-motion: reduce) { .ds-field dd span { animation: none; } }"
+      "css": ".ds-field { display: grid; gap: 6px; margin: 0; background: #fff; padding: 20px; } .ds-field dt { font-family: var(--font-form, \"Barlow Condensed\", \"Arial Narrow\", sans-serif); text-transform: uppercase; color: var(--color-form, #a8221a); font-size: 0.875rem; line-height: 1.25; font-weight: 700; letter-spacing: 0.05em; } .ds-field dd { margin: 0; min-height: 1.875rem; border-bottom: 1px solid var(--color-form-rule, #d4776e); font-family: var(--font-hand, Kalam, \"Segoe Print\", cursive); font-size: 1.5rem; line-height: 1.25; color: var(--color-carbon, #1b3a8c); } .ds-field dd span { display: inline-block; animation: ds-write-in 700ms cubic-bezier(0.16, 1, 0.3, 1) both; } .ds-field dd span::first-letter { text-transform: uppercase; } @keyframes ds-write-in { from { clip-path: inset(0 100% 0 0); } to { clip-path: inset(0 0 0 0); } } @media (prefers-reduced-motion: reduce) { .ds-field dd span { animation: none; } }"
     },
     {
       "name": "Transcript Line",
@@ -353,7 +353,7 @@
       "**Don't** add a fourth ink, a gradient, a glow, a dark screen, an orb or chat bubbles.",
       "**Don't** put a shadow on anything but the top sheet; no cards.",
       "**Don't** use Carbon Blue or Kalam for anything the form prints.",
-      "**Don't** set Faint Form Rule (#e9a8a2) as text; it is a line colour only.",
+      "**Don't** set Faint Form Rule (#d4776e) as text; it is a line colour only.",
       "**Don't** add motion beyond one write-in per captured detail and the sheet lift: no pulsing lamp, no hover animation, no scroll effects."
     ]
   }

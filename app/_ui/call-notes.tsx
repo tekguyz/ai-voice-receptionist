@@ -10,7 +10,7 @@ import { SAMPLE_BUSINESS } from "@/lib/sample-business";
 
 const END_REASONS = {
   "caller-hung-up": "Caller hung up",
-  "receptionist-finished": "Receptionist finished",
+  "receptionist-finished": `${SAMPLE_BUSINESS.receptionistName} ended the call`,
   "time-limit": "Time limit reached",
   error: "Call failed",
 } as const;
@@ -61,7 +61,7 @@ export function CallNotesSheet({
             Call Notes
           </h1>
           <p className="font-form text-lg leading-none font-bold uppercase">
-            Owner&apos;s copy · No. {number}
+            Owner’s copy · No. {number}
           </p>
         </div>
         <p className="border-x-2 border-b-2 border-form px-5 py-1.5 font-form text-[0.9375rem] font-semibold tracking-wide uppercase">
@@ -90,13 +90,15 @@ export function CallNotesSheet({
           </section>
 
           <dl className="grid gap-4 [&_dd]:border-form">
-            {DETAIL_FIELDS.map((field) => (
-              <Field key={field} label={DETAIL_LABELS[field]} value={notes.details[field]} empty="Not captured" />
-            ))}
-            <Field label="Booked" value={notes.booked} empty="Nothing booked" />
+            {/* A spam call has nothing to capture: a column of empty rules would read as a failure. */}
+            {!spam &&
+              DETAIL_FIELDS.map((field) => (
+                <Field key={field} label={DETAIL_LABELS[field]} value={notes.details[field]} empty="Not captured" />
+              ))}
+            {!spam && <Field label="Booked" value={notes.booked} empty="Nothing booked" />}
             <Field label="Taken by" value={`${SAMPLE_BUSINESS.receptionistName}, Receptionist`} />
           </dl>
-          {!spam && <p className="text-print-soft">In a real setup, the booking lands in the business&apos;s calendar.</p>}
+          {!spam && <p className="text-print-soft">In a real setup, the booking lands in the business’s calendar.</p>}
         </div>
 
         <div className="grid content-start gap-8">
@@ -106,7 +108,7 @@ export function CallNotesSheet({
                 Spam blocked
               </h2>
               <p className="mt-2 text-[1.0625rem] leading-relaxed">
-                {SAMPLE_BUSINESS.receptionistName} ended the call. No text goes to a spam caller.
+                No text goes to a spam caller.
               </p>
             </section>
           ) : (

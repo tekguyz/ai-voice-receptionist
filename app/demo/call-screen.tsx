@@ -8,6 +8,7 @@
 import { useEffect, useId, useRef, useState, type ReactNode } from "react";
 import {
   DemoBanner,
+  DemoClosing,
   DETAIL_LABELS,
   EndCallButton,
   Field,
@@ -25,19 +26,20 @@ import {
 import { CallNotesSheet } from "@/app/_ui/call-notes";
 import type { CallSource, RunningCall, StartFailure } from "@/lib/call-source";
 import { DETAIL_FIELDS, tellCallStory, type CallEvent, type CallNotes, type CallView } from "@/lib/call-story";
-import { createSampleCallPlayer } from "@/lib/sample-call";
+import { SAMPLE_CALL_SUMMARY, createSampleCallPlayer } from "@/lib/sample-call";
 import { fetchSavedNotes, watchSavedNotes } from "@/lib/saved-notes";
 import { SAMPLE_BUSINESS, TEST_CALL_TICKET } from "@/lib/sample-business";
+import { SITE_NAME } from "@/lib/site";
 import { browserVapiSourceDeps } from "@/lib/vapi-browser";
 import { createVapiSource } from "@/lib/vapi-source";
 
 const FAILURE_NOTICES: Record<StartFailure, string> = {
-  "microphone-blocked": "Your microphone is blocked, so the call can't start. You can still hear how it works.",
-  limit: "The Test Calls for today are used up. You can still hear how it works.",
-  unavailable: "The call couldn't connect. You can still hear how it works.",
-  "connect-failed": "The call couldn't connect. You can still hear how it works.",
+  "microphone-blocked": "Your microphone is blocked, so the call can't start. You can still see how it works.",
+  limit: "The Test Calls for today are used up. You can still see how it works.",
+  unavailable: "The call couldn't connect. You can still see how it works.",
+  "connect-failed": "The call couldn't connect. You can still see how it works.",
   // The day's Test Call is already used, so there is no retry for this one.
-  "join-failed": "The call couldn't connect. You can still hear how it works.",
+  "join-failed": "The call couldn't connect. You can still see how it works.",
 };
 
 const CALL_STATUS = "flex items-center gap-3 font-form text-2xl font-bold uppercase";
@@ -80,7 +82,9 @@ export function CallScreen() {
     [],
   );
 
-  const { view, notes } = tellCallStory(events);
+  const mode: Mode = phase.kind === "running" ? phase.mode : "test";
+  // The Sample Call carries its own written summary, like the Dashboard's calls.
+  const { view, notes } = tellCallStory(events, mode === "sample" ? { summary: SAMPLE_CALL_SUMMARY } : {});
   const ticking = phase.kind === "running" && !notes;
 
   useEffect(() => {
@@ -135,7 +139,6 @@ export function CallScreen() {
   }
 
   const elapsedMs = ticking && startedAt !== null ? Math.max(view.elapsedMs, now - startedAt) : view.elapsedMs;
-  const mode: Mode = phase.kind === "running" ? phase.mode : "test";
 
   const ended = notes !== null;
   // A Test Call's notes are saved by the server a moment after the call ends: ask until they are there.
@@ -166,11 +169,18 @@ export function CallScreen() {
         : saved.kind === "late"
           ? "Call ended. The summary did not arrive."
           : "Call ended. Finishing the notes.";
-  const announcement = notes ? endedWord : phase.kind === "connecting" ? "Calling…" : phase.kind === "running" ? "On the line" : "";
+  const runningWord = mode === "sample" ? "Sample Call playing" : "On the line";
+  const announcement = notes ? endedWord : phase.kind === "connecting" ? "Calling…" : phase.kind === "running" ? runningWord : "";
+
+  // The tab says which screen this is: the page's own title says "Test Call".
+  const tabTitle = notes ? "Call Notes" : mode === "sample" ? "Sample Call" : "Test Call";
+  useEffect(() => {
+    document.title = `${tabTitle} · ${SITE_NAME}`;
+  }, [tabTitle]);
 
   if (notes) {
     return (
-      <Page announcement={announcement}>
+      <Page announcement={announcement} closing>
         <div className="relative">
           <CallNotesSheet
             notes={saved.kind === "ready" ? saved.notes : notes}
@@ -221,7 +231,9 @@ export function CallScreen() {
           <StampButton onClick={() => begin("test")} icon={<PhoneIcon />} autoFocus={phase.focus === "test"}>
             Call now
           </StampButton>
-          <p className="mt-3 text-sm text-print-muted">Make up your details. Don&apos;t give your real name or address.</p>
+          <p className="mt-3 text-sm text-print-muted">
+            One Test Call a day, 3 minutes at most. Make up your details. Don’t give your real name or address.
+          </p>
           <p className="mt-1 text-sm text-print-muted">Only the words are kept, never your voice. Our copy is deleted after 7 days.</p>
           <div className="mt-5 flex flex-wrap gap-3">
             <FormButton onClick={() => begin("sample")} autoFocus={phase.focus === "sample"}>
@@ -264,10 +276,11 @@ export function CallScreen() {
       );
       break;
     case "running":
+      // The Sample Call is a playback, not an open line: no lamp.
       status = (
         <p className={CALL_STATUS}>
-          <OnTheLine />
-          On the line
+          {phase.mode === "test" ? <OnTheLine /> : <PlayIcon />}
+          {phase.mode === "test" ? "On the line" : "Sample Call"}
           <span className="ml-auto text-form">{formatTime(elapsedMs)}</span>
         </p>
       );
@@ -289,7 +302,7 @@ export function CallScreen() {
   );
 }
 
-function Page({ children, announcement }: { children: ReactNode; announcement: string }) {
+function Page({ children, announcement, closing = false }: { children: ReactNode; announcement: string; closing?: boolean }) {
   return (
     <>
       <DemoBanner />
@@ -298,6 +311,7 @@ function Page({ children, announcement }: { children: ReactNode; announcement: s
         {announcement}
       </div>
       <main className="mx-auto max-w-[1200px] px-4 pt-4 pb-10 md:pt-12">{children}</main>
+      {closing && <DemoClosing />}
     </>
   );
 }
@@ -309,6 +323,16 @@ function Page({ children, announcement }: { children: ReactNode; announcement: s
  */
 function TopSheet({ view, status, controls }: { view: CallView; status: ReactNode; controls?: ReactNode }) {
   const talkId = useId();
+  const talk = useRef<HTMLElement>(null);
+  // Only the live sheet has controls; the lifting copy has none.
+  const live = controls !== undefined;
+  const lineCount = view.lines.length;
+  // On a phone, keep the newest line on screen. The transcript there holds
+  // only the newest lines, so the page moves a little at most.
+  useEffect(() => {
+    if (!live || lineCount === 0 || !window.matchMedia("(max-width: 767px)").matches) return;
+    talk.current?.scrollIntoView({ block: "nearest" });
+  }, [live, lineCount]);
   return (
     <article
       aria-label="Work order"
@@ -337,6 +361,7 @@ function TopSheet({ view, status, controls }: { view: CallView; status: ReactNod
 
       {/* Always in the page, even empty, so a screen reader hears the first line too. */}
       <section
+        ref={talk}
         aria-labelledby={view.lines.length > 0 ? talkId : undefined}
         className={`-mt-px bg-sheet [grid-area:talk] ${view.lines.length > 0 ? "border-t border-form-rule px-5 pt-5 pb-8" : ""}`}
       >
@@ -345,7 +370,7 @@ function TopSheet({ view, status, controls }: { view: CallView; status: ReactNod
             What was said
           </h2>
         )}
-        <Transcript lines={view.lines} receptionistName={SAMPLE_BUSINESS.receptionistName} live />
+        <Transcript lines={view.lines} receptionistName={SAMPLE_BUSINESS.receptionistName} live latest={2} />
       </section>
     </article>
   );

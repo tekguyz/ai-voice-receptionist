@@ -30,6 +30,10 @@ export const SAMPLE_CALL_EVENTS: readonly CallEvent[] = [
   { type: "ended", reason: "receptionist-finished", atMs: 30000 },
 ];
 
+/** The Call Notes summary, written like the Dashboard's sample calls. Only facts from the lines above. */
+export const SAMPLE_CALL_SUMMARY =
+  "Marco Delgado's AC stopped cooling last night and it's 85 in the house. His mom is staying with him, so it's urgent. Booked for tomorrow, 9:00 AM.";
+
 /** Plays a timed event list: each event is emitted when playback reaches its time. */
 export function createSampleCallPlayer(
   events: readonly CallEvent[] = SAMPLE_CALL_EVENTS,
