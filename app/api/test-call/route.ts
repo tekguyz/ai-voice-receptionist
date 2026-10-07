@@ -1,12 +1,11 @@
 import { DEV_LIMITS, LIMITS, createCallGate } from "@/lib/call-gate";
 import { redisCounterStore } from "@/lib/redis-counter-store";
+import { isProduction, keyPrefix } from "@/lib/server-env";
 import { startTestCall } from "@/lib/start-test-call";
 import { vapiWebCallCreator } from "@/lib/vapi-web-call";
+import { webhookTarget } from "@/lib/webhook-target";
 
 export const dynamic = "force-dynamic";
-
-// Not NODE_ENV: Vercel Preview and a local `next start` are "production" builds but must use the dev limits and the avr:dev: keys.
-const production = process.env.VERCEL_ENV === "production";
 
 export async function POST(request: Request) {
   const privateKey = process.env.VAPI_PRIVATE_KEY;
@@ -18,15 +17,17 @@ export async function POST(request: Request) {
     );
     return Response.json({ reason: "unavailable" }, { status: 503, headers: { "Cache-Control": "no-store" } });
   }
+  const webhook = webhookTarget(new URL(request.url).origin, process.env);
+  if (!process.env.VAPI_WEBHOOK_SECRET) console.error("Start Test Call: VAPI_WEBHOOK_SECRET is missing, so this call's Call Notes will not be saved.");
   return startTestCall(request, {
     gate: createCallGate({
       store: redisCounterStore(),
-      limits: production ? LIMITS : DEV_LIMITS,
-      prefix: production ? "avr:" : "avr:dev:",
+      limits: isProduction() ? LIMITS : DEV_LIMITS,
+      prefix: keyPrefix(),
     }),
     // Reuses a server secret so there is no new env var; a key change only resets the per-IP counts.
     ipSecret: privateKey,
-    createWebCall: vapiWebCallCreator({ privateKey, orgId, assistantId }),
+    createWebCall: vapiWebCallCreator({ privateKey, orgId, assistantId, webhook }),
     now: () => new Date(),
   });
 }

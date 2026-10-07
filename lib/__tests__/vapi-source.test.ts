@@ -31,19 +31,22 @@ function fakeVapi({ joinFails = false, deferJoin = false } = {}) {
   });
 }
 
+const OFFERED = ["Tuesday, October 6 at 9 AM", "Tuesday, October 6 at 2 PM"];
+
 function harness(over: Partial<VapiSourceDeps> = {}, vapi = fakeVapi()) {
   let clock = 1000;
   const events: CallEvent[] = [];
   const failures: StartFailure[] = [];
+  const callIds: string[] = [];
   const deps: VapiSourceDeps = {
     requestMicrophone: async () => true,
-    startTestCall: async (): Promise<StartResult> => ({ ok: true, webCallUrl: "https://vapi.daily.co/room", callId: "call-1" }),
+    startTestCall: async (): Promise<StartResult> => ({ ok: true, webCallUrl: "https://vapi.daily.co/room", callId: "call-1", openTimes: OFFERED }),
     createVapi: async () => vapi,
     now: () => clock,
     ...over,
   };
-  const call = createVapiSource(deps).start({ onEvent: (e) => events.push(e), onFailed: (f) => failures.push(f) });
-  return { call, vapi, events, failures, tick: (ms: number) => (clock += ms) };
+  const call = createVapiSource(deps).start({ onEvent: (e) => events.push(e), onFailed: (f) => failures.push(f), onCallId: (id) => callIds.push(id) });
+  return { call, vapi, events, failures, callIds, tick: (ms: number) => (clock += ms) };
 }
 
 const settle = () => new Promise((resolve) => setTimeout(resolve, 0));
@@ -78,6 +81,31 @@ describe("the Vapi source", () => {
     const { vapi } = harness();
     await settle();
     expect(vapi.joined).toEqual([{ webCallUrl: "https://vapi.daily.co/room", id: "call-1" }]);
+  });
+
+  it("tells the screen the call ID as soon as the server made the call", async () => {
+    const { callIds } = harness();
+    await settle();
+    expect(callIds).toEqual(["call-1"]);
+  });
+
+  it("reports no call ID when the server refuses", async () => {
+    const { callIds } = harness({ startTestCall: async () => ({ ok: false, failure: "limit" }) });
+    await settle();
+    expect(callIds).toEqual([]);
+  });
+
+  it("keeps a booking only for a time that was offered, written as offered", async () => {
+    const { vapi, events } = harness();
+    await settle();
+    vapi.emit("message", {
+      type: "tool-calls",
+      toolCallList: [
+        { function: { name: "bookTime", arguments: { time: "Friday at noon" } } },
+        { function: { name: "bookTime", arguments: { time: "tuesday, october 6 at 2 pm" } } },
+      ],
+    });
+    expect(events).toEqual([{ type: "booked", time: "Tuesday, October 6 at 2 PM", atMs: 0 }]);
   });
 
   it("turns only final transcripts into lines, timed from the join", async () => {

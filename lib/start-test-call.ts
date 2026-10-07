@@ -40,8 +40,10 @@ export async function startTestCall(request: Request, deps: StartTestCallDeps): 
   if (!gate.allowed) return answer(gate.reason === "unavailable" ? 503 : 429, { reason: gate.reason });
 
   try {
-    const { webCallUrl, callId } = await deps.createWebCall({ visitorId, openTimes: openTimes(now) });
-    return answer(200, { webCallUrl, callId });
+    const times = openTimes(now);
+    const { webCallUrl, callId } = await deps.createWebCall({ visitorId, openTimes: times });
+    // The browser needs the two times only to show a booking that the server will accept.
+    return answer(200, { webCallUrl, callId, openTimes: times });
   } catch (error) {
     console.error("Start Test Call: Vapi did not start the call.", error instanceof Error ? error.message : error);
     await gate.release().catch(() => {});

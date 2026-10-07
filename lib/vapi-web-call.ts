@@ -40,16 +40,29 @@ export function signWebCallToken({
   return `${header}.${payload}.${signature}`;
 }
 
+function webhookHeaders({ secret, protectionBypass }: { secret: string; protectionBypass?: string }) {
+  return { "X-Vapi-Secret": secret, ...(protectionBypass ? { "x-vercel-protection-bypass": protectionBypass } : {}) };
+}
+
 export function vapiWebCallCreator({
   privateKey,
   orgId,
   assistantId,
+  webhook,
   fetchImpl = fetch,
   now = Date.now,
 }: {
   privateKey: string;
   orgId: string;
   assistantId: string;
+  /**
+   * Where Vapi sends this call's tool calls and end-of-call report, and the
+   * secret it must send back. Set on each call, so a Preview deploy gets its
+   * own notes. Left out when Vapi cannot reach this server (local development).
+   * `protectionBypass`: Vercel's Protection Bypass for Automation secret, so
+   * Vapi gets past Deployment Protection on a Preview.
+   */
+  webhook?: { url: string; secret: string; protectionBypass?: string };
   fetchImpl?: typeof fetch;
   /** A clock in milliseconds. */
   now?: () => number;
@@ -60,7 +73,11 @@ export function vapiWebCallCreator({
       headers: { Authorization: `Bearer ${signWebCallToken({ privateKey, orgId, assistantId, nowMs: now() })}`, "Content-Type": "application/json" },
       body: JSON.stringify({
         assistantId,
-        assistantOverrides: { metadata: { visitorId }, variableValues: { openTime1, openTime2 } },
+        assistantOverrides: {
+          metadata: { visitorId },
+          variableValues: { openTime1, openTime2 },
+          ...(webhook ? { server: { url: webhook.url, headers: webhookHeaders(webhook) } } : {}),
+        },
       }),
       signal: AbortSignal.timeout(10_000),
     });
@@ -69,7 +86,8 @@ export function vapiWebCallCreator({
     const webCallUrl = call.webCallUrl ?? call.transport?.callUrl;
     if (!call.id || !webCallUrl) throw new Error("Vapi's web call has no ID or room link.");
     // Only these two leave the server. Vapi's answer also holds a control
-    // link that can steer the call; it must never reach the browser.
+    // link that can steer the call, and the webhook secret went to Vapi only;
+    // neither must ever reach the browser.
     return { webCallUrl, callId: call.id };
   };
 }

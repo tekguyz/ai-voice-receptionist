@@ -8,3 +8,7 @@ starts. Do not turn recording on to add a playback feature.
 The one exception is the Sample Call. Its sound is a single call the founder
 made with made-up details and recorded on purpose, once. It holds no
 Visitor's voice.
+
+## Note, 2026-10-06: the 7 days is this app's copy
+
+This app deletes its own copy of a call (the Call Notes and transcript) after 7 days. Vapi keeps its own call logs, with the transcript, under its own retention: not checked in the dashboard (it needs the founder's sign-in). Vapi's docs ("Zero Data Retention (ZDR)", read 2026-10-06) say Vapi stores transcripts, messages, summaries and detailed call logs unless the organization turns on Zero Data Retention in the dashboard, and give no time limit. So the screen says "Our copy is deleted after 7 days." and never promises that the words exist nowhere else. Audio is still never kept.
