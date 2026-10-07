@@ -25,14 +25,21 @@ export function formatTime(ms: number) {
 export function DemoBanner() {
   return (
     <aside aria-label="Demo" className="bg-print text-sheet">
-      <div className="mx-auto flex max-w-[960px] items-center justify-between gap-4 px-4 py-2 text-sm">
-        <p className="truncate">
+      {/* Wraps to two rows on a narrow phone; no word is ever cut off. */}
+      <div className="mx-auto flex max-w-[960px] flex-wrap items-center justify-between gap-x-4 gap-y-1 px-4 py-2 text-sm">
+        <p>
           <span className="font-form font-bold tracking-wide uppercase">Demo</span>
           <span className="text-sheet/80"> · Made-up business</span>
         </p>
-        <a href="https://tekguyz.com" className="shrink-0 underline hover:text-copy focus-visible:outline-copy">
-          Built by TEKGUYZ
-        </a>
+        <p className="flex gap-4">
+          {/* A plain link: the Visitor cookie stays, so their calls are there if they come back. */}
+          <Link href="/" className="underline hover:text-copy focus-visible:outline-copy">
+            Leave the demo
+          </Link>
+          <a href="https://tekguyz.com" className="underline hover:text-copy focus-visible:outline-copy">
+            Built by TEKGUYZ
+          </a>
+        </p>
       </div>
     </aside>
   );
