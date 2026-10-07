@@ -48,7 +48,7 @@ export function ProductLogo() {
   return (
     <p className="inline-flex items-center gap-3">
       <ProductMark className="size-10 shrink-0" />
-      <span className="font-form text-[1.75rem] leading-none font-extrabold tracking-tight uppercase">AI Voice Receptionist</span>
+      <span translate="no" className="font-form text-[1.75rem] leading-none font-extrabold tracking-tight uppercase">AI Voice Receptionist</span>
     </p>
   );
 }

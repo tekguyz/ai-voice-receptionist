@@ -26,20 +26,43 @@ export function DemoBanner() {
   return (
     <aside aria-label="Demo" className="bg-print text-sheet">
       {/* Wraps to two rows on a narrow phone; no word is ever cut off. */}
-      <div className="mx-auto flex max-w-[960px] flex-wrap items-center justify-between gap-x-4 gap-y-1 px-4 py-2 text-sm">
-        <p>
+      <div className="mx-auto flex max-w-[960px] flex-wrap items-center justify-between gap-x-4 px-4 text-sm">
+        <p className="py-2">
           <span className="font-form font-bold tracking-wide uppercase">Demo</span>
           <span className="text-sheet/80"> · Made-up business</span>
         </p>
         <p className="flex gap-4">
           {/* A plain link: the Visitor cookie stays, so their calls are there if they come back. */}
-          <Link href="/" className="underline hover:text-copy focus-visible:outline-copy">
+          <Link href="/" className={BANNER_LINK}>
             Leave the demo
           </Link>
-          <a href="https://tekguyz.com" className="underline hover:text-copy focus-visible:outline-copy">
+          <a href="https://tekguyz.com" className={BANNER_LINK}>
             Built by TEKGUYZ
           </a>
         </p>
+      </div>
+    </aside>
+  );
+}
+
+/** A link on the black strip: 32px tall to tap (WCAG 2.2 asks 24), canary on hover and focus (DESIGN.md). */
+const BANNER_LINK = "inline-flex min-h-8 items-center underline hover:text-copy focus-visible:outline-copy";
+
+/**
+ * The end of the demo, in the TEKGUYZ voice: the same black strip as the
+ * banner, so it reads as TEKGUYZ speaking, not the Sample Business.
+ */
+export function DemoClosing() {
+  return (
+    <aside aria-label="From TEKGUYZ" className="bg-print text-sheet">
+      <div className="mx-auto flex max-w-[960px] flex-wrap items-center justify-between gap-x-6 gap-y-3 px-4 py-6">
+        <p className="font-form text-2xl leading-tight font-bold text-balance uppercase">Want this answering for your shop?</p>
+        <a
+          href="https://tekguyz.com"
+          className="inline-flex min-h-12 items-center border-2 border-copy px-5 font-form text-lg font-bold tracking-wide text-copy uppercase hover:bg-copy hover:text-print focus-visible:outline-copy"
+        >
+          Talk to TEKGUYZ
+        </a>
       </div>
     </aside>
   );
@@ -68,7 +91,7 @@ export function TicketHeader({ number, as: Title = "h1" }: { number: string; as?
 /** The Sample Business's mark and name, printed under every header. */
 export function BusinessLine() {
   return (
-    <span className="inline-flex items-center gap-2">
+    <span translate="no" className="inline-flex items-center gap-2">
       <BusinessMark className="size-5 shrink-0" />
       {SAMPLE_BUSINESS.name} · {SAMPLE_BUSINESS.trade} · {SAMPLE_BUSINESS.area}
     </span>
@@ -80,7 +103,7 @@ export function Field({ label, value, empty }: { label: string; value?: string |
   return (
     <div className="grid">
       <dt className="font-form text-sm leading-tight font-bold tracking-wider text-form uppercase">{label}</dt>
-      <dd className="min-h-[1.875rem] border-b border-form-rule font-hand text-2xl leading-tight text-carbon">
+      <dd className="min-h-[1.875rem] border-b border-form-rule font-hand text-2xl leading-tight break-words text-carbon">
         {value ? (
           <span key={value} className="write-in inline-block first-letter:uppercase">
             {value}
@@ -93,17 +116,32 @@ export function Field({ label, value, empty }: { label: string; value?: string |
   );
 }
 
-export function Transcript({ lines, receptionistName, live }: { lines: readonly TranscriptLine[]; receptionistName: string; live?: boolean }) {
+/**
+ * `live`: screen readers hear each new line. `latest`: on a phone, only the
+ * newest lines show, so they fit beside the fields; the rest stay for screen
+ * readers, and the Call Notes show them all.
+ */
+export function Transcript({
+  lines,
+  receptionistName,
+  live,
+  latest,
+}: {
+  lines: readonly TranscriptLine[];
+  receptionistName: string;
+  live?: boolean;
+  latest?: number;
+}) {
   return (
     <ol aria-live={live ? "polite" : undefined} className="grid gap-3">
       {lines.map((line, i) => (
-        <li key={i} className="grid grid-cols-[5.5rem_1fr] gap-x-3">
+        <li key={i} className={`grid grid-cols-[5.5rem_1fr] gap-x-3 ${latest && i < lines.length - latest ? "max-md:sr-only" : ""}`}>
           <span
             className={`pt-0.5 font-form text-sm font-bold tracking-wider uppercase ${line.speaker === "caller" ? "text-print" : "text-form"}`}
           >
             {line.speaker === "caller" ? "Caller" : receptionistName}
           </span>
-          <span className="max-w-[60ch] text-[1.0625rem] leading-relaxed">{line.text}</span>
+          <span className="max-w-[60ch] text-[1.0625rem] leading-relaxed break-words">{line.text}</span>
         </li>
       ))}
     </ol>

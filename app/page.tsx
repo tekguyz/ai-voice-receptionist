@@ -25,11 +25,11 @@ export default function Home() {
         <ProductLogo />
 
         <section className="mt-8 grid items-start gap-10 lg:grid-cols-[minmax(0,1fr)_420px] lg:gap-16">
-          <div className="max-w-[44ch]">
+          <div>
             <h1 className="font-form text-[2.75rem] leading-[1.02] font-extrabold tracking-tight text-balance uppercase md:text-[3.5rem]">
-              An AI receptionist that answers when you can&apos;t.
+              An AI receptionist that answers when you can’t.
             </h1>
-            <p className="mt-5 text-[1.375rem] leading-snug font-medium">
+            <p className="mt-5 max-w-[40ch] text-[1.375rem] leading-snug font-medium">
               It picks up, takes down the job, books a time and hands you the notes. Try it now in your browser: it
               answers for {business}, a made-up AC repair shop.
             </p>
@@ -52,7 +52,7 @@ export default function Home() {
           </h2>
           <ol className="mt-5 grid gap-6 md:grid-cols-3">
             <Step n={1} title="Call">
-              Press Call now and talk. No phone number, no signup.
+              Press Try the demo, then Call now, and talk. No phone number, no signup.
             </Step>
             <Step n={2} title="Watch it write">
               {luna} asks your name, the job, how urgent it is and the address, then offers two open times. Each detail is
@@ -60,7 +60,7 @@ export default function Home() {
             </Step>
             <Step n={3} title="Read the Owner's side">
               When you hang up, the Call Notes show a summary, the booked time and the text the caller would get. The
-              Dashboard shows every call.
+              Dashboard shows your Test Call with the sample calls.
             </Step>
           </ol>
         </section>
@@ -70,7 +70,7 @@ export default function Home() {
             For shops and trades that miss calls
           </h2>
           <p className="mt-4 max-w-[60ch] text-[1.0625rem] leading-relaxed">
-            You&apos;re on a roof, under a house or out on a boat. The phone rings, and the job goes to whoever picks up
+            You’re on a roof, under a house or out on a boat. The phone rings, and the job goes to whoever picks up
             first. A receptionist like {luna} answers for your business, takes the job and books it. If the caller speaks
             Spanish, it answers in Spanish.
           </p>
@@ -92,8 +92,8 @@ export default function Home() {
       </main>
 
       <footer className="border-t-2 border-form">
-        <div className="mx-auto max-w-[1200px] px-4 py-6 text-sm">
-          <a href="https://tekguyz.com" className="underline hover:text-form">
+        <div className="mx-auto max-w-[1200px] px-4 py-3 text-sm">
+          <a href="https://tekguyz.com" className="inline-flex min-h-11 items-center underline hover:text-form">
             Built by TEKGUYZ
           </a>
         </div>

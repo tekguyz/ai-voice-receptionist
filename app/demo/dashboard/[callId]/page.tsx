@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { cookies } from "next/headers";
 import { notFound, redirect } from "next/navigation";
 import { CallNotesSheet } from "@/app/_ui/call-notes";
-import { DemoBanner, FormLink } from "@/app/_ui/ticket";
+import { DemoBanner, DemoClosing, FormLink } from "@/app/_ui/ticket";
 import { callTimeLabel, findDashboardCall } from "@/lib/dashboard";
 import { serverNotesStore } from "@/lib/server-notes-store";
 import { VISITOR_COOKIE, isVisitorId } from "@/lib/visitor";
@@ -40,6 +40,7 @@ export default async function DashboardCallPage({ params }: { params: Promise<{ 
           }
         />
       </main>
+      <DemoClosing />
     </>
   );
 }

@@ -18,14 +18,14 @@ Live site: https://ai-voice-receptionist-tekguyz.vercel.app
 | Phase | Building |
 | Shipped | [#2 Step 1: setup and the Call Story](https://github.com/tekguyz/ai-voice-receptionist/issues/2) · [#3 Step 2: the look](https://github.com/tekguyz/ai-voice-receptionist/issues/3) · [#4 Step 3: live Test Call](https://github.com/tekguyz/ai-voice-receptionist/issues/4) · [#5 Step 4: Call Notes saved](https://github.com/tekguyz/ai-voice-receptionist/issues/5) · [#6 Step 5: Dashboard](https://github.com/tekguyz/ai-voice-receptionist/issues/6) |
 | Known issues | [#15 Tune Luna: model, hang-up, speed](https://github.com/tekguyz/ai-voice-receptionist/issues/15) |
-| Next | [#7 Step 6: landing page, link preview and banner](https://github.com/tekguyz/ai-voice-receptionist/issues/7) (built; the design pass is still to run) |
+| Next | [#7 Step 6: landing page, link preview and banner](https://github.com/tekguyz/ai-voice-receptionist/issues/7) (built; design pass done, in review) |
 | Updated | 2026-10-07 |
 
 ## What it does
 
 Built so far:
 
-- A landing page at `/` says what it does, shows a filled-in sample work order and has one "Try the demo" button. Only `/` is in search; demo screens are `noindex`. A link to it shows a preview card drawn by the app (`app/opengraph-image.tsx`). The demo banner has "Leave the demo" and "Built by TEKGUYZ".
+- A landing page at `/` says what it does, shows a filled-in sample work order and has one "Try the demo" button. Only `/` is in search; demo screens are `noindex`. A link to it shows a preview card drawn by the app (`app/opengraph-image.tsx`). The demo banner has "Leave the demo" and "Built by TEKGUYZ". The Call Notes and the Dashboard end with "Want this answering for your shop? Talk to TEKGUYZ".
 - A Visitor presses "Try the demo" (a cookie, no sign-in). Then "Call now" talks to Luna through the browser microphone. Words and tags fill in live. A call stops at 3 minutes. Limits are 1 Test Call per Visitor a day, 2 per IP address a day, 5 per site a day, and 30 a month. At a limit, with a blocked microphone, or when the call cannot connect, the Sample Call is offered.
 - Turns a call's events (lines, captured details, a booking, the end) into the live call view and the Call Notes. This is the Call Story, in `lib/call-story.ts`.
 - Plays a Sample Call on a plain screen at `/demo`: lines and detail tags appear in time, then the Call Notes show a summary, the details, the booked time and a preview of the confirmation text.

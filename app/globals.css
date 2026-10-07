@@ -9,7 +9,7 @@
   --color-sheet: #ffffff;
   --color-form: #a8221a;
   --color-form-deep: #8a1b14;
-  --color-form-rule: #e9a8a2;
+  --color-form-rule: #d4776e;
   --color-carbon: #1b3a8c;
   --color-print: #17171a;
   --color-print-muted: #4e4e57;
@@ -45,6 +45,12 @@
   :focus-visible {
     outline: 3px solid var(--color-carbon);
     outline-offset: 3px;
+  }
+
+  /* No double-tap zoom wait on a control. */
+  a,
+  button {
+    touch-action: manipulation;
   }
 
   a {

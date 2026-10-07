@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { cookies } from "next/headers";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { BusinessLine, DemoBanner, FormLink, SECTION_LABEL } from "@/app/_ui/ticket";
+import { BusinessLine, DemoBanner, DemoClosing, FormLink, SECTION_LABEL } from "@/app/_ui/ticket";
 import { buildDashboard, callTimeLabel, savedCallsFor, type DashboardCall } from "@/lib/dashboard";
 import { SAMPLE_BUSINESS } from "@/lib/sample-business";
 import { serverNotesStore } from "@/lib/server-notes-store";
@@ -31,7 +31,7 @@ export default async function DashboardPage() {
         <header className="text-form">
           <div className="flex flex-wrap items-end justify-between gap-x-6 gap-y-1 border-2 border-form px-5 pt-3 pb-2.5">
             <h1 className="font-form text-[2.25rem] leading-none font-extrabold tracking-tight uppercase">Dashboard</h1>
-            <p className="font-form text-lg leading-none font-bold uppercase">Owner&apos;s view</p>
+            <p className="font-form text-lg leading-none font-bold uppercase">Owner’s view</p>
           </div>
           <p className="border-x-2 border-b-2 border-form px-5 py-1.5 font-form text-[0.9375rem] font-semibold tracking-wide uppercase">
             <BusinessLine />
@@ -39,7 +39,7 @@ export default async function DashboardPage() {
         </header>
 
         <p className="mt-6 max-w-[44ch] text-[1.375rem] leading-snug font-medium text-balance">
-          While you worked, {SAMPLE_BUSINESS.receptionistName} answered {count(totals.answered, "call")} and booked{" "}
+          {SAMPLE_BUSINESS.receptionistName} answered {count(totals.answered, "call")} and booked{" "}
           {count(totals.booked, "job")}.
         </p>
 
@@ -55,7 +55,8 @@ export default async function DashboardPage() {
           <h2 id="recent-calls" className={`${SECTION_LABEL} border-b-2 border-form pb-2`}>
             Recent calls
           </h2>
-          <ol>
+          <p className="mt-2 text-sm text-print-soft">Sample calls, plus any Test Call you make. The totals count them all.</p>
+          <ol className="mt-1">
             {calls.map((call) => (
               <li key={call.id} className="border-b border-form">
                 <CallRow call={call} when={callTimeLabel(call.at, now)} />
@@ -68,13 +69,15 @@ export default async function DashboardPage() {
           <FormLink href="/demo">Make a Test Call</FormLink>
         </div>
       </main>
+      <DemoClosing />
     </>
   );
 }
 
+// The number sits at the bottom of each box, so the three line up when a label wraps.
 function Total({ label, value }: { label: string; value: number }) {
   return (
-    <div className="grid content-start gap-1 px-3 py-3 md:px-5">
+    <div className="grid grid-rows-[1fr_auto] gap-1 px-3 py-3 md:px-5">
       <dt className={SECTION_LABEL}>{label}</dt>
       <dd className="font-form text-[2.25rem] leading-none font-extrabold">{value}</dd>
     </div>
