@@ -84,8 +84,8 @@ export default function Home() {
             <li>{business} is made up. Nothing you book is real, and no text is sent.</li>
             <li>Make up your details. Only the words are kept, never your voice. Our copy is deleted after 7 days.</li>
             <li>
-              One Test Call a day, 3 minutes at most. If calls are used up or your microphone is blocked, the Sample Call
-              plays instead.
+              One Test Call a day, 3 minutes at most. If calls are used up or your microphone is blocked, you can play the
+              Sample Call instead.
             </li>
           </ul>
         </section>

@@ -18,8 +18,13 @@ test("a Visitor goes from the landing page to the Sample Call's Call Notes", asy
   await expect(banner.getByRole("link", { name: "Leave the demo" })).toHaveAttribute("href", "/");
   await expect(banner.getByRole("link", { name: "Built by TEKGUYZ" })).toHaveAttribute("href", "https://tekguyz.com");
 
-  await page.getByRole("button", { name: "Play the Sample Call" }).click();
+  // /demo is a full page load: a click before React hydrates does nothing.
+  // Retry until the click lands and the Sample Call is running.
+  const play = page.getByRole("button", { name: "Play the Sample Call" });
+  await expect(async () => {
+    await play.click();
+    await expect(page.getByRole("button", { name: "Stop the Sample Call" })).toBeVisible({ timeout: 1_000 });
+  }).toPass();
   await page.clock.runFor(35_000);
-  // A long wait too, so the check still holds if the clock does not drive a timer.
-  await expect(page.getByRole("heading", { name: "Call Notes" })).toBeVisible({ timeout: 45_000 });
+  await expect(page.getByRole("heading", { name: "Call Notes" })).toBeVisible();
 });
