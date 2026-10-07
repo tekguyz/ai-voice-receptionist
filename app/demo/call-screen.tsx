@@ -8,6 +8,7 @@
 import { useEffect, useId, useRef, useState, type ReactNode } from "react";
 import {
   DemoBanner,
+  DETAIL_LABELS,
   EndCallButton,
   Field,
   FormButton,
@@ -19,8 +20,9 @@ import {
   StampButton,
   TicketHeader,
   Transcript,
+  formatTime,
 } from "@/app/_ui/ticket";
-import { CallNotesSheet, DETAIL_LABELS, formatTime } from "@/app/_ui/call-notes";
+import { CallNotesSheet } from "@/app/_ui/call-notes";
 import type { CallSource, RunningCall, StartFailure } from "@/lib/call-source";
 import { DETAIL_FIELDS, tellCallStory, type CallEvent, type CallNotes, type CallView } from "@/lib/call-story";
 import { createSampleCallPlayer } from "@/lib/sample-call";

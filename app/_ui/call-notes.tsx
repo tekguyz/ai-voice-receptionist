@@ -4,16 +4,9 @@
 // it when a call ends; the Dashboard shows it for any call in its list.
 
 import { useId, useLayoutEffect, useRef, type ReactNode } from "react";
-import { BusinessLine, Field, SECTION_LABEL, Transcript } from "@/app/_ui/ticket";
-import { DETAIL_FIELDS, type CallDetails, type CallNotes } from "@/lib/call-story";
+import { BusinessLine, DETAIL_LABELS, Field, SECTION_LABEL, Transcript, formatTime } from "@/app/_ui/ticket";
+import { DETAIL_FIELDS, type CallNotes } from "@/lib/call-story";
 import { SAMPLE_BUSINESS } from "@/lib/sample-business";
-
-export const DETAIL_LABELS: Record<keyof CallDetails, string> = {
-  name: "Name",
-  job: "Job",
-  urgency: "Urgency",
-  address: "Address",
-};
 
 const END_REASONS = {
   "caller-hung-up": "Caller hung up",
@@ -21,11 +14,6 @@ const END_REASONS = {
   "time-limit": "Time limit reached",
   error: "Call failed",
 } as const;
-
-export function formatTime(ms: number) {
-  const seconds = Math.floor(ms / 1000);
-  return `${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, "0")}`;
-}
 
 /**
  * `sample`: notes shown whole at once (the Sample Call, a Dashboard sample
