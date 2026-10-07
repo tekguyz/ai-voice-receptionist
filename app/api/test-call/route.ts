@@ -19,7 +19,10 @@ export async function POST(request: Request) {
   // Vapi sends the tool calls and the end-of-call report here. It can only reach a public https address, so a local server saves no Call Notes.
   const webhookSecret = process.env.VAPI_WEBHOOK_SECRET;
   const origin = new URL(request.url).origin;
-  const webhook = webhookSecret && origin.startsWith("https://") ? { url: `${origin}/api/vapi/webhook`, secret: webhookSecret } : undefined;
+  // Vercel sets this when Protection Bypass for Automation is on; without it, Deployment Protection stops Vapi at a Preview.
+  const protectionBypass = process.env.VERCEL_AUTOMATION_BYPASS_SECRET;
+  const webhook =
+    webhookSecret && origin.startsWith("https://") ? { url: `${origin}/api/vapi/webhook`, secret: webhookSecret, protectionBypass } : undefined;
   if (!webhookSecret) console.error("Start Test Call: VAPI_WEBHOOK_SECRET is missing, so this call's Call Notes will not be saved.");
   return startTestCall(request, {
     gate: createCallGate({

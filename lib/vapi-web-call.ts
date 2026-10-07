@@ -40,6 +40,10 @@ export function signWebCallToken({
   return `${header}.${payload}.${signature}`;
 }
 
+function webhookHeaders({ secret, protectionBypass }: { secret: string; protectionBypass?: string }) {
+  return { "X-Vapi-Secret": secret, ...(protectionBypass ? { "x-vercel-protection-bypass": protectionBypass } : {}) };
+}
+
 export function vapiWebCallCreator({
   privateKey,
   orgId,
@@ -55,8 +59,10 @@ export function vapiWebCallCreator({
    * Where Vapi sends this call's tool calls and end-of-call report, and the
    * secret it must send back. Set on each call, so a Preview deploy gets its
    * own notes. Left out when Vapi cannot reach this server (local development).
+   * `protectionBypass`: Vercel's Protection Bypass for Automation secret, so
+   * Vapi gets past Deployment Protection on a Preview.
    */
-  webhook?: { url: string; secret: string };
+  webhook?: { url: string; secret: string; protectionBypass?: string };
   fetchImpl?: typeof fetch;
   /** A clock in milliseconds. */
   now?: () => number;
@@ -70,7 +76,7 @@ export function vapiWebCallCreator({
         assistantOverrides: {
           metadata: { visitorId },
           variableValues: { openTime1, openTime2 },
-          ...(webhook ? { server: { url: webhook.url, headers: { "X-Vapi-Secret": webhook.secret } } } : {}),
+          ...(webhook ? { server: { url: webhook.url, headers: webhookHeaders(webhook) } } : {}),
         },
       }),
       signal: AbortSignal.timeout(10_000),

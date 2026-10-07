@@ -186,6 +186,24 @@ describe("creating the Vapi web call", () => {
     expect(JSON.stringify(result)).not.toContain("hook-secret");
   });
 
+  it("lets Vapi past Vercel's Deployment Protection with the bypass header, when there is one", async () => {
+    const fetchImpl = vi.fn(async (_url: string | URL | Request, _init?: RequestInit) => new Response(JSON.stringify(VAPI_CALL), { status: 201 }));
+    const create = vapiWebCallCreator({
+      privateKey: PRIVATE_KEY,
+      orgId: ORG_ID,
+      assistantId: "asst-1",
+      fetchImpl,
+      webhook: { url: "https://demo.example/api/vapi/webhook", secret: "hook-secret", protectionBypass: "bypass-secret" },
+    });
+    const result = await create({ visitorId: VISITOR, openTimes: OPEN_TIMES });
+    const [, init] = fetchImpl.mock.calls[0];
+    expect(JSON.parse(String(init!.body)).assistantOverrides.server.headers).toEqual({
+      "X-Vapi-Secret": "hook-secret",
+      "x-vercel-protection-bypass": "bypass-secret",
+    });
+    expect(JSON.stringify(result)).not.toContain("bypass-secret");
+  });
+
   it("sends no server override when there is no webhook address (a local server Vapi cannot reach)", async () => {
     const { init } = await sendOne();
     expect(JSON.parse(String(init.body)).assistantOverrides).not.toHaveProperty("server");
