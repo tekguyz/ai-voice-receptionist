@@ -31,3 +31,7 @@ next-env.d.ts
 
 # Per-laptop Claude settings
 .claude/settings.local.json
+
+# Playwright output (CI only)
+/test-results
+/playwright-report
