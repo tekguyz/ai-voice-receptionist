@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { cookies } from "next/headers";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { DemoBanner, FormLink, SECTION_LABEL } from "@/app/_ui/ticket";
+import { BusinessLine, DemoBanner, FormLink, SECTION_LABEL } from "@/app/_ui/ticket";
 import { buildDashboard, callTimeLabel, savedCallsFor, type DashboardCall } from "@/lib/dashboard";
 import { SAMPLE_BUSINESS } from "@/lib/sample-business";
 import { serverNotesStore } from "@/lib/server-notes-store";
@@ -34,7 +34,7 @@ export default async function DashboardPage() {
             <p className="font-form text-lg leading-none font-bold uppercase">Owner&apos;s view</p>
           </div>
           <p className="border-x-2 border-b-2 border-form px-5 py-1.5 font-form text-[0.9375rem] font-semibold tracking-wide uppercase">
-            {SAMPLE_BUSINESS.name} · {SAMPLE_BUSINESS.trade} · {SAMPLE_BUSINESS.area}
+            <BusinessLine />
           </p>
         </header>
 

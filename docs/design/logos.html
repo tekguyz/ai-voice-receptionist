@@ -1,0 +1,226 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Logo options · AI Voice Receptionist</title>
+<!-- Step 6 (issue #7): the founder picks one option. DEMO-STANDARD.md,
+     "Logo, icons and link preview: I pick from options". Every mark is a
+     32 x 32 SVG, so the picked one can be copied into code as it is. -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Barlow:wght@400;500&family=Kalam&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --copy: #faf08a; --sheet: #ffffff; --form: #a8221a; --carbon: #1b3a8c;
+    --print: #17171a; --print-muted: #4e4e57; --print-soft: #5a4a1e;
+    --form-font: "Barlow Condensed", "Arial Narrow", sans-serif;
+    --body-font: "Barlow", system-ui, sans-serif;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--copy); color: var(--print); font-family: var(--body-font); }
+  main { max-width: 1200px; margin: 0 auto; padding: 32px 16px 64px; }
+  h1 { font-family: var(--form-font); font-weight: 800; font-size: 2.25rem; text-transform: uppercase; margin: 0 0 4px; }
+  .intro { margin: 0 0 32px; max-width: 70ch; }
+  section.option { background: var(--sheet); padding: 24px; margin-bottom: 32px; border-top: 6px solid var(--form); }
+  section.option > h2 { font-family: var(--form-font); font-weight: 800; font-size: 1.875rem; text-transform: uppercase; margin: 0; color: var(--form); }
+  section.option > p.what { margin: 4px 0 20px; color: var(--print-muted); max-width: 70ch; }
+  .row { display: grid; gap: 8px; padding: 16px 0; border-top: 1px solid #e9a8a2; }
+  .label { font-family: var(--form-font); font-weight: 700; font-size: .875rem; letter-spacing: .05em; text-transform: uppercase; color: var(--form); }
+  .flex { display: flex; flex-wrap: wrap; gap: 16px; align-items: center; }
+
+  /* 1. The logo on light and dark */
+  .logo { display: inline-flex; align-items: center; gap: 12px; padding: 16px 20px; }
+  .logo .name { font-family: var(--form-font); font-weight: 800; font-size: 1.75rem; line-height: 1; text-transform: uppercase; letter-spacing: -.01em; }
+  .on-copy { background: var(--copy); }
+  .on-dark { background: var(--print); color: var(--sheet); }
+
+  /* 2. Fake browser tabs */
+  .browser { width: 340px; background: #dee1e6; padding: 8px 8px 0; border-radius: 8px 8px 0 0; }
+  .tab { display: flex; align-items: center; gap: 8px; background: #fff; border-radius: 8px 8px 0 0; padding: 8px 12px; font: 12px system-ui, sans-serif; color: #202124; width: 240px; }
+  .tab.big { gap: 10px; font-size: 14px; }
+  .bar { background: #fff; height: 28px; border-top: 1px solid #dadce0; }
+
+  /* 3. Home-screen icon */
+  .phone { display: flex; gap: 20px; padding: 20px; background: #3c4a5a; border-radius: 20px; }
+  .app { display: grid; justify-items: center; gap: 6px; font: 11px system-ui, sans-serif; color: #fff; }
+  .app .tile { width: 60px; height: 60px; border-radius: 13px; overflow: hidden; background: #9aa5b1; }
+  .app .tile svg { display: block; width: 60px; height: 60px; }
+  .big-tile { width: 180px; height: 180px; border-radius: 40px; overflow: hidden; }
+  .big-tile svg { display: block; width: 180px; height: 180px; }
+
+  /* 4. Link preview card, as WhatsApp draws it */
+  .chat { background: #efeae2; padding: 16px; width: 392px; }
+  .bubble { background: #d9fdd3; padding: 4px; border-radius: 8px; width: 360px; }
+  .card { background: #cfe9c7; border-radius: 6px; overflow: hidden; }
+  .og { width: 360px; height: 189px; position: relative; overflow: hidden; }
+  .og-inner { width: 1200px; height: 630px; transform: scale(.3); transform-origin: 0 0; background: var(--copy); display: flex; flex-direction: column; }
+  .og-band { background: var(--form); color: var(--sheet); display: flex; align-items: center; gap: 24px; padding: 28px 64px; font-family: var(--form-font); font-weight: 800; font-size: 44px; text-transform: uppercase; }
+  .og-band svg { width: 72px; height: 72px; }
+  .og-body { padding: 48px 64px 0; flex: 1; display: flex; flex-direction: column; }
+  .og-head { font-family: var(--form-font); font-weight: 800; font-size: 88px; line-height: 1; text-transform: uppercase; letter-spacing: -.02em; max-width: 1000px; }
+  .og-line { margin-top: 24px; font-size: 34px; font-weight: 500; color: var(--print-soft); }
+  .og-stamp { margin: auto 0 56px; align-self: flex-start; transform: rotate(-1deg); border: 10px double var(--form); background: var(--sheet); color: var(--form); font-family: var(--form-font); font-weight: 800; font-size: 40px; letter-spacing: .03em; text-transform: uppercase; padding: 12px 32px; }
+  .card-text { padding: 8px 10px; font: 13px system-ui, sans-serif; color: #111b21; }
+  .card-text b { display: block; font-size: 14px; }
+  .card-text span { color: #54656f; }
+  .card-text small { color: #667781; }
+  .msg { font: 14px system-ui, sans-serif; color: #111b21; padding: 6px 6px 2px; }
+  .msg a { color: #027eb5; }
+
+  /* 5. The Mangrove Air mark on the work order header */
+  .ticket { width: 420px; max-width: 100%; background: var(--sheet); filter: drop-shadow(0 2px 2px rgb(90 74 30 / .16)) drop-shadow(0 14px 24px rgb(90 74 30 / .22)); }
+  .band { display: flex; justify-content: space-between; align-items: flex-end; background: var(--form); color: var(--sheet); padding: 12px 20px 10px; font-family: var(--form-font); }
+  .band b { font-size: 2.25rem; line-height: 1; font-weight: 800; text-transform: uppercase; letter-spacing: -.025em; }
+  .band span { font-size: 1.25rem; font-weight: 700; line-height: 1; }
+  .biz { display: flex; align-items: center; gap: 8px; border-bottom: 2px solid var(--form); padding: 6px 20px; color: var(--form); font-family: var(--form-font); font-weight: 600; font-size: .9375rem; letter-spacing: .025em; text-transform: uppercase; }
+  .biz svg { width: 20px; height: 20px; flex-shrink: 0; }
+  .sheet-pad { height: 40px; }
+  .biz-big { display: flex; gap: 16px; align-items: center; }
+  .biz-big svg { width: 64px; height: 64px; }
+</style>
+</head>
+<body>
+
+<!-- The marks. Each option has a product mark and a Mangrove Air mark. -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <!-- The phone handset, from PhoneIcon in app/_ui/ticket.tsx (20 x 20). -->
+    <path id="handset" d="M6.6 2.2 4.4 2c-.9 0-2 .9-1.9 2.2.4 6.6 6.7 12.9 13.3 13.3 1.3.1 2.2-1 2.2-1.9l-.2-2.2c0-.5-.4-.9-.9-1l-3-.7c-.4-.1-.9.1-1.1.5l-.9 1.5c-2-1-3.9-2.9-4.9-4.9l1.5-.9c.4-.2.6-.7.5-1.1l-.7-3c-.1-.5-.5-.9-1-.9Z"/>
+  </defs>
+
+  <!-- A: Stamp. A red stamp with a white inner rule; the handset inside. -->
+  <symbol id="a-product" viewBox="0 0 32 32">
+    <rect width="32" height="32" fill="#a8221a"/>
+    <rect x="3" y="3" width="26" height="26" fill="none" stroke="#ffffff" stroke-width="1.5"/>
+    <use href="#handset" fill="#ffffff" transform="translate(7.5 7.5) scale(.85)"/>
+  </symbol>
+  <symbol id="a-business" viewBox="0 0 32 32">
+    <rect width="32" height="32" fill="#a8221a"/>
+    <rect x="3" y="3" width="26" height="26" fill="none" stroke="#ffffff" stroke-width="1.5"/>
+    <text x="16" y="22.5" text-anchor="middle" fill="#ffffff" font-family="Barlow Condensed, Arial Narrow, sans-serif" font-weight="800" font-size="15">MA</text>
+  </symbol>
+
+  <!-- B: Ticket band. The handset over a ruled line: a field filled in. -->
+  <symbol id="b-product" viewBox="0 0 32 32">
+    <rect width="32" height="32" fill="#a8221a"/>
+    <use href="#handset" fill="#ffffff" transform="translate(8 4) scale(.8)"/>
+    <rect x="6" y="24" width="20" height="2.5" fill="#ffffff"/>
+  </symbol>
+  <symbol id="b-business" viewBox="0 0 32 32">
+    <rect width="32" height="32" fill="#a8221a"/>
+    <g fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="square">
+      <path d="M8 11 Q16 3 24 11"/>
+      <path d="M16 8 V17"/>
+      <path d="M16 16 C12 18 9.5 21 8 25"/>
+      <path d="M16 16 C14.5 19.5 13.5 22 13 25"/>
+      <path d="M16 16 C17.5 19.5 18.5 22 19 25"/>
+      <path d="M16 16 C20 18 22.5 21 24 25"/>
+      <path d="M5 26.5 H27"/>
+    </g>
+  </symbol>
+
+  <!-- C: On the line. The red lamp with the handset, on canary. -->
+  <symbol id="c-product" viewBox="0 0 32 32">
+    <rect width="32" height="32" fill="#faf08a"/>
+    <circle cx="16" cy="16" r="13" fill="#a8221a"/>
+    <use href="#handset" fill="#ffffff" transform="translate(9 9) scale(.7)"/>
+  </symbol>
+  <symbol id="c-business" viewBox="0 0 32 32">
+    <rect x="1" y="1" width="30" height="30" fill="#ffffff" stroke="#a8221a" stroke-width="2"/>
+    <text x="16" y="24" text-anchor="middle" fill="#1b3a8c" font-family="Kalam, Segoe Print, cursive" font-size="22">M</text>
+  </symbol>
+</svg>
+
+<main>
+  <h1>Logo options</h1>
+  <p class="intro">Three options in the Service Ticket look: three inks, square corners, no purple. Each has a mark for the product ("AI Voice Receptionist") and a matching small mark for the Sample Business ("Mangrove Air"). Pick A, B or C.</p>
+
+  <template id="option">
+    <section class="option">
+      <h2></h2>
+      <p class="what"></p>
+
+      <div class="row">
+        <div class="label">1. The logo, on light and on dark</div>
+        <div class="flex">
+          <div class="logo on-copy"><svg width="40" height="40"><use data-mark="product"/></svg><span class="name">AI Voice Receptionist</span></div>
+          <div class="logo on-dark"><svg width="40" height="40"><use data-mark="product"/></svg><span class="name">AI Voice Receptionist</span></div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="label">2. The favicon in a browser tab: 16 px, then 32 px</div>
+        <div class="flex">
+          <div class="browser"><div class="tab"><svg width="16" height="16"><use data-mark="product"/></svg>AI Voice Receptionist</div><div class="bar"></div></div>
+          <div class="browser"><div class="tab big"><svg width="32" height="32"><use data-mark="product"/></svg>AI Voice Receptionist</div><div class="bar"></div></div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="label">3. The home-screen icon (180 px, and as a phone shows it)</div>
+        <div class="flex">
+          <div class="big-tile"><svg viewBox="0 0 32 32"><use data-mark="product"/></svg></div>
+          <div class="phone">
+            <div class="app"><div class="tile"></div>Mail</div>
+            <div class="app"><div class="tile"><svg viewBox="0 0 32 32"><use data-mark="product"/></svg></div>Receptionist</div>
+            <div class="app"><div class="tile"></div>Photos</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="label">4. The link preview, as WhatsApp shows it</div>
+        <div class="chat">
+          <div class="bubble">
+            <div class="card">
+              <div class="og"><div class="og-inner">
+                <div class="og-band"><svg viewBox="0 0 32 32"><use data-mark="product"/></svg>AI Voice Receptionist</div>
+                <div class="og-body">
+                  <div class="og-head">An AI receptionist that answers when you can't.</div>
+                  <div class="og-line">Call it in your browser. It takes the job and books a time.</div>
+                  <div class="og-stamp">Try the demo · no signup</div>
+                </div>
+              </div></div>
+              <div class="card-text"><b>AI Voice Receptionist</b><span>Call an AI receptionist in your browser. It answers for a made-up AC repair shop, takes the job and books a time. No signup.</span><br><small>ai-voice-receptionist-tekguyz.vercel.app</small></div>
+            </div>
+            <div class="msg"><a>https://ai-voice-receptionist-tekguyz.vercel.app</a></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="label">5. The Mangrove Air mark on the work order (20 px), and large</div>
+        <div class="flex">
+          <div class="ticket">
+            <div class="band"><b>Work order</b><span>No. 04127</span></div>
+            <div class="biz"><svg viewBox="0 0 32 32"><use data-mark="business"/></svg>Mangrove Air · AC repair · South Florida</div>
+            <div class="sheet-pad"></div>
+          </div>
+          <div class="biz-big"><svg viewBox="0 0 32 32"><use data-mark="business"/></svg></div>
+        </div>
+      </div>
+    </section>
+  </template>
+
+  <div id="options"></div>
+</main>
+
+<script>
+  const options = [
+    { id: "a", title: "A · Stamp", what: "A red rubber stamp with a white inner rule. The product mark holds the phone handset; Mangrove Air's holds \"MA\". Same family as the Try the demo stamp." },
+    { id: "b", title: "B · Ticket band", what: "A red square like the work order's header band. The product mark is the handset over a ruled line, a field filled in. Mangrove Air's is a mangrove tree, its roots in the water." },
+    { id: "c", title: "C · On the line", what: "The round red on-the-line lamp from the call screen, with the handset inside, on canary. Mangrove Air's is a carbon-blue handwritten \"M\" in a red-ruled box." },
+  ];
+  const template = document.getElementById("option");
+  for (const option of options) {
+    const node = template.content.cloneNode(true);
+    node.querySelector("h2").textContent = option.title;
+    node.querySelector("p.what").textContent = option.what;
+    node.querySelector("section").id = option.id;
+    for (const use of node.querySelectorAll("use[data-mark]")) use.setAttribute("href", `#${option.id}-${use.dataset.mark}`);
+    document.getElementById("options").append(node);
+  }
+</script>
+</body>
+</html>

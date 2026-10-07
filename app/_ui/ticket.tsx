@@ -3,39 +3,75 @@
 
 import Link from "next/link";
 import type { ReactNode } from "react";
-import type { TranscriptLine } from "@/lib/call-story";
+import { BusinessMark } from "@/app/_ui/logo";
+import type { CallDetails, TranscriptLine } from "@/lib/call-story";
 import { SAMPLE_BUSINESS } from "@/lib/sample-business";
+
+// Plain values live here, not in a "use client" file: a server page that
+// imports a plain value from a client file gets a stub.
+export const DETAIL_LABELS: Record<keyof CallDetails, string> = {
+  name: "Name",
+  job: "Job",
+  urgency: "Urgency",
+  address: "Address",
+};
+
+/** A call's length as m:ss. */
+export function formatTime(ms: number) {
+  const seconds = Math.floor(ms / 1000);
+  return `${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, "0")}`;
+}
 
 export function DemoBanner() {
   return (
     <aside aria-label="Demo" className="bg-print text-sheet">
-      <div className="mx-auto flex max-w-[960px] items-center justify-between gap-4 px-4 py-2 text-sm">
-        <p className="truncate">
+      {/* Wraps to two rows on a narrow phone; no word is ever cut off. */}
+      <div className="mx-auto flex max-w-[960px] flex-wrap items-center justify-between gap-x-4 gap-y-1 px-4 py-2 text-sm">
+        <p>
           <span className="font-form font-bold tracking-wide uppercase">Demo</span>
           <span className="text-sheet/80"> · Made-up business</span>
         </p>
-        <a href="https://tekguyz.com" className="shrink-0 underline hover:text-copy focus-visible:outline-copy">
-          Built by TEKGUYZ
-        </a>
+        <p className="flex gap-4">
+          {/* A plain link: the Visitor cookie stays, so their calls are there if they come back. */}
+          <Link href="/" className="underline hover:text-copy focus-visible:outline-copy">
+            Leave the demo
+          </Link>
+          <a href="https://tekguyz.com" className="underline hover:text-copy focus-visible:outline-copy">
+            Built by TEKGUYZ
+          </a>
+        </p>
       </div>
     </aside>
   );
 }
 
-/** The printed head of the work order: title, ticket number and business. */
-export function TicketHeader({ number }: { number: string }) {
+/**
+ * The printed head of the work order: title, ticket number and business.
+ * `as="p"` where the page has its own h1 (the landing page's sample).
+ */
+export function TicketHeader({ number, as: Title = "h1" }: { number: string; as?: "h1" | "p" }) {
   return (
     <header className="text-form">
       <div className="flex items-end justify-between gap-3 bg-form px-5 pt-3 pb-2.5 text-sheet">
-        <h1 className="font-form text-[2.25rem] leading-none font-extrabold tracking-tight uppercase">Work order</h1>
+        <Title className="font-form text-[2.25rem] leading-none font-extrabold tracking-tight uppercase">Work order</Title>
         <p className="font-form text-xl leading-none font-bold">
           <span className="sr-only">Ticket number </span>No. {number}
         </p>
       </div>
       <p className="border-b-2 border-form px-5 py-1.5 font-form text-[0.9375rem] font-semibold tracking-wide uppercase">
-        {SAMPLE_BUSINESS.name} · {SAMPLE_BUSINESS.trade} · {SAMPLE_BUSINESS.area}
+        <BusinessLine />
       </p>
     </header>
+  );
+}
+
+/** The Sample Business's mark and name, printed under every header. */
+export function BusinessLine() {
+  return (
+    <span className="inline-flex items-center gap-2">
+      <BusinessMark className="size-5 shrink-0" />
+      {SAMPLE_BUSINESS.name} · {SAMPLE_BUSINESS.trade} · {SAMPLE_BUSINESS.area}
+    </span>
   );
 }
 
@@ -74,6 +110,10 @@ export function Transcript({ lines, receptionistName, live }: { lines: readonly 
   );
 }
 
+/** The stamp's look, also used by the landing page's submit button. */
+export const STAMP_BUTTON =
+  "inline-flex min-h-14 w-full -rotate-1 items-center justify-center gap-3 border-[6px] border-double border-form bg-sheet px-4 font-form text-[1.375rem] whitespace-nowrap font-extrabold tracking-wide text-form uppercase hover:bg-form/5 active:bg-form active:text-sheet";
+
 /**
  * The main action, set like a red rubber stamp on the form: red ink in a
  * double rule, a slight tilt. It fills solid red only while pressed.
@@ -94,7 +134,7 @@ export function StampButton({
       type="button"
       onClick={onClick}
       autoFocus={autoFocus}
-      className="inline-flex min-h-14 w-full -rotate-1 items-center justify-center gap-3 border-[6px] border-double border-form bg-sheet px-4 font-form text-[1.375rem] whitespace-nowrap font-extrabold tracking-wide text-form uppercase hover:bg-form/5 active:bg-form active:text-sheet"
+      className={STAMP_BUTTON}
     >
       {icon}
       {children}

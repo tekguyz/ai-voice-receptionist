@@ -1,6 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Barlow, Barlow_Condensed, Kalam } from "next/font/google";
-import { SAMPLE_BUSINESS } from "@/lib/sample-business";
+import { SITE_DESCRIPTION, SITE_NAME, siteUrl } from "@/lib/site";
 import "./globals.css";
 
 // The Service Ticket faces (DESIGN.md): condensed caps for the printed form,
@@ -12,10 +12,12 @@ const hand = Kalam({ subsets: ["latin"], weight: "400", variable: "--font-kalam"
 export const viewport: Viewport = { themeColor: "#faf08a" };
 
 export const metadata: Metadata = {
-  title: "AI Voice Receptionist",
-  description: `Watch an AI Receptionist answer a call for ${SAMPLE_BUSINESS.name}, a made-up ${SAMPLE_BUSINESS.trade} shop.`,
+  // Link previews and the sitemap need absolute URLs on the live address.
+  metadataBase: siteUrl(),
+  title: SITE_NAME,
+  description: SITE_DESCRIPTION,
   // Out of search by default, so no page leaks in by mistake. The landing
-  // page (a later step) is the only page that says index.
+  // page (app/page.tsx) is the only page that says index.
   robots: { index: false, follow: false },
 };
 

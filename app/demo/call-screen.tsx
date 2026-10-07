@@ -8,6 +8,7 @@
 import { useEffect, useId, useRef, useState, type ReactNode } from "react";
 import {
   DemoBanner,
+  DETAIL_LABELS,
   EndCallButton,
   Field,
   FormButton,
@@ -19,8 +20,9 @@ import {
   StampButton,
   TicketHeader,
   Transcript,
+  formatTime,
 } from "@/app/_ui/ticket";
-import { CallNotesSheet, DETAIL_LABELS, formatTime } from "@/app/_ui/call-notes";
+import { CallNotesSheet } from "@/app/_ui/call-notes";
 import type { CallSource, RunningCall, StartFailure } from "@/lib/call-source";
 import { DETAIL_FIELDS, tellCallStory, type CallEvent, type CallNotes, type CallView } from "@/lib/call-story";
 import { createSampleCallPlayer } from "@/lib/sample-call";
@@ -221,10 +223,11 @@ export function CallScreen() {
           </StampButton>
           <p className="mt-3 text-sm text-print-muted">Make up your details. Don&apos;t give your real name or address.</p>
           <p className="mt-1 text-sm text-print-muted">Only the words are kept, never your voice. Our copy is deleted after 7 days.</p>
-          <div className="mt-5">
+          <div className="mt-5 flex flex-wrap gap-3">
             <FormButton onClick={() => begin("sample")} autoFocus={phase.focus === "sample"}>
               Play the Sample Call
             </FormButton>
+            <FormLink href="/demo/dashboard">Open the Dashboard</FormLink>
           </div>
         </>
       );

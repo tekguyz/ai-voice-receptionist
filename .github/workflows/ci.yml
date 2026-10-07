@@ -20,3 +20,18 @@ jobs:
       # `npm test`: it prints an error and stops on purpose.
       - run: npm run test:unit
       - run: npm run build
+
+  e2e:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - run: npm run build
+      # The landing page, Try the demo and the Sample Call to Call Notes.
+      # No Vapi and no Redis: the Sample Call needs neither.
+      - run: npm run test:e2e
