@@ -260,6 +260,7 @@ An ordered list, 12px apart. Speaker in Label caps in a 5.5rem column: the Recep
 ### Buttons (call controls)
 - **Stamp Button (primary):** a red rubber stamp. White ground, red 6px double border, red Stamp caps, tilted -1deg, min-height 56px, full width in the call column. Hover tints the ground with 5% red; pressed fills it solid red with white words. An optional 20px inline SVG icon sits before the words.
 - **Form Button (secondary):** a printed outline. 2px red border, red Form caps 1.125rem bold, min-height 48px, 20px sides. Hover fills solid red with white words.
+- **Form Link:** a link to another screen ("Open the Dashboard", "Make a Test Call"). It looks exactly like a Form Button.
 - **Focus:** every control shows a 3px carbon-blue outline offset 3px.
 - **End button (Test Call):** solid Form Red, white Form caps, square, min-height 56px, full width in the call column, phone icon. No glow, no pulse.
 
@@ -271,6 +272,9 @@ Drawn in Form Red only, square-ended, inside the call column. It moves only with
 
 ### Perforation
 A tear line of red dots at the top of the Owner's copy, marking where the white sheet came off.
+
+### Dashboard (the Owner's view)
+The yellow copy as a 960px page with no white sheet: the Owner reads it; nothing is being written. The outlined header says "Dashboard" with "Owner's view" at right, over the business line. One Body Lead line says what the Receptionist handled. The answering row sits between two 2px red rules: the lamp (solid red while answering, a red ring when not), the status in Title caps, and a square switch at right (2px red frame and a square knob; filled red when on). A Small line in Print Soft says the switch changes only this screen. The three totals are one outlined box split in three by 2px red rules: a red Label over a Form 800 number at 2.25rem in Print Black. Recent calls are rows ruled in 1px solid red, each a link: the time in Small Print Soft, the caller in Body 600, the job in Print Soft, and square marks at right in red Label caps ("Booked", "Spam" outlined; "Your call" filled red with white caps). Hover tints a row with 5% red. A call opens on its own page as the Owner's copy, with its time before the end reason. A spam call's copy shows "Spam blocked" where the text preview would be.
 
 ### Motion
 - **Write-in:** a captured value is revealed left to right with `clip-path`, 700ms, `cubic-bezier(0.16, 1, 0.3, 1)`. One per captured detail.
