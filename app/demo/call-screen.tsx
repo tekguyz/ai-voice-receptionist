@@ -177,7 +177,8 @@ export function CallScreen() {
             actions={
               <>
                 <FormButton onClick={() => begin(mode)}>{mode === "test" ? "Make another Test Call" : "Play the Sample Call again"}</FormButton>
-                <FormLink href="/demo/dashboard">Open the Dashboard</FormLink>
+                {/* Not while the server is still saving the Test Call: the Dashboard would not list it yet. */}
+                {(mode === "sample" || saved.kind !== "waiting") && <FormLink href="/demo/dashboard">Open the Dashboard</FormLink>}
               </>
             }
           />
