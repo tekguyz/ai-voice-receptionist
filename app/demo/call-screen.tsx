@@ -318,8 +318,8 @@ function Page({ children, announcement, closing = false }: { children: ReactNode
 
 /**
  * The white top sheet: the call as it happens. On a phone it is one sheet.
- * From md the job details sit beside it on their own sheet; from lg the call
- * column sits in the middle of the screen at phone width.
+ * From md the job details sit beside it on their own sheet, and the two are
+ * centred together; from lg the gap between them widens.
  */
 function TopSheet({ view, status, controls }: { view: CallView; status: ReactNode; controls?: ReactNode }) {
   const talkId = useId();
@@ -336,7 +336,7 @@ function TopSheet({ view, status, controls }: { view: CallView; status: ReactNod
   return (
     <article
       aria-label="Work order"
-      className="mx-auto grid max-w-[420px] [filter:drop-shadow(0_2px_2px_rgb(90_74_30/0.16))_drop-shadow(0_14px_24px_rgb(90_74_30/0.22))] [grid-template-areas:'head''status''fields''controls''talk'] md:max-w-none md:grid-cols-[minmax(0,420px)_minmax(0,22rem)] md:justify-center md:gap-x-8 md:[grid-template-areas:'head_fields''status_fields''controls_fields''talk_fields'] lg:grid-cols-[minmax(0,1fr)_minmax(0,420px)_minmax(0,1fr)] lg:[grid-template-areas:'._head_fields''._status_fields''._controls_fields''._talk_fields']"
+      className="mx-auto grid max-w-[420px] [filter:drop-shadow(0_2px_2px_rgb(90_74_30/0.16))_drop-shadow(0_14px_24px_rgb(90_74_30/0.22))] [grid-template-areas:'head''status''fields''controls''talk'] md:max-w-none md:grid-cols-[minmax(0,420px)_minmax(0,22rem)] md:justify-center md:gap-x-8 md:[grid-template-areas:'head_fields''status_fields''controls_fields''talk_fields'] lg:gap-x-12"
     >
       <div className="bg-sheet [grid-area:head]">
         <TicketHeader number={TEST_CALL_TICKET} />

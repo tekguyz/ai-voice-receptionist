@@ -21,7 +21,7 @@ export function SampleWorkOrder() {
         </dl>
         <div className="border-t border-form-rule px-5 pt-5 pb-6">
           <p className={`${SECTION_LABEL} mb-4`}>What was said</p>
-          <Transcript lines={view.lines.slice(0, 4)} receptionistName={SAMPLE_BUSINESS.receptionistName} />
+          <Transcript lines={view.lines.slice(0, 2)} receptionistName={SAMPLE_BUSINESS.receptionistName} />
         </div>
       </div>
     </figure>

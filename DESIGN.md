@@ -234,7 +234,7 @@ A printed counter pad: two papers and three inks, with no accent outside them.
 
 Phone first. On a phone the top sheet is one column, max 420px, centred, in this order: header, status, fields, controls, transcript. The page holds a 16px side margin and starts 16px below the banner (48px from 768px up).
 
-From 768px the job details move beside the call column (`420px | 22rem`, centred, 32px gap). From 1024px the sheet becomes a three-column grid (`1fr | 420px | 1fr`, 32px gaps) inside a 1200px page. The call column (header, status, controls, transcript) sits in the middle at phone width; the job details are their own white sheet in the right column, max 22rem, top-aligned, headed "Job details · No." with a red rule under it. The left column stays empty paper.
+From 768px the job details move beside the call column (`420px | 22rem`, centred, 32px gap). From 1024px the gap widens to 48px. The call column (header, status, controls, transcript) stays at phone width; the job details are their own white sheet beside it, max 22rem, top-aligned, headed "Job details · No." with a red rule under it. The two sheets are centred together as one group, so the paper on each side is even (founder, 2026-10-07: the earlier three-column grid left the pair off-centre on a 15-inch laptop).
 
 The Owner's copy is a 960px document: perforation, an outlined header, then two columns from 768px (`1fr | 24rem`, 48px column gap, 32px row gap): summary and fields on the left, the text preview and transcript on the right. A red rule closes it above the actions.
 
