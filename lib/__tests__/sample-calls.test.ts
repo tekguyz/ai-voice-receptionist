@@ -7,11 +7,21 @@ const NOW = new Date("2026-10-06T16:00:00Z");
 const MINUTE = 60_000;
 
 describe("the Dashboard's sample calls", () => {
-  it("are dated a fixed time before now, so they never look stale", () => {
+  it("are dated a fixed time before the start of the hour, so they never look stale", () => {
     const aMonthLater = new Date("2026-11-06T17:00:00Z");
     const ages = (now: Date) => sampleCalls(now).map((call) => (now.getTime() - call.at.getTime()) / MINUTE);
     expect(ages(aMonthLater)).toEqual(ages(NOW));
     expect(ages(NOW)[0]).toBe(38);
+  });
+
+  it("keep the same times on every page load within an hour", () => {
+    const times = (now: Date) => sampleCalls(now).map((call) => call.at.toISOString());
+    const sameHour = new Date("2026-10-06T16:59:59Z");
+    expect(times(sameHour)).toEqual(times(NOW));
+    expect(times(new Date("2026-10-06T17:00:00Z"))).not.toEqual(times(NOW));
+    // Never in the future, and the newest is under two hours old.
+    for (const call of sampleCalls(sameHour)) expect(call.at.getTime()).toBeLessThan(sameHour.getTime());
+    expect(sameHour.getTime() - sampleCalls(sameHour)[0].at.getTime()).toBeLessThan(120 * MINUTE);
   });
 
   it("all happened in the last 3 days, newest first", () => {

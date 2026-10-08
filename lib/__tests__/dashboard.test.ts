@@ -2,6 +2,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import { createCallNotesStore, type SavedCallNotes } from "@/lib/call-notes-store";
 import { tellCallStory, type CallEvent } from "@/lib/call-story";
 import { buildDashboard, callTimeLabel, findDashboardCall, savedCallsFor } from "@/lib/dashboard";
+import { ticketNumberFor } from "@/lib/ticket-number";
 import { fakeNotesStorage } from "./fake-notes-storage";
 
 // Tuesday, October 6, 12:00 PM in Miami (UTC-4 in October).
@@ -43,17 +44,25 @@ describe("the Dashboard's recent calls", () => {
     const saved = [testCall("call-1", 5, null), testCall("call-2", 400, null)];
     const { calls } = buildDashboard({ saved, now: NOW });
     expect(calls).toHaveLength(9);
-    expect(calls[0]).toMatchObject({ id: "call-1", whose: "yours", spam: false, number: "04127" });
+    expect(calls[0]).toMatchObject({ id: "call-1", whose: "yours", spam: false, number: ticketNumberFor("call-1") });
     expect(calls.find((call) => call.id === "call-2")?.whose).toBe("yours");
     const times = calls.map((call) => call.at.getTime());
     expect(times).toEqual([...times].sort((a, b) => b - a));
   });
 
-  it("never look stale: the newest sample call is 38 minutes old on any day", () => {
-    for (const now of [NOW, new Date("2027-03-15T09:30:00Z")]) {
+  it("date the Visitor's call from when it started, not when it was saved", () => {
+    const saved = testCall("call-1", 5, null); // saved 5 minutes ago; the call ran 3 seconds
+    const { calls } = buildDashboard({ saved: [saved], now: NOW });
+    const mine = calls.find((call) => call.id === "call-1")!;
+    expect(mine.at.getTime()).toBe(new Date(saved.savedAt).getTime() - saved.notes.durationMs);
+  });
+
+  it("never look stale: the newest sample call is from today or yesterday on any day", () => {
+    // 38 minutes before the start of the hour; the second clock is half way through its hour.
+    for (const [now, minutesOld] of [[NOW, 38], [new Date("2027-03-15T09:30:00Z"), 68]] as const) {
       const newestSample = buildDashboard({ saved: [], now }).calls[0];
       expect(callTimeLabel(newestSample.at, now)).toMatch(/^(Today|Yesterday) · /);
-      expect(now.getTime() - newestSample.at.getTime()).toBe(38 * 60_000);
+      expect(now.getTime() - newestSample.at.getTime()).toBe(minutesOld * 60_000);
     }
   });
 });
@@ -69,6 +78,12 @@ describe("the time of a call", () => {
   it("goes by the day in Miami, not in UTC", () => {
     // 11:30 PM Monday in Miami is already Tuesday in UTC; 10 AM Monday is still "Today".
     expect(callTimeLabel(new Date("2026-10-05T14:00:00Z"), new Date("2026-10-06T03:30:00Z"))).toBe("Today · 10:00 AM");
+  });
+
+  it("goes by the day in Miami the other way round too", () => {
+    // 11:30 PM Monday in Miami is already Tuesday in UTC, the same UTC day as 10 AM Tuesday in Miami,
+    // yet it was yesterday for the Owner.
+    expect(callTimeLabel(new Date("2026-10-06T03:30:00Z"), new Date("2026-10-06T14:00:00Z"))).toBe("Yesterday · 11:30 PM");
   });
 });
 
@@ -95,7 +110,7 @@ describe("opening one call", () => {
   it("finds the Visitor's own call", async () => {
     const store = await storeWith([VISITOR_A, testCall("call-a", 5, null)]);
     const call = await findDashboardCall({ callId: "call-a", visitorId: VISITOR_A, now: NOW, store });
-    expect(call).toMatchObject({ id: "call-a", whose: "yours", spam: false, number: "04127" });
+    expect(call).toMatchObject({ id: "call-a", whose: "yours", spam: false, number: ticketNumberFor("call-a") });
     expect(call?.notes.details.name).toBe("Rosa Diaz");
   });
 

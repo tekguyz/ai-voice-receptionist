@@ -16,7 +16,7 @@ const printSoft = "#5a4a1e";
 
 const HEADLINE = "An AI receptionist that answers when you can't.";
 
-export const alt = `${SITE_NAME}: an AI receptionist that answers when you can't.`;
+export const alt = `${SITE_NAME}: ${HEADLINE}`;
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 

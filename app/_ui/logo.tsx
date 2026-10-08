@@ -21,26 +21,23 @@ const MANGROVE = [
   "M5 26.5 H27",
 ];
 
+// The mark's shapes, written once as SVG text. The favicon file and the icon
+// pictures use them whole; the page draws the same text inside its own <svg>.
+const PRODUCT_MARK_SHAPES =
+  `<rect width="32" height="32" fill="${FORM_RED}"/>` +
+  `<path transform="translate(8 4) scale(.8)" fill="${WHITE}" d="${HANDSET}"/>` +
+  `<rect x="6" y="24" width="20" height="2.5" fill="${WHITE}"/>`;
+
 /**
  * The product mark as SVG text: the favicon file, and the picture
  * ImageResponse draws (it cannot render a React SVG component).
  */
-export const PRODUCT_MARK_SVG =
-  `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">` +
-  `<rect width="32" height="32" fill="${FORM_RED}"/>` +
-  `<path transform="translate(8 4) scale(.8)" fill="${WHITE}" d="${HANDSET}"/>` +
-  `<rect x="6" y="24" width="20" height="2.5" fill="${WHITE}"/>` +
-  `</svg>`;
+export const PRODUCT_MARK_SVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">${PRODUCT_MARK_SHAPES}</svg>`;
 
 /** "AI Voice Receptionist": a red square, the handset over a ruled line (a field filled in). */
 export function ProductMark({ className }: { className?: string }) {
-  return (
-    <svg aria-hidden="true" viewBox="0 0 32 32" className={className}>
-      <rect width="32" height="32" fill={FORM_RED} />
-      <path transform="translate(8 4) scale(.8)" fill={WHITE} d={HANDSET} />
-      <rect x="6" y="24" width="20" height="2.5" fill={WHITE} />
-    </svg>
-  );
+  // The shapes are our own constant text, never user input.
+  return <svg aria-hidden="true" viewBox="0 0 32 32" className={className} dangerouslySetInnerHTML={{ __html: PRODUCT_MARK_SHAPES }} />;
 }
 
 /** The mark and the name, as one unit, for the landing page. */

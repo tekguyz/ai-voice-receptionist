@@ -31,10 +31,7 @@ Built so far:
 - Plays a Sample Call on a plain screen at `/demo`: lines and detail tags appear in time, then the Call Notes show a summary, the details, the booked time and a preview of the confirmation text. The Visitor can pause, resume or stop it. Once the founder's call is recorded, it plays with sound, and the words and tags follow the sound's own clock. Until then it is a text-only placeholder.
 - The Dashboard shows the Owner's side: three totals and recent calls, sample calls mixed with the Visitor's own.
 - After a Test Call, the Call Notes are saved for the Visitor and the screen fills in from the saved copy. Each entry is deleted after 7 days. The Vapi webhook (`app/api/vapi/webhook`) refuses any request without Vapi's secret.
-
-Planned (spec [#1](https://github.com/tekguyz/ai-voice-receptionist/issues/1)):
-
-- The Receptionist answers in Spanish when the caller speaks Spanish (checked on test calls, 2026-10-05).
+- The Receptionist answers in Spanish when the caller speaks Spanish (checked on test calls, 2026-10-05). The screens stay in English.
 
 ## What it never does
 
