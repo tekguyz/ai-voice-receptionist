@@ -70,6 +70,12 @@ describe("the time of a call", () => {
     // 11:30 PM Monday in Miami is already Tuesday in UTC; 10 AM Monday is still "Today".
     expect(callTimeLabel(new Date("2026-10-05T14:00:00Z"), new Date("2026-10-06T03:30:00Z"))).toBe("Today · 10:00 AM");
   });
+
+  it("goes by the day in Miami the other way round too", () => {
+    // 11:30 PM Monday in Miami is already Tuesday in UTC, the same UTC day as 10 AM Tuesday in Miami,
+    // yet it was yesterday for the Owner.
+    expect(callTimeLabel(new Date("2026-10-06T03:30:00Z"), new Date("2026-10-06T14:00:00Z"))).toBe("Yesterday · 11:30 PM");
+  });
 });
 
 describe("a Visitor's own calls", () => {
