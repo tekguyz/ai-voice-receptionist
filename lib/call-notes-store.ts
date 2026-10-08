@@ -8,6 +8,11 @@ import type { CallNotes } from "@/lib/call-story";
 export const NOTES_TTL_SECONDS = 7 * 24 * 60 * 60;
 export const NOTES_PER_VISITOR = 10;
 
+const CALL_ID = /^[A-Za-z0-9-]{1,64}$/;
+
+/** A call ID that is safe in a key and in an address: 1 to 64 letters, digits and dashes. */
+export const isCallId = (value: string): boolean => CALL_ID.test(value);
+
 export type SavedCallNotes = { readonly callId: string; readonly savedAt: string; readonly notes: CallNotes };
 
 /** The slice of Redis the store needs. Tests use an in-memory one. */

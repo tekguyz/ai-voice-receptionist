@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { NOTES_PER_VISITOR, NOTES_TTL_SECONDS, createCallNotesStore } from "@/lib/call-notes-store";
+import { NOTES_PER_VISITOR, NOTES_TTL_SECONDS, createCallNotesStore, isCallId } from "@/lib/call-notes-store";
 import type { CallNotes } from "@/lib/call-story";
 import { fakeNotesStorage } from "./fake-notes-storage";
 
@@ -85,5 +85,14 @@ describe("the Call Notes store", () => {
     for (const key of fake.values.keys()) if (key.endsWith(":call-2")) fake.values.delete(key);
     expect((await store.list({ visitorId: ROSA })).map((n) => n.callId)).toEqual(["call-1"]);
     expect(await store.get({ visitorId: ROSA, callId: "call-2" })).toBeNull();
+  });
+});
+
+describe("a call ID", () => {
+  it("is 1 to 64 letters, digits and dashes", () => {
+    expect(isCallId("call-123")).toBe(true);
+    expect(isCallId(ROSA)).toBe(true);
+    expect(isCallId("a".repeat(64))).toBe(true);
+    for (const bad of ["", "a".repeat(65), "call:123", "call 123", "../call", "call\n"]) expect(isCallId(bad)).toBe(false);
   });
 });

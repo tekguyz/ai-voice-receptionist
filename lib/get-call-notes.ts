@@ -2,10 +2,8 @@
 // cookie, never from the request's address, so no one can ask for another
 // Visitor's call: an ID that is not theirs is simply "pending".
 
-import type { CallNotesStore } from "@/lib/call-notes-store";
+import { isCallId, type CallNotesStore } from "@/lib/call-notes-store";
 import { visitorIdFrom } from "@/lib/visitor";
-
-const CALL_ID = /^[A-Za-z0-9-]{1,64}$/;
 
 const answer = (status: number, body: object) => Response.json(body, { status, headers: { "Cache-Control": "no-store" } });
 
@@ -14,7 +12,7 @@ export async function getCallNotes(request: Request, deps: { store: CallNotesSto
   if (!visitorId) return answer(401, { reason: "no-visitor" });
 
   const callId = new URL(request.url).searchParams.get("callId") ?? "";
-  if (!CALL_ID.test(callId)) return answer(400, { reason: "bad-call-id" });
+  if (!isCallId(callId)) return answer(400, { reason: "bad-call-id" });
 
   try {
     const saved = await deps.store.get({ visitorId, callId });

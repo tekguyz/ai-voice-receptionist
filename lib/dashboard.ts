@@ -3,7 +3,7 @@
 // mix. "Calls answered" leaves spam out, so the totals do not overlap.
 // "Spam blocked" comes from sample calls only: a Test Call is never spam.
 
-import type { CallNotesStore, SavedCallNotes } from "@/lib/call-notes-store";
+import { isCallId, type CallNotesStore, type SavedCallNotes } from "@/lib/call-notes-store";
 import type { CallNotes } from "@/lib/call-story";
 import { TIME_ZONE, localDate } from "@/lib/calendar-day";
 import { TEST_CALL_TICKET } from "@/lib/sample-business";
@@ -70,8 +70,6 @@ export async function savedCallsFor({ visitorId, store }: { visitorId: string; s
   }
 }
 
-const CALL_ID = /^[A-Za-z0-9-]{1,64}$/;
-
 /** One call on the Dashboard: any sample call, or one of the Visitor's own. Null otherwise. */
 export async function findDashboardCall({
   callId,
@@ -86,7 +84,7 @@ export async function findDashboardCall({
 }): Promise<DashboardCall | null> {
   const sample = sampleCalls(now).find((call) => call.id === callId);
   if (sample) return fromSample(sample);
-  if (!store || !CALL_ID.test(callId)) return null;
+  if (!store || !isCallId(callId)) return null;
   try {
     const saved = await store.get({ visitorId, callId });
     return saved ? fromSaved(saved) : null;
