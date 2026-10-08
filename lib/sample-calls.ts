@@ -1,7 +1,8 @@
 // The Dashboard's sample calls: made-up calls Luna took for the Sample
 // Business while the Owner worked. Each is dated a fixed number of minutes
-// before now, so the Dashboard never looks stale, and each runs through the
-// Call Story like every other call. A booked time is one of the two times
+// before the start of this hour, so the Dashboard never looks stale and the
+// times hold still between page loads, and each runs through the Call Story
+// like every other call. A booked time is one of the two times
 // offered on the call's own date. Names and addresses are made up.
 // Not the Sample Call: that is the one recorded call (lib/sample-call.ts).
 
@@ -181,8 +182,12 @@ export function sampleCalls(now: Date): SampleCall[] {
   return SCRIPTS.map((script) => play(script, now));
 }
 
+// Every zone the Sample Business could use is a whole number of hours from UTC.
+const HOUR_MS = 60 * 60_000;
+const startOfHour = (now: Date) => new Date(Math.floor(now.getTime() / HOUR_MS) * HOUR_MS);
+
 function play(script: Script, now: Date): SampleCall {
-  const at = new Date(now.getTime() - script.minutesAgo * 60_000);
+  const at = new Date(startOfHour(now).getTime() - script.minutesAgo * 60_000);
   const offered = openTimes(at);
   const booked = script.picks === undefined ? null : offered[script.picks];
   const lines = script.lines(offered);

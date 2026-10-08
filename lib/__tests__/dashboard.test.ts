@@ -56,11 +56,12 @@ describe("the Dashboard's recent calls", () => {
     expect(mine.at.getTime()).toBe(new Date(saved.savedAt).getTime() - saved.notes.durationMs);
   });
 
-  it("never look stale: the newest sample call is 38 minutes old on any day", () => {
-    for (const now of [NOW, new Date("2027-03-15T09:30:00Z")]) {
+  it("never look stale: the newest sample call is from today or yesterday on any day", () => {
+    // 38 minutes before the start of the hour; the second clock is half way through its hour.
+    for (const [now, minutesOld] of [[NOW, 38], [new Date("2027-03-15T09:30:00Z"), 68]] as const) {
       const newestSample = buildDashboard({ saved: [], now }).calls[0];
       expect(callTimeLabel(newestSample.at, now)).toMatch(/^(Today|Yesterday) · /);
-      expect(now.getTime() - newestSample.at.getTime()).toBe(38 * 60_000);
+      expect(now.getTime() - newestSample.at.getTime()).toBe(minutesOld * 60_000);
     }
   });
 });
