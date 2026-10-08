@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import OpengraphImage, { size } from "@/app/opengraph-image";
+import OpengraphImage, { alt, size } from "@/app/opengraph-image";
 import AppleIcon from "@/app/apple-icon";
 
 // PNG files start with these 8 bytes; the width and height follow at 16–23.
@@ -16,6 +16,10 @@ describe("the pictures the app draws", () => {
     const picture = await png(OpengraphImage());
     expect(picture).toEqual({ signature: PNG_SIGNATURE, width: size.width, height: size.height });
     expect(size).toEqual({ width: 1200, height: 630 });
+  });
+
+  it("describes the link preview with the site name and the headline it draws", () => {
+    expect(alt).toBe("AI Voice Receptionist: An AI receptionist that answers when you can't.");
   });
 
   it("draws the home-screen icon as a 180 x 180 PNG", async () => {
