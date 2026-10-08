@@ -49,6 +49,13 @@ describe("the Dashboard's recent calls", () => {
     expect(times).toEqual([...times].sort((a, b) => b - a));
   });
 
+  it("date the Visitor's call from when it started, not when it was saved", () => {
+    const saved = testCall("call-1", 5, null); // saved 5 minutes ago; the call ran 3 seconds
+    const { calls } = buildDashboard({ saved: [saved], now: NOW });
+    const mine = calls.find((call) => call.id === "call-1")!;
+    expect(mine.at.getTime()).toBe(new Date(saved.savedAt).getTime() - saved.notes.durationMs);
+  });
+
   it("never look stale: the newest sample call is 38 minutes old on any day", () => {
     for (const now of [NOW, new Date("2027-03-15T09:30:00Z")]) {
       const newestSample = buildDashboard({ saved: [], now }).calls[0];

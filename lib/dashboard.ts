@@ -25,7 +25,8 @@ const fromSample = (call: SampleCall): DashboardCall => ({ ...call, whose: "samp
 
 const fromSaved = (saved: SavedCallNotes): DashboardCall => ({
   id: saved.callId,
-  at: new Date(saved.savedAt),
+  // The notes are saved just after the call ends: count back by its length to get the start.
+  at: new Date(new Date(saved.savedAt).getTime() - saved.notes.durationMs),
   whose: "yours",
   spam: false,
   number: TEST_CALL_TICKET,
