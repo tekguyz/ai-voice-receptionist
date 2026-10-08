@@ -1,0 +1,31 @@
+{
+  "about": "PLACEHOLDER: text only, no sound. `npm run sample-call:pull` replaces this file with the founder's recorded call (issue #8). Every caller detail is made up.",
+  "audio": null,
+  "audioOffsetMs": 0,
+  "endedReason": "assistant-ended-call",
+  "durationSeconds": 30,
+  "analysis": {
+    "summary": "Marco Delgado's AC stopped cooling last night and it's 85 in the house. His mom is staying with him, so it's urgent. Booked for tomorrow at 9 AM."
+  },
+  "call": {
+    "assistantOverrides": { "variableValues": { "openTime1": "tomorrow at 9 AM", "openTime2": "tomorrow at 2 PM" } }
+  },
+  "artifact": {
+    "messages": [
+      { "role": "bot", "message": "Thanks for calling Mangrove Air, this is Luna. How can I help?", "secondsFromStart": 0 },
+      { "role": "user", "message": "Hi, my AC stopped cooling last night and it's 85 in the house.", "secondsFromStart": 3.5 },
+      { "role": "tool_calls", "toolCalls": [{ "function": { "name": "recordDetail", "arguments": "{\"field\":\"job\",\"value\":\"AC not cooling\"}" } }], "secondsFromStart": 5 },
+      { "role": "bot", "message": "I'm sorry, that's no fun in this heat. Is anyone at home at risk, like a baby or someone elderly?", "secondsFromStart": 7.5 },
+      { "role": "user", "message": "My mom is staying with us, so as soon as possible, please.", "secondsFromStart": 11 },
+      { "role": "tool_calls", "toolCalls": [{ "function": { "name": "recordDetail", "arguments": "{\"field\":\"urgency\",\"value\":\"Urgent, as soon as possible\"}" } }], "secondsFromStart": 12.5 },
+      { "role": "bot", "message": "Understood. Can I get your name and the address of the home?", "secondsFromStart": 14.5 },
+      { "role": "user", "message": "Marco Delgado, 1207 Mango Tree Lane in Kendall.", "secondsFromStart": 17.5 },
+      { "role": "tool_calls", "toolCalls": [{ "function": { "name": "recordDetail", "arguments": "{\"field\":\"name\",\"value\":\"Marco Delgado\"}" } }], "secondsFromStart": 18.5 },
+      { "role": "tool_calls", "toolCalls": [{ "function": { "name": "recordDetail", "arguments": "{\"field\":\"address\",\"value\":\"1207 Mango Tree Lane, Kendall\"}" } }], "secondsFromStart": 19 },
+      { "role": "bot", "message": "Thanks, Marco. I have tomorrow at 9 AM or tomorrow at 2 PM. Which works?", "secondsFromStart": 21 },
+      { "role": "user", "message": "Nine in the morning, please.", "secondsFromStart": 24.5 },
+      { "role": "tool_calls", "toolCalls": [{ "function": { "name": "bookTime", "arguments": "{\"time\":\"tomorrow at 9 AM\"}" } }], "secondsFromStart": 25.5 },
+      { "role": "bot", "message": "You're booked for tomorrow at 9 AM. You'll get a text to confirm. Stay cool, Marco!", "secondsFromStart": 26.5 }
+    ]
+  }
+}

@@ -23,15 +23,14 @@ export function visitorIdOf(call: unknown): string | null {
 
 export type ReportedCall = { callId: string; visitorId: string; notes: CallNotes };
 
-/** Call Notes from an end-of-call report, or null when it is not one of our Test Calls. */
-export function callNotesFromReport(message: unknown): ReportedCall | null {
+/**
+ * The Call Story events in a report: each line and tool call at its time, then
+ * the end. Also reads the Sample Call (lib/sample-call.json), which keeps the
+ * same shape as the report of the call it was recorded from.
+ */
+export function callEventsFromReport(message: unknown): CallEvent[] {
   const report = asRecord(message);
-  const call = asRecord(report.call);
-  const callId = asText(call.id);
-  const visitorId = visitorIdOf(call);
-  if (!callId || !visitorId) return null;
-
-  const offered = offeredTimesOf(call);
+  const offered = offeredTimesOf(report.call);
   const events: CallEvent[] = [];
   let atMs = 0;
   const messages = asRecord(report.artifact).messages;
@@ -55,8 +54,22 @@ export function callNotesFromReport(message: unknown): ReportedCall | null {
 
   const reportedMs = typeof report.durationSeconds === "number" ? Math.round(report.durationSeconds * 1000) : 0;
   events.push({ type: "ended", reason: endReasonFrom(asText(report.endedReason) || undefined), atMs: Math.max(atMs, reportedMs) });
+  return events;
+}
 
-  const summary = asText(asRecord(report.analysis).summary) || asText(report.summary) || undefined;
-  const { notes } = tellCallStory(events, { summary });
+/** Vapi's summary of the call, or undefined when it sent none. */
+export function summaryOfReport(message: unknown): string | undefined {
+  const report = asRecord(message);
+  return asText(asRecord(report.analysis).summary) || asText(report.summary) || undefined;
+}
+
+/** Call Notes from an end-of-call report, or null when it is not one of our Test Calls. */
+export function callNotesFromReport(message: unknown): ReportedCall | null {
+  const call = asRecord(asRecord(message).call);
+  const callId = asText(call.id);
+  const visitorId = visitorIdOf(call);
+  if (!callId || !visitorId) return null;
+
+  const { notes } = tellCallStory(callEventsFromReport(message), { summary: summaryOfReport(message) });
   return notes ? { callId, visitorId, notes } : null;
 }

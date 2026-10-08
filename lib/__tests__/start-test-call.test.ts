@@ -113,6 +113,14 @@ describe("Start Test Call", () => {
     expect(text).not.toContain(PRIVATE_KEY);
     expect(text).not.toContain("control");
   });
+
+  it("offers the open times it is given instead, to Vapi and to the browser", async () => {
+    const createWebCall = vi.fn(async () => ({ webCallUrl: VAPI_CALL.webCallUrl, callId: VAPI_CALL.id }));
+    const times: [string, string] = ["tomorrow at 9 AM", "tomorrow at 2 PM"];
+    const response = await startTestCall(request(), deps({ createWebCall, offerTimes: () => times }));
+    expect(createWebCall).toHaveBeenCalledWith({ visitorId: VISITOR, openTimes: times });
+    expect((await response.json()).openTimes).toEqual(times);
+  });
 });
 
 describe("creating the Vapi web call", () => {
@@ -207,6 +215,18 @@ describe("creating the Vapi web call", () => {
   it("sends no server override when there is no webhook address (a local server Vapi cannot reach)", async () => {
     const { init } = await sendOne();
     expect(JSON.parse(String(init.body)).assistantOverrides).not.toHaveProperty("server");
+  });
+
+  it("asks Vapi to record only when told to: the founder's Sample Call", async () => {
+    const fetchImpl = vi.fn(async (_url: string | URL | Request, _init?: RequestInit) => new Response(JSON.stringify(VAPI_CALL), { status: 201 }));
+    const create = vapiWebCallCreator({ privateKey: PRIVATE_KEY, orgId: ORG_ID, assistantId: "asst-1", fetchImpl, record: true });
+    await create({ visitorId: VISITOR, openTimes: OPEN_TIMES });
+    const [, init] = fetchImpl.mock.calls[0];
+    expect(JSON.parse(String(init!.body)).assistantOverrides.artifactPlan).toEqual({
+      recordingEnabled: true,
+      recordingFormat: "mp3",
+      videoRecordingEnabled: false,
+    });
   });
 
   it("fails when Vapi refuses", async () => {

@@ -1,5 +1,6 @@
 import { DEV_LIMITS, LIMITS, createCallGate } from "@/lib/call-gate";
 import { redisCounterStore } from "@/lib/redis-counter-store";
+import { RECORDING_OPEN_TIMES, sampleCallRecording } from "@/lib/sample-call-recording";
 import { isProduction, keyPrefix } from "@/lib/server-env";
 import { startTestCall } from "@/lib/start-test-call";
 import { vapiWebCallCreator } from "@/lib/vapi-web-call";
@@ -17,7 +18,13 @@ export async function POST(request: Request) {
     );
     return Response.json({ reason: "unavailable" }, { status: 503, headers: { "Cache-Control": "no-store" } });
   }
-  const webhook = webhookTarget(new URL(request.url).origin, process.env);
+  // Off for every Visitor. On only for the founder's Sample Call, on the laptop.
+  const recording = sampleCallRecording(process.env);
+  if (recording) console.warn("Start Test Call: SAMPLE_CALL_RECORDING is on. This call is recorded for the Sample Call.");
+  else if (process.env.SAMPLE_CALL_RECORDING === "on") {
+    console.error("Start Test Call: SAMPLE_CALL_RECORDING is on, but recording works only on `npm run dev` off Vercel, with an https SAMPLE_CALL_WEBHOOK_ORIGIN. This call is not recorded.");
+  }
+  const webhook = webhookTarget(recording?.webhookOrigin ?? new URL(request.url).origin, process.env);
   if (!process.env.VAPI_WEBHOOK_SECRET) console.error("Start Test Call: VAPI_WEBHOOK_SECRET is missing, so this call's Call Notes will not be saved.");
   return startTestCall(request, {
     gate: createCallGate({
@@ -27,7 +34,8 @@ export async function POST(request: Request) {
     }),
     // Reuses a server secret so there is no new env var; a key change only resets the per-IP counts.
     ipSecret: privateKey,
-    createWebCall: vapiWebCallCreator({ privateKey, orgId, assistantId, webhook }),
+    createWebCall: vapiWebCallCreator({ privateKey, orgId, assistantId, webhook, record: recording !== null }),
     now: () => new Date(),
+    ...(recording ? { offerTimes: () => RECORDING_OPEN_TIMES } : {}),
   });
 }
