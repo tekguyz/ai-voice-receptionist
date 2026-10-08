@@ -15,6 +15,8 @@ export type StartTestCallDeps = {
   now(): Date;
   /** A server secret that keys the IP hash. */
   ipSecret: string;
+  /** The two open times to offer. Default: the Sample Business's calendar. */
+  offerTimes?(now: Date): [string, string];
 };
 
 /**
@@ -40,7 +42,7 @@ export async function startTestCall(request: Request, deps: StartTestCallDeps): 
   if (!gate.allowed) return answer(gate.reason === "unavailable" ? 503 : 429, { reason: gate.reason });
 
   try {
-    const times = openTimes(now);
+    const times = (deps.offerTimes ?? openTimes)(now);
     const { webCallUrl, callId } = await deps.createWebCall({ visitorId, openTimes: times });
     // The browser needs the two times only to show a booking that the server will accept.
     return answer(200, { webCallUrl, callId, openTimes: times });

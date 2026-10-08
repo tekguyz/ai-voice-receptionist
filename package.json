@@ -11,7 +11,8 @@
     "test": "node -e \"console.error('Do not run the aggregate test command. Use: npm run test:unit.'); process.exit(1)\"",
     "test:unit": "vitest run",
     "test:e2e": "playwright test",
-    "vapi:sync": "node --env-file-if-exists=.env.local scripts/vapi-sync.ts"
+    "vapi:sync": "node --env-file-if-exists=.env.local scripts/vapi-sync.ts",
+    "sample-call:pull": "node --env-file-if-exists=.env.local scripts/sample-call-pull.ts"
   },
   "dependencies": {
     "@upstash/redis": "^1.39.0",

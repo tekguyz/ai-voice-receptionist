@@ -24,9 +24,9 @@ import {
   formatTime,
 } from "@/app/_ui/ticket";
 import { CallNotesSheet } from "@/app/_ui/call-notes";
-import type { CallSource, RunningCall, StartFailure } from "@/lib/call-source";
+import type { CallHandlers, CallSource, RunningCall, StartFailure } from "@/lib/call-source";
 import { DETAIL_FIELDS, tellCallStory, type CallEvent, type CallNotes, type CallView } from "@/lib/call-story";
-import { SAMPLE_CALL_SUMMARY, createSampleCallPlayer } from "@/lib/sample-call";
+import { SAMPLE_CALL_SUMMARY, createSampleCallPlayer, type RunningSampleCall, type SampleCallSource } from "@/lib/sample-call";
 import { fetchSavedNotes, watchSavedNotes } from "@/lib/saved-notes";
 import { SAMPLE_BUSINESS, TEST_CALL_TICKET } from "@/lib/sample-business";
 import { SITE_NAME } from "@/lib/site";
@@ -58,7 +58,7 @@ type Saved = { kind: "waiting" } | { kind: "ready"; notes: CallNotes } | { kind:
 
 export function CallScreen() {
   const [testCall] = useState<CallSource>(() => createVapiSource(browserVapiSourceDeps()));
-  const [sampleCall] = useState<CallSource>(() => createSampleCallPlayer());
+  const [sampleCall] = useState<SampleCallSource>(() => createSampleCallPlayer());
   const [phase, setPhase] = useState<Phase>({ kind: "ready" });
   const [events, setEvents] = useState<CallEvent[]>([]);
   // The server's ID for the Test Call, and whether its notes are saved yet.
@@ -70,6 +70,11 @@ export function CallScreen() {
   // After the call ends, the white sheet is pulled off; then it is gone.
   const [sheetGone, setSheetGone] = useState(false);
   const call = useRef<RunningCall | null>(null);
+  // The running Sample Call, for pause and its own clock. Null during a Test Call.
+  const sample = useRef<RunningSampleCall | null>(null);
+  const [paused, setPaused] = useState(false);
+  // How far the Sample Call's sound has played. It stands still while paused.
+  const [sampleAt, setSampleAt] = useState(0);
   // Each call gets a number. Anything a call says after it is no longer the
   // current one (stopped, failed or replaced) is ignored.
   const callNumber = useRef(0);
@@ -89,7 +94,10 @@ export function CallScreen() {
 
   useEffect(() => {
     if (!ticking) return;
-    const timer = setInterval(() => setNow(performance.now()), 250);
+    const timer = setInterval(() => {
+      setNow(performance.now());
+      if (sample.current) setSampleAt(sample.current.positionMs());
+    }, 250);
     return () => clearInterval(timer);
   }, [ticking]);
 
@@ -102,8 +110,10 @@ export function CallScreen() {
     setSheetGone(false);
     setCallId(null);
     setSaved({ kind: "waiting" });
+    setPaused(false);
+    setSampleAt(0);
     setPhase(next === "test" ? { kind: "connecting" } : { kind: "running", mode: next });
-    call.current = (next === "test" ? testCall : sampleCall).start({
+    const handlers: CallHandlers = {
       onEvent: (event) => {
         if (number !== callNumber.current) return;
         const arrived = performance.now();
@@ -121,7 +131,20 @@ export function CallScreen() {
         call.current = null;
         setPhase({ kind: "failed", failure });
       },
-    });
+    };
+    if (next === "test") {
+      sample.current = null;
+      call.current = testCall.start(handlers);
+    } else {
+      sample.current = sampleCall.start(handlers);
+      call.current = sample.current;
+    }
+  }
+
+  function pauseOrResumeSample() {
+    if (paused) sample.current?.resume();
+    else sample.current?.pause();
+    setPaused(!paused);
   }
 
   function endTestCall() {
@@ -133,12 +156,21 @@ export function CallScreen() {
     callNumber.current += 1; // the stopped call's last `ended` is not wanted
     call.current?.stop();
     call.current = null;
+    sample.current = null;
+    setPaused(false);
     setEvents([]);
     setStartedAt(null);
     setPhase({ kind: "ready", focus: mode });
   }
 
-  const elapsedMs = ticking && startedAt !== null ? Math.max(view.elapsedMs, now - startedAt) : view.elapsedMs;
+  // The Sample Call's timer follows its sound; a Test Call's follows the wall clock.
+  const elapsedMs = !ticking
+    ? view.elapsedMs
+    : mode === "sample"
+      ? Math.max(view.elapsedMs, sampleAt)
+      : startedAt !== null
+        ? Math.max(view.elapsedMs, now - startedAt)
+        : view.elapsedMs;
 
   const ended = notes !== null;
   // A Test Call's notes are saved by the server a moment after the call ends: ask until they are there.
@@ -169,7 +201,7 @@ export function CallScreen() {
         : saved.kind === "late"
           ? "Call ended. The summary did not arrive."
           : "Call ended. Finishing the notes.";
-  const runningWord = mode === "sample" ? "Sample Call playing" : "On the line";
+  const runningWord = mode === "sample" ? (paused ? "Sample Call paused" : "Sample Call playing") : "On the line";
   const announcement = notes ? endedWord : phase.kind === "connecting" ? "Calling…" : phase.kind === "running" ? runningWord : "";
 
   // The tab says which screen this is: the page's own title says "Test Call".
@@ -280,7 +312,7 @@ export function CallScreen() {
       status = (
         <p className={CALL_STATUS}>
           {phase.mode === "test" ? <OnTheLine /> : <PlayIcon />}
-          {phase.mode === "test" ? "On the line" : "Sample Call"}
+          {phase.mode === "test" ? "On the line" : paused ? "Paused" : "Sample Call"}
           <span className="ml-auto text-form">{formatTime(elapsedMs)}</span>
         </p>
       );
@@ -288,9 +320,12 @@ export function CallScreen() {
         phase.mode === "test" ? (
           <EndCallButton onClick={endTestCall} autoFocus />
         ) : (
-          <FormButton onClick={() => cancelOrStopSample("sample")} autoFocus>
-            Stop the Sample Call
-          </FormButton>
+          <div className="flex flex-wrap gap-3">
+            <FormButton onClick={pauseOrResumeSample} autoFocus>
+              {paused ? "Resume the Sample Call" : "Pause the Sample Call"}
+            </FormButton>
+            <FormButton onClick={() => cancelOrStopSample("sample")}>Stop the Sample Call</FormButton>
+          </div>
         );
       break;
   }

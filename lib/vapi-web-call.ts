@@ -49,6 +49,7 @@ export function vapiWebCallCreator({
   orgId,
   assistantId,
   webhook,
+  record = false,
   fetchImpl = fetch,
   now = Date.now,
 }: {
@@ -63,6 +64,8 @@ export function vapiWebCallCreator({
    * Vapi gets past Deployment Protection on a Preview.
    */
   webhook?: { url: string; secret: string; protectionBypass?: string };
+  /** Record this call's sound. Only for the founder's Sample Call (lib/sample-call-recording.ts). */
+  record?: boolean;
   fetchImpl?: typeof fetch;
   /** A clock in milliseconds. */
   now?: () => number;
@@ -77,6 +80,7 @@ export function vapiWebCallCreator({
           metadata: { visitorId },
           variableValues: { openTime1, openTime2 },
           ...(webhook ? { server: { url: webhook.url, headers: webhookHeaders(webhook) } } : {}),
+          ...(record ? { artifactPlan: { recordingEnabled: true, recordingFormat: "mp3", videoRecordingEnabled: false } } : {}),
         },
       }),
       signal: AbortSignal.timeout(10_000),
