@@ -29,6 +29,7 @@ import { DETAIL_FIELDS, tellCallStory, type CallEvent, type CallNotes, type Call
 import { SAMPLE_CALL_SUMMARY, createSampleCallPlayer, type RunningSampleCall, type SampleCallSource } from "@/lib/sample-call";
 import { fetchSavedNotes, watchSavedNotes } from "@/lib/saved-notes";
 import { SAMPLE_BUSINESS, TEST_CALL_TICKET } from "@/lib/sample-business";
+import { ticketNumberFor } from "@/lib/ticket-number";
 import { SITE_NAME } from "@/lib/site";
 import { browserVapiSourceDeps } from "@/lib/vapi-browser";
 import { createVapiSource } from "@/lib/vapi-source";
@@ -205,6 +206,8 @@ export function CallScreen() {
   const announcement = notes ? endedWord : phase.kind === "connecting" ? "Calling…" : phase.kind === "running" ? runningWord : "";
 
   // The tab says which screen this is: the page's own title says "Test Call".
+  // A Test Call prints its own ticket number once the server gives it an ID.
+  const ticket = mode === "test" && callId ? ticketNumberFor(callId) : TEST_CALL_TICKET;
   const tabTitle = notes ? "Call Notes" : mode === "sample" ? "Sample Call" : "Test Call";
   useEffect(() => {
     document.title = `${tabTitle} · ${SITE_NAME}`;
@@ -217,7 +220,7 @@ export function CallScreen() {
           <CallNotesSheet
             notes={saved.kind === "ready" ? saved.notes : notes}
             state={mode === "sample" ? "sample" : saved.kind === "ready" ? "saved" : saved.kind}
-            number={TEST_CALL_TICKET}
+            number={ticket}
             actions={
               <>
                 <FormButton onClick={() => begin(mode)}>{mode === "test" ? "Make another Test Call" : "Play the Sample Call again"}</FormButton>
@@ -238,6 +241,7 @@ export function CallScreen() {
               }}
             >
               <TopSheet
+                ticket={ticket}
                 view={view}
                 status={
                   <p className={CALL_STATUS}>
@@ -332,7 +336,7 @@ export function CallScreen() {
 
   return (
     <Page announcement={announcement}>
-      <TopSheet view={view} status={status} controls={controls} />
+      <TopSheet ticket={ticket} view={view} status={status} controls={controls} />
     </Page>
   );
 }
@@ -356,7 +360,7 @@ function Page({ children, announcement, closing = false }: { children: ReactNode
  * From md the job details sit beside it on their own sheet, and the two are
  * centred together; from lg the gap between them widens.
  */
-function TopSheet({ view, status, controls }: { view: CallView; status: ReactNode; controls?: ReactNode }) {
+function TopSheet({ ticket, view, status, controls }: { ticket: string; view: CallView; status: ReactNode; controls?: ReactNode }) {
   const talkId = useId();
   const talk = useRef<HTMLElement>(null);
   // Only the live sheet has controls; the lifting copy has none.
@@ -374,7 +378,7 @@ function TopSheet({ view, status, controls }: { view: CallView; status: ReactNod
       className="mx-auto grid max-w-[420px] [filter:drop-shadow(0_2px_2px_rgb(90_74_30/0.16))_drop-shadow(0_14px_24px_rgb(90_74_30/0.22))] [grid-template-areas:'head''status''fields''controls''talk'] md:max-w-none md:grid-cols-[minmax(0,420px)_minmax(0,22rem)] md:justify-center md:gap-x-8 md:[grid-template-areas:'head_fields''status_fields''controls_fields''talk_fields'] lg:gap-x-12"
     >
       <div className="bg-sheet [grid-area:head]">
-        <TicketHeader number={TEST_CALL_TICKET} />
+        <TicketHeader number={ticket} />
       </div>
 
       <div className="-mt-px bg-sheet px-5 pt-4 [grid-area:status]">{status}</div>
@@ -383,7 +387,7 @@ function TopSheet({ view, status, controls }: { view: CallView; status: ReactNod
         aria-label="Job details"
         className="-mt-px bg-sheet px-5 pt-3 pb-1 [grid-area:fields] md:mt-0 md:max-w-[22rem] md:self-start md:pt-5 md:pb-6"
       >
-        <h2 className={`${SECTION_LABEL} mb-3 hidden border-b-2 border-form pb-2 md:block`}>Job details · No. {TEST_CALL_TICKET}</h2>
+        <h2 className={`${SECTION_LABEL} mb-3 hidden border-b-2 border-form pb-2 md:block`}>Job details · No. {ticket}</h2>
         <dl className="grid gap-1.5 md:gap-4">
           {DETAIL_FIELDS.map((field) => (
             <Field key={field} label={DETAIL_LABELS[field]} value={view.details[field]} />

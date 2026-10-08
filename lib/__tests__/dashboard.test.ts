@@ -2,6 +2,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import { createCallNotesStore, type SavedCallNotes } from "@/lib/call-notes-store";
 import { tellCallStory, type CallEvent } from "@/lib/call-story";
 import { buildDashboard, callTimeLabel, findDashboardCall, savedCallsFor } from "@/lib/dashboard";
+import { ticketNumberFor } from "@/lib/ticket-number";
 import { fakeNotesStorage } from "./fake-notes-storage";
 
 // Tuesday, October 6, 12:00 PM in Miami (UTC-4 in October).
@@ -43,7 +44,7 @@ describe("the Dashboard's recent calls", () => {
     const saved = [testCall("call-1", 5, null), testCall("call-2", 400, null)];
     const { calls } = buildDashboard({ saved, now: NOW });
     expect(calls).toHaveLength(9);
-    expect(calls[0]).toMatchObject({ id: "call-1", whose: "yours", spam: false, number: "04127" });
+    expect(calls[0]).toMatchObject({ id: "call-1", whose: "yours", spam: false, number: ticketNumberFor("call-1") });
     expect(calls.find((call) => call.id === "call-2")?.whose).toBe("yours");
     const times = calls.map((call) => call.at.getTime());
     expect(times).toEqual([...times].sort((a, b) => b - a));
@@ -109,7 +110,7 @@ describe("opening one call", () => {
   it("finds the Visitor's own call", async () => {
     const store = await storeWith([VISITOR_A, testCall("call-a", 5, null)]);
     const call = await findDashboardCall({ callId: "call-a", visitorId: VISITOR_A, now: NOW, store });
-    expect(call).toMatchObject({ id: "call-a", whose: "yours", spam: false, number: "04127" });
+    expect(call).toMatchObject({ id: "call-a", whose: "yours", spam: false, number: ticketNumberFor("call-a") });
     expect(call?.notes.details.name).toBe("Rosa Diaz");
   });
 

@@ -6,8 +6,8 @@
 import { isCallId, type CallNotesStore, type SavedCallNotes } from "@/lib/call-notes-store";
 import type { CallNotes } from "@/lib/call-story";
 import { TIME_ZONE, localDate } from "@/lib/calendar-day";
-import { TEST_CALL_TICKET } from "@/lib/sample-business";
 import { sampleCalls, type SampleCall } from "@/lib/sample-calls";
+import { ticketNumberFor } from "@/lib/ticket-number";
 
 export type DashboardCall = {
   readonly id: string;
@@ -29,7 +29,7 @@ const fromSaved = (saved: SavedCallNotes): DashboardCall => ({
   at: new Date(new Date(saved.savedAt).getTime() - saved.notes.durationMs),
   whose: "yours",
   spam: false,
-  number: TEST_CALL_TICKET,
+  number: ticketNumberFor(saved.callId),
   notes: saved.notes,
 });
 
