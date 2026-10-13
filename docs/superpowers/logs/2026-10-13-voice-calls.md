@@ -18,7 +18,7 @@ Bridge start timings (call 1): SDK 0.5 s, Actor joined 4.2 s, `/api/test-call` a
 | 6 | `01a13742-7c61-799d-85fa-29597fa6efdd` | `01a13742-74b8-7ccd-97ad-545721bebb90` | Spanish recheck after "stay in Spanish to the goodbye" | Fail. Read-back and times now in Spanish. After `bookTime`, Vapi's English filler "One moment." played; the Actor said "Claro" and "Gracias"; Luna's transcriber heard "Claire" and "Gracious", she saved "Claire" as the name and ended in English. Average turn 2765 ms. The founder said not to focus on Spanish: no more Spanish calls; the rest goes to an issue. | 1.68 + 1.72 |
 | 7 | `01a13746-5699-7dd9-a485-862123c619fb` (recorded, **keeper**) | `01a13746-492f-7000-8011-9d9efc7f78f4` | The Sample Call, recording on, English | **Kept.** Report PASS: four details, booked "tomorrow at 9 AM", "You're all set for tomorrow at nine in the morning at …, Thanks for calling Mangrove Air. Have a great day.", then the end. No narration. Average turn 1582 ms. 77 s. Pulled with `--offset-ms -230`; three lines Vapi logged with no length are placed at their real speech start. | 1.28 + 1.35 |
 
-**Total: 7 voice calls.** Luna 10.0 min, Actor 10.5 min (20.5 min of Vapi calls). Budget left: 3.
+**Total: 7 voice calls.** Luna 9.7 min, Actor 10.1 min (19.8 min of Vapi calls). Budget left: 3.
 
 ## Start time (finding 4)
 
