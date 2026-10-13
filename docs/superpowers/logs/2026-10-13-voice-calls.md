@@ -16,3 +16,17 @@ Bridge start timings (call 1): SDK 0.5 s, Actor joined 4.2 s, `/api/test-call` a
 | 4 | `01a1373b-e1ab-7331-9cca-6950402db5b8` | `01a1373b-d564-7eee-88a5-fd9cfc28f1e1` | Change 3: goodbye in the call's language. Actor waits 1.2 s before answering. | **English pass bar met.** Four details, booked, "You're all set … Thanks for calling Mangrove Air. Have a great day.", then the end. No narration. Average turn 1868 ms (slowest 2356). No talking over. Not keeper quality yet: the Actor said "eighty degrees", left out his mom, and said "No" to a correct read-back; Vapi heard Luna's greeting as "Mangrover". | 1.37 + 1.43 |
 | 5 | `01a1373f-be3f-7cc6-8d86-38846d95c642` | `01a1373f-b177-733f-a7f4-021038910366` | Spanish check (finding 2). Also: greeting with a full stop after the name; Actor keeps to its script. | Finding 2 fixed: no narration. Report PASS, average turn 1634 ms. Greeting now heard as "Mangrove Air." But she switched to English after the address (read-back, confirmation, goodbye). | 1.50 + 1.55 |
 | 6 | `01a13742-7c61-799d-85fa-29597fa6efdd` | `01a13742-74b8-7ccd-97ad-545721bebb90` | Spanish recheck after "stay in Spanish to the goodbye" | Fail. Read-back and times now in Spanish. After `bookTime`, Vapi's English filler "One moment." played; the Actor said "Claro" and "Gracias"; Luna's transcriber heard "Claire" and "Gracious", she saved "Claire" as the name and ended in English. Average turn 2765 ms. The founder said not to focus on Spanish: no more Spanish calls; the rest goes to an issue. | 1.68 + 1.72 |
+| 7 | `01a13746-5699-7dd9-a485-862123c619fb` (recorded, **keeper**) | `01a13746-492f-7000-8011-9d9efc7f78f4` | The Sample Call, recording on, English | **Kept.** Report PASS: four details, booked "tomorrow at 9 AM", "You're all set for tomorrow at nine in the morning at …, Thanks for calling Mangrove Air. Have a great day.", then the end. No narration. Average turn 1582 ms. 77 s. Pulled with `--offset-ms -230`; three lines Vapi logged with no length are placed at their real speech start. | 1.28 + 1.35 |
+
+**Total: 7 voice calls.** Luna 10.0 min, Actor 10.5 min (20.5 min of Vapi calls). Budget left: 3.
+
+## Start time (finding 4)
+
+Measured on the bridge page (it runs the same `/api/test-call`, SDK load and room join as the Test Call screen):
+
+- SDK load: 0.1–0.5 s once cached; the Test Call screen now loads it when it opens, so "Call now" no longer waits for it.
+- `/api/test-call` (gate, signed token, Vapi create): 0.7–1.0 s (server log).
+- Room join: 1.0–1.5 s.
+- Join to the end of Luna's greeting: about 5.4 s; the greeting itself lasts about 3 s, so she starts speaking about 2.4 s after the join.
+
+Not measured: the microphone prompt. The built-in browser has no microphone, and the bridge does not use one.

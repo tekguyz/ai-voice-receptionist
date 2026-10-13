@@ -12,11 +12,11 @@
 // VAPI_ASSISTANT_ID from .env.local. Never prints a key.
 
 import { execFileSync, spawnSync } from "node:child_process";
-import { existsSync, mkdtempSync, readFileSync, rmSync, statSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, statSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { RECORDING_OPEN_TIMES } from "../lib/sample-call-recording.ts";
-import { firstSoundMs, hasRecording, sampleCallFile } from "./sample-call-file.ts";
+import { alignUntimedLines, firstSoundMs, hasRecording, sampleCallFile, speechStarts } from "./sample-call-file.ts";
 
 const API = "https://api.vapi.ai";
 const ROOT = path.resolve(import.meta.dirname, "..");
@@ -90,11 +90,22 @@ async function main(): Promise<number> {
     writeFileSync(raw, Buffer.from(await response.arrayBuffer()));
 
     // Mono, 40 kbps, 22 kHz: clear speech, small enough for a phone on mobile data.
+    mkdirSync(path.dirname(AUDIO_FILE), { recursive: true });
     execFileSync("ffmpeg", ["-v", "error", "-y", "-i", raw, "-ac", "1", "-ar", "22050", "-c:a", "libmp3lame", "-b:a", "40k", AUDIO_FILE]);
     const seconds = Number(execFileSync("ffprobe", ["-v", "error", "-show_entries", "format=duration", "-of", "csv=p=0", AUDIO_FILE]).toString().trim());
     const silence = spawnSync("ffmpeg", ["-i", AUDIO_FILE, "-af", "silencedetect=noise=-40dB:d=0.3", "-f", "null", "-"], { encoding: "utf8" }).stderr;
 
-    const file = sampleCallFile(call, { audio: AUDIO, audioOffsetMs: offsetMs, recordedOn: String(call.createdAt ?? "").slice(0, 10) });
+    // Where each side starts speaking, from the stereo recording (left: the
+    // caller, right: Luna), to place the lines Vapi logged with no timing.
+    const stereo = await fetch(`${API}/call/${encodeURIComponent(callId)}/stereo-recording`, { headers: { Authorization: `Bearer ${key}` } });
+    if (!stereo.ok) throw new Error(`Vapi did not send the stereo recording: ${stereo.status}`);
+    const stereoFile = path.join(work, "stereo");
+    writeFileSync(stereoFile, Buffer.from(await stereo.arrayBuffer()));
+    const startsOn = (channel: number) =>
+      speechStarts(spawnSync("ffmpeg", ["-i", stereoFile, "-af", `pan=mono|c0=c${channel},silencedetect=noise=-40dB:d=0.4`, "-f", "null", "-"], { encoding: "utf8" }).stderr);
+    const aligned = alignUntimedLines(call, { user: startsOn(0), bot: startsOn(1) }, offsetMs);
+
+    const file = sampleCallFile(aligned, { audio: AUDIO, audioOffsetMs: offsetMs, recordedOn: String(call.createdAt ?? "").slice(0, 10) });
     writeFileSync(JSON_FILE, `${JSON.stringify(file, null, 2)}\n`);
 
     const firstLine = file.artifact.messages.find((m: any) => m.role !== "tool_calls") as { secondsFromStart?: number } | undefined;
