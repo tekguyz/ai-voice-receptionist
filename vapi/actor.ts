@@ -55,6 +55,9 @@ export function actorAssistant(lang: ActorLanguage = "en") {
     firstMessageMode: "assistant-waits-for-user",
     maxDurationSeconds: MAX_CALL_SECONDS,
     silenceTimeoutSeconds: 30,
+    // A person waits a moment before answering. Without it he answered into
+    // Luna's short pauses and talked over her (voice call 3).
+    startSpeakingPlan: { waitSeconds: 1.2 },
     model: { provider: "openai", model: "gpt-4.1-mini", temperature: 0.6, messages: [{ role: "system", content: PROMPT[lang] }] },
     voice: { provider: "11labs", model: "eleven_flash_v2_5", voiceId: VOICE_ID },
     transcriber: { provider: "deepgram", model: "flux-general-multi", languages: ["en", "es"] },

@@ -30,7 +30,7 @@ describe("Luna's Vapi settings", () => {
     const luna = lunaAssistant() as any;
     expect(luna.model.tools.some((t: any) => t.type === "endCall")).toBe(false);
     expect(luna.endCallPhrases).toEqual(["have a great day", "que tenga un buen día"]);
-    expect(luna.model.messages[0].content).toContain('end with exactly "Thanks for calling Mangrove Air, have a great day!"');
+    expect(luna.model.messages[0].content).toContain('In English, end with exactly "Thanks for calling Mangrove Air, have a great day!"');
     expect(luna.model.messages[0].content).not.toContain("endCall");
     expect(checkLuna({ ...luna, endCallPhrases: [] })).toContain("Luna must be able to end the call.");
   });
@@ -57,6 +57,12 @@ describe("Luna's Vapi settings", () => {
     const model = (lunaAssistant() as any).model;
     expect(model.provider).toBe("openai");
     expect(model.model).toBe("gpt-4.1-mini");
+  });
+
+  // Voice call 3: she ended an English call with the Spanish goodbye.
+  it("say the goodbye in the call's language only", () => {
+    const prompt: string = (lunaAssistant() as any).model.messages[0].content;
+    expect(prompt).toContain('Only if the call is in Spanish, end with exactly "Gracias por llamar a Mangrove Air, ¡que tenga un buen día!" instead.');
   });
 
   it("tell Luna the call limit from MAX_CALL_SECONDS", () => {

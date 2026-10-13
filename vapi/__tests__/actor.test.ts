@@ -29,6 +29,11 @@ describe("the Caller actor's Vapi settings", () => {
     expect((actorAssistant("es") as any).model.messages[0].content).toContain('"cuarenta y cuatro cincuenta Northeast Eighteenth Avenue, Miami"');
   });
 
+  // Voice call 3: he answered into Luna's short pauses and talked over her time offer.
+  it("wait a moment before answering, like a person on the phone", () => {
+    expect((actorAssistant() as any).startSpeakingPlan.waitSeconds).toBeGreaterThanOrEqual(1);
+  });
+
   it("have a Spanish variant of the same persona", () => {
     const prompt: string = (actorAssistant("es") as any).model.messages[0].content;
     expect(prompt).toContain("Marco Delgado");
