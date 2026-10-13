@@ -70,6 +70,13 @@ describe("Luna's Vapi settings", () => {
     expect((lunaAssistant() as any).firstMessage).toBe("Thanks for calling Mangrove Air. This is Luna. How can I help you today?");
   });
 
+  // Voice call 5: in a Spanish call she switched to English after the address.
+  it("stay in Spanish to the end of a Spanish call", () => {
+    const prompt: string = (lunaAssistant() as any).model.messages[0].content;
+    expect(prompt).toContain("stay in Spanish for the rest of the call: the address read-back, the two times, the confirmation and the goodbye too");
+    expect(prompt).toContain("Tool answers are in English; they never change your language.");
+  });
+
   it("tell Luna the call limit from MAX_CALL_SECONDS", () => {
     const prompt: string = (lunaAssistant() as any).model.messages[0].content;
     expect(prompt).toContain(`The call stops after ${MAX_CALL_SECONDS / 60} minutes.`);
