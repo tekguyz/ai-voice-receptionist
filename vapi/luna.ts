@@ -29,16 +29,15 @@ On every call:
 3. Get the caller's name.
 4. Get the service address, then read it back once in a short sentence so the caller can correct it.
 5. Offer exactly these two open times: {{openTime1}}, or {{openTime2}}. Book the one the caller picks.
-6. After booking, confirm in one full sentence with the day, the time and the street address (for example: "You're all set for Tuesday at two in the afternoon at 4450 Northeast 18th Avenue."). Then say goodbye in one short sentence. Only after that, end the call.
+6. After booking, confirm in one full sentence with the day, the time and the street address (for example: "You're all set for Tuesday at two in the afternoon at 4450 Northeast 18th Avenue."). In English, end with exactly "Thanks for calling ${business}, have a great day!" Only if the call is in Spanish, end with exactly "Gracias por llamar a ${business}, ¡que tenga un buen día!" instead. Saying it ends the call, so never say "have a great day" or "que tenga un buen día" before that.
 
 Tools:
 - As soon as you learn the name, the job, the urgency or the address, call ${TOOL.recordDetail} with that one field. If the caller corrects a detail, call it again with the new value. Write values short, the way they would go on a work order. Write the job and the urgency in English. Write a name with capital letters and a space between first and last name (for example "Alejandro Zapatos"); if you only have a first name, write just that. Write addresses as the caller said them, with numbers as digits.
-- When the caller picks a time, call ${TOOL.bookTime} with that time exactly as written above. Never offer or book any other time. If neither time works, say a dispatcher will call back to find a time, and do not book. If ${TOOL.bookTime} answers that the time was not offered, offer the two open times again.
-- Call endCall only after you have spoken the confirmation and the goodbye. Never call endCall in the same reply as ${TOOL.bookTime}.
+- When the caller picks a time, call ${TOOL.bookTime} with that time exactly as written above. Never offer or book any other time. If neither time works, say a dispatcher will call back to find a time, do not book, and end with the goodbye from step 6. If ${TOOL.bookTime} answers that the time was not offered, offer the two open times again.
 
 How you talk:
 - Warm, calm and quick, like a good front desk. One question at a time. Never more than two short sentences in a row.
-- If the caller speaks Spanish, answer in Spanish and stay in Spanish for the rest of the call.
+- If the caller speaks Spanish, answer in Spanish and stay in Spanish for the rest of the call: the address read-back, the two times, the confirmation and the goodbye too (for example: "Listo, queda agendado para el martes a las dos de la tarde en el 4450 Northeast 18th Avenue."). Tool answers are in English; they never change your language.
 - Never give prices. Say the technician gives a quote on site.
 - If the caller asks something off topic, answer in one short sentence and steer back to their service call.
 - The call stops after ${MAX_CALL_SECONDS / 60} minutes. Keep it moving; aim to finish within 2 minutes.
@@ -48,13 +47,14 @@ How you talk:
 export function lunaAssistant() {
   return {
     name: LUNA_NAME,
-    firstMessage: `Thanks for calling ${business}, this is ${luna}. How can I help you today?`,
+    // A full stop after the name: "Mangrove Air, this is" ran together and was heard as "Mangrover".
+    firstMessage: `Thanks for calling ${business}. This is ${luna}. How can I help you today?`,
     firstMessageMode: "assistant-speaks-first",
     maxDurationSeconds: MAX_CALL_SECONDS,
     silenceTimeoutSeconds: 30,
     model: {
-      provider: "google",
-      model: "gemini-3.5-flash",
+      provider: "openai",
+      model: "gpt-4.1-mini",
       temperature: 0.3,
       messages: [{ role: "system", content: SYSTEM_PROMPT }],
       tools: [
@@ -86,9 +86,11 @@ export function lunaAssistant() {
             },
           },
         },
-        { type: "endCall" },
       ],
     },
+    // She ends the call by saying her goodbye (step 6), not with an endCall
+    // tool: with the tool she booked and hung up in one reply (issue #15).
+    endCallPhrases: ["have a great day", "que tenga un buen día"],
     voice: { provider: "11labs", model: "eleven_flash_v2_5", voiceId: VOICE_ID },
     transcriber: { provider: "deepgram", model: "flux-general-multi", languages: ["en", "es"] },
     artifactPlan: { recordingEnabled: false, videoRecordingEnabled: false },
@@ -114,7 +116,7 @@ export function checkLuna(saved: unknown): string[] {
     else if (name === TOOL.recordDetail && tool.async !== true) problems.push(`Tool ${name} must be async.`);
     else if (name === TOOL.bookTime && tool.async === true) problems.push(`Tool ${name} must wait for the server's answer (not async).`);
   }
-  if (!tools.some((t) => t.type === "endCall")) problems.push("Luna must be able to end the call.");
+  if (!tools.some((t) => t.type === "endCall") && !(luna.endCallPhrases ?? []).length) problems.push("Luna must be able to end the call.");
   const prompt: string = luna.model?.messages?.[0]?.content ?? "";
   if (!prompt.includes("{{openTime1}}") || !prompt.includes("{{openTime2}}")) problems.push("The prompt must offer {{openTime1}} and {{openTime2}}.");
   const messages: string[] = luna.clientMessages ?? [];

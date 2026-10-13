@@ -1,15 +1,20 @@
-// The Sample Call: one Test Call the founder recorded on purpose (ADR 0004),
-// and the player that emits its Call Story events in step with its sound.
+// The Sample Call: one real call to Luna, made by an AI actor that plays the
+// caller and recorded on purpose (ADR 0004), and the player that emits its
+// Call Story events in step with its sound.
 //
 // lib/sample-call.json keeps the shape of the call's Vapi report, so the same
 // code that reads a Test Call's report reads it. `npm run sample-call:pull`
-// writes it and the sound (public/). Until then it is a text-only placeholder
-// with no sound, played on a silent clock. Every caller detail is made up.
+// writes it and the sound (public/). Without sound it plays on a silent
+// clock. Every caller detail is made up.
 
 import type { CallHandlers, RunningCall } from "@/lib/call-source";
 import { callEventsFromReport, summaryOfReport } from "@/lib/call-notes-from-report";
-import type { CallEvent } from "@/lib/call-story";
+import { tellCallStory, type CallEvent } from "@/lib/call-story";
 import recorded from "@/lib/sample-call.json";
+import { SAMPLE_BUSINESS } from "@/lib/sample-business";
+
+/** One line on the call screen while the Sample Call plays. */
+export const SAMPLE_CALL_CREDIT = `A real call to ${SAMPLE_BUSINESS.receptionistName}. The caller is an AI actor.`;
 
 /** How much later each event comes in the sound than Vapi's clock says. */
 const offsetMs: number = recorded.audioOffsetMs;
@@ -19,8 +24,12 @@ export const SAMPLE_CALL_EVENTS: readonly CallEvent[] = callEventsFromReport(rec
   atMs: Math.max(0, event.atMs + offsetMs),
 }));
 
-/** Vapi's summary of the call, shown on its Call Notes like the Dashboard's sample calls. */
-export const SAMPLE_CALL_SUMMARY: string = summaryOfReport(recorded) ?? "";
+/**
+ * Vapi's summary of the call, shown on its Call Notes like the Dashboard's
+ * sample calls. Vapi sent none for the recorded call, so, like a Test Call's
+ * notes, it is built from the details.
+ */
+export const SAMPLE_CALL_SUMMARY: string = summaryOfReport(recorded) ?? tellCallStory(SAMPLE_CALL_EVENTS).notes?.summary ?? "";
 
 /** The sound's address in public/, or null while the Sample Call has none. */
 export const SAMPLE_CALL_AUDIO: string | null = recorded.audio;

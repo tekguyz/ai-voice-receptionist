@@ -1,31 +1,135 @@
 {
-  "about": "PLACEHOLDER: text only, no sound. `npm run sample-call:pull` replaces this file with the founder's recorded call (issue #8). Every caller detail is made up.",
-  "audio": null,
-  "audioOffsetMs": 0,
-  "endedReason": "assistant-ended-call",
-  "durationSeconds": 30,
+  "about": "A real call to Luna by an AI actor that plays the caller, 2026-10-13. Pulled by `npm run sample-call:pull` (issue #8). Every caller detail is made up.",
+  "audio": "/sample-call.mp3",
+  "audioOffsetMs": -230,
+  "endedReason": "assistant-said-end-call-phrase",
+  "durationSeconds": 77,
   "analysis": {
-    "summary": "Marco Delgado's AC stopped cooling last night and it's 85 in the house. His mom is staying with him, so it's urgent. Booked for tomorrow at 9 AM."
+    "summary": ""
   },
   "call": {
-    "assistantOverrides": { "variableValues": { "openTime1": "tomorrow at 9 AM", "openTime2": "tomorrow at 2 PM" } }
+    "assistantOverrides": {
+      "variableValues": {
+        "openTime1": "tomorrow at 9 AM",
+        "openTime2": "tomorrow at 2 PM"
+      }
+    }
   },
   "artifact": {
     "messages": [
-      { "role": "bot", "message": "Thanks for calling Mangrove Air, this is Luna. How can I help?", "secondsFromStart": 0 },
-      { "role": "user", "message": "Hi, my AC stopped cooling last night and it's 85 in the house.", "secondsFromStart": 3.5 },
-      { "role": "tool_calls", "toolCalls": [{ "function": { "name": "recordDetail", "arguments": "{\"field\":\"job\",\"value\":\"AC not cooling\"}" } }], "secondsFromStart": 5 },
-      { "role": "bot", "message": "I'm sorry, that's no fun in this heat. Is anyone at home at risk, like a baby or someone elderly?", "secondsFromStart": 7.5 },
-      { "role": "user", "message": "My mom is staying with us, so as soon as possible, please.", "secondsFromStart": 11 },
-      { "role": "tool_calls", "toolCalls": [{ "function": { "name": "recordDetail", "arguments": "{\"field\":\"urgency\",\"value\":\"Urgent, as soon as possible\"}" } }], "secondsFromStart": 12.5 },
-      { "role": "bot", "message": "Understood. Can I get your name and the address of the home?", "secondsFromStart": 14.5 },
-      { "role": "user", "message": "Marco Delgado, 1207 Mango Tree Lane in Kendall.", "secondsFromStart": 17.5 },
-      { "role": "tool_calls", "toolCalls": [{ "function": { "name": "recordDetail", "arguments": "{\"field\":\"name\",\"value\":\"Marco Delgado\"}" } }], "secondsFromStart": 18.5 },
-      { "role": "tool_calls", "toolCalls": [{ "function": { "name": "recordDetail", "arguments": "{\"field\":\"address\",\"value\":\"1207 Mango Tree Lane, Kendall\"}" } }], "secondsFromStart": 19 },
-      { "role": "bot", "message": "Thanks, Marco. I have tomorrow at 9 AM or tomorrow at 2 PM. Which works?", "secondsFromStart": 21 },
-      { "role": "user", "message": "Nine in the morning, please.", "secondsFromStart": 24.5 },
-      { "role": "tool_calls", "toolCalls": [{ "function": { "name": "bookTime", "arguments": "{\"time\":\"tomorrow at 9 AM\"}" } }], "secondsFromStart": 25.5 },
-      { "role": "bot", "message": "You're booked for tomorrow at 9 AM. You'll get a text to confirm. Stay cool, Marco!", "secondsFromStart": 26.5 }
+      {
+        "role": "bot",
+        "message": "Thanks for calling Mangrove Air. This is Luna. How can I help you today?",
+        "secondsFromStart": 1.09
+      },
+      {
+        "role": "user",
+        "message": "My AC stopped cooling last night, and it is eighty five degrees in the house.",
+        "secondsFromStart": 6.399
+      },
+      {
+        "role": "bot",
+        "message": "I'm sorry to hear that your AC stopped cooling. Would you say this is an urgent issue that needs to be fixed as soon as possible?",
+        "secondsFromStart": 11.971
+      },
+      {
+        "role": "user",
+        "message": "It's urgent. My mom is staying with me.",
+        "secondsFromStart": 20.846
+      },
+      {
+        "role": "bot",
+        "message": "you for letting me know. May I have your name, please?",
+        "secondsFromStart": 23.739
+      },
+      {
+        "role": "user",
+        "message": "Marco Delgado.",
+        "secondsFromStart": 28.847
+      },
+      {
+        "role": "bot",
+        "message": "Thank you, Marco. What is the address where the service is needed?",
+        "secondsFromStart": 31.579
+      },
+      {
+        "role": "tool_calls",
+        "toolCalls": [
+          {
+            "function": {
+              "name": "recordDetail",
+              "arguments": "{\"field\": \"name\", \"value\": \"Marco Delgado\"}"
+            }
+          }
+        ],
+        "secondsFromStart": 31.803
+      },
+      {
+        "role": "user",
+        "message": "Forty four fifty Northeast eighteenth Avenue, Miami.",
+        "secondsFromStart": 36.847
+      },
+      {
+        "role": "tool_calls",
+        "toolCalls": [
+          {
+            "function": {
+              "name": "recordDetail",
+              "arguments": "{\"field\": \"job\", \"value\": \"AC not cooling\"}"
+            }
+          },
+          {
+            "function": {
+              "name": "recordDetail",
+              "arguments": "{\"field\": \"urgency\", \"value\": \"urgent\"}"
+            }
+          },
+          {
+            "function": {
+              "name": "recordDetail",
+              "arguments": "{\n  \"field\": \"address\",\n  \"value\": \"4450 Northeast 18th Avenue, Miami\"\n}"
+            }
+          }
+        ],
+        "secondsFromStart": 42.108
+      },
+      {
+        "role": "bot",
+        "message": "Just to confirm, the address is four four five zero Northeast Eighteenth Avenue, Miami. Right? Also, I can offer you two open times for a technician to come. Tomorrow at nine in the morning or tomorrow at two in the afternoon, which works better for you?",
+        "secondsFromStart": 43.924
+      },
+      {
+        "role": "user",
+        "message": "Yes. That's right. Tomorrow at nine in the morning works.",
+        "secondsFromStart": 62.159
+      },
+      {
+        "role": "tool_calls",
+        "toolCalls": [
+          {
+            "function": {
+              "name": "bookTime",
+              "arguments": "{\"time\": \"tomorrow at 9 AM\"}"
+            }
+          }
+        ],
+        "secondsFromStart": 65.276
+      },
+      {
+        "role": "bot",
+        "message": "One moment.",
+        "secondsFromStart": 65.604
+      },
+      {
+        "role": "bot",
+        "message": "You're all set for tomorrow at nine in the morning at four four five Northeast Eighteenth Avenue, Miami. Thanks for calling Mangrove Air. Have a great day.",
+        "secondsFromStart": 67.217
+      },
+      {
+        "role": "user",
+        "message": "Okay.",
+        "secondsFromStart": 68.873
+      }
     ]
   }
 }

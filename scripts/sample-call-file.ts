@@ -45,7 +45,7 @@ export function sampleCallFile(call: unknown, { audio, audioOffsetMs, recordedOn
   const c = record(call);
   const values = record(record(c.assistantOverrides).variableValues);
   return {
-    about: `The founder's recorded Test Call, ${recordedOn}. Pulled by \`npm run sample-call:pull\` (issue #8). Every caller detail is made up.`,
+    about: `A real call to Luna by an AI actor that plays the caller, ${recordedOn}. Pulled by \`npm run sample-call:pull\` (issue #8). Every caller detail is made up.`,
     audio,
     audioOffsetMs,
     endedReason: typeof c.endedReason === "string" ? c.endedReason : "",
@@ -68,4 +68,43 @@ export function firstSoundMs(silencedetectLog: string): number {
 export function hasRecording(call: unknown): boolean {
   const artifact = record(record(call).artifact);
   return Boolean(record(record(artifact.recording).mono).combinedUrl || artifact.recordingUrl || record(call).recordingUrl);
+}
+
+/** Where speech starts on one side of the recording, in seconds, from ffmpeg's `silencedetect` output for that channel. */
+export function speechStarts(silencedetectLog: string): number[] {
+  const firstSilence = silencedetectLog.match(/silence_start: ([\d.]+)/);
+  const starts = [...silencedetectLog.matchAll(/silence_end: ([\d.]+)/g)].map((m) => Number(m[1]));
+  return !firstSilence || Number(firstSilence[1]) > 0.05 ? [0, ...starts] : starts;
+}
+
+/**
+ * Vapi logs some lines with no length (`duration: 0`) and a time seconds too
+ * late, after the line was spoken. Each such line moves to the first speech
+ * start on its own side of the recording after that side's last line ended
+ * and after the last line Vapi did time; never later than Vapi logged it.
+ * `starts` are in the recording's clock, which runs `offsetMs` ahead of the
+ * call's (the same offset as `--offset-ms`). Lines stay in time order.
+ */
+export function alignUntimedLines(call: unknown, starts: { user: number[]; bot: number[] }, offsetMs: number): unknown {
+  const c = record(call);
+  const artifact = record(c.artifact);
+  const messages = (Array.isArray(artifact.messages) ? artifact.messages : []).map((m: unknown) => ({ ...record(m) }));
+  const sideOf = (role: unknown) => (role === "user" ? "user" : role === "bot" || role === "assistant" ? "bot" : null);
+  const lastEnd = { user: -Infinity, bot: -Infinity };
+  let lastTimedStart = -Infinity;
+  for (const m of messages) {
+    const side = sideOf(m.role);
+    if (!side || typeof m.secondsFromStart !== "number") continue;
+    if (m.duration === 0) {
+      const after = Math.max(lastEnd[side], lastTimedStart);
+      const start = starts[side].map((s) => s - offsetMs / 1000).find((s) => s > after);
+      if (start !== undefined && start < m.secondsFromStart) m.secondsFromStart = Math.round(start * 1000) / 1000;
+    } else if (typeof m.duration === "number") {
+      lastTimedStart = m.secondsFromStart;
+    }
+    lastEnd[side] = m.secondsFromStart + (typeof m.duration === "number" ? m.duration / 1000 : 0);
+  }
+  const at = (m: Record<string, any>) => (typeof m.secondsFromStart === "number" ? m.secondsFromStart : 0);
+  const ordered = messages.map((m, i) => ({ m, i })).sort((a, b) => at(a.m) - at(b.m) || a.i - b.i).map(({ m }) => m);
+  return { ...c, artifact: { ...artifact, messages: ordered } };
 }

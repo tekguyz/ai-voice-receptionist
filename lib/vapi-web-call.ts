@@ -64,7 +64,7 @@ export function vapiWebCallCreator({
    * Vapi gets past Deployment Protection on a Preview.
    */
   webhook?: { url: string; secret: string; protectionBypass?: string };
-  /** Record this call's sound. Only for the founder's Sample Call (lib/sample-call-recording.ts). */
+  /** Record this call's sound. Only for the Sample Call (lib/sample-call-recording.ts). */
   record?: boolean;
   fetchImpl?: typeof fetch;
   /** A clock in milliseconds. */

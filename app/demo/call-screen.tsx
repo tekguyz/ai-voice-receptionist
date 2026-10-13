@@ -26,12 +26,12 @@ import {
 import { CallNotesSheet } from "@/app/_ui/call-notes";
 import type { CallHandlers, CallSource, RunningCall, StartFailure } from "@/lib/call-source";
 import { DETAIL_FIELDS, tellCallStory, type CallEvent, type CallNotes, type CallView } from "@/lib/call-story";
-import { SAMPLE_CALL_SUMMARY, createSampleCallPlayer, type RunningSampleCall, type SampleCallSource } from "@/lib/sample-call";
+import { SAMPLE_CALL_CREDIT, SAMPLE_CALL_SUMMARY, createSampleCallPlayer, type RunningSampleCall, type SampleCallSource } from "@/lib/sample-call";
 import { fetchSavedNotes, watchSavedNotes } from "@/lib/saved-notes";
 import { SAMPLE_BUSINESS, TEST_CALL_TICKET } from "@/lib/sample-business";
 import { ticketNumberFor } from "@/lib/ticket-number";
 import { SITE_NAME } from "@/lib/site";
-import { browserVapiSourceDeps } from "@/lib/vapi-browser";
+import { browserVapiSourceDeps, preloadVapi } from "@/lib/vapi-browser";
 import { createVapiSource } from "@/lib/vapi-source";
 
 const FAILURE_NOTICES: Record<StartFailure, string> = {
@@ -87,6 +87,11 @@ export function CallScreen() {
     },
     [],
   );
+
+  // "Call now" should not wait for the SDK's download (issue #15).
+  useEffect(() => {
+    preloadVapi().catch(() => {});
+  }, []);
 
   const mode: Mode = phase.kind === "running" ? phase.mode : "test";
   // The Sample Call carries its own written summary, like the Dashboard's calls.
@@ -314,11 +319,14 @@ export function CallScreen() {
     case "running":
       // The Sample Call is a playback, not an open line: no lamp.
       status = (
-        <p className={CALL_STATUS}>
-          {phase.mode === "test" ? <OnTheLine /> : <PlayIcon />}
-          {phase.mode === "test" ? "On the line" : paused ? "Paused" : "Sample Call"}
-          <span className="ml-auto text-form">{formatTime(elapsedMs)}</span>
-        </p>
+        <>
+          <p className={CALL_STATUS}>
+            {phase.mode === "test" ? <OnTheLine /> : <PlayIcon />}
+            {phase.mode === "test" ? "On the line" : paused ? "Paused" : "Sample Call"}
+            <span className="ml-auto text-form">{formatTime(elapsedMs)}</span>
+          </p>
+          {phase.mode === "sample" && <p className="mt-1 text-sm text-print-muted">{SAMPLE_CALL_CREDIT}</p>}
+        </>
       );
       controls =
         phase.mode === "test" ? (

@@ -19,11 +19,20 @@ describe("Luna's Vapi settings", () => {
   });
 
   // From the founder's test calls on 2026-10-05.
-  it("read the address back, write names as first and last, and confirm before hanging up", () => {
+  it("read the address back and write names as first and last", () => {
     const prompt: string = (lunaAssistant() as any).model.messages[0].content;
     expect(prompt).toMatch(/read it back/i);
     expect(prompt).toContain("a space between first and last name");
-    expect(prompt).toMatch(/Never call endCall in the same reply as/);
+  });
+
+  // Issue #15, finding 1: with an endCall tool she booked and hung up in one reply, with no confirmation.
+  it("end the call by her goodbye phrase, not a tool, so she cannot hang up before confirming", () => {
+    const luna = lunaAssistant() as any;
+    expect(luna.model.tools.some((t: any) => t.type === "endCall")).toBe(false);
+    expect(luna.endCallPhrases).toEqual(["have a great day", "que tenga un buen día"]);
+    expect(luna.model.messages[0].content).toContain('In English, end with exactly "Thanks for calling Mangrove Air, have a great day!"');
+    expect(luna.model.messages[0].content).not.toContain("endCall");
+    expect(checkLuna({ ...luna, endCallPhrases: [] })).toContain("Luna must be able to end the call.");
   });
 
   it("flag recording, a longer call, a server URL or a missing tool", () => {
@@ -41,6 +50,37 @@ describe("Luna's Vapi settings", () => {
     const luna = lunaAssistant() as any;
     expect(luna).not.toHaveProperty("endCallMessage");
     expect(checkLuna({ ...luna, endCallMessage: "Goodbye!" })).toContain("Luna must not have an endCallMessage (she says goodbye herself).");
+  });
+
+  // Issue #15: Gemini 3.5 Flash hung up without confirming and read its notes aloud.
+  it("use a GPT-4.1-class mini model", () => {
+    const model = (lunaAssistant() as any).model;
+    expect(model.provider).toBe("openai");
+    expect(model.model).toBe("gpt-4.1-mini");
+  });
+
+  // Voice call 3: she ended an English call with the Spanish goodbye.
+  it("say the goodbye in the call's language only", () => {
+    const prompt: string = (lunaAssistant() as any).model.messages[0].content;
+    expect(prompt).toContain('Only if the call is in Spanish, end with exactly "Gracias por llamar a Mangrove Air, ¡que tenga un buen día!" instead.');
+  });
+
+  // Voice calls 1-4: "Mangrove Air, this is Luna" ran together and was heard as "Mangrover".
+  it("say the business name, then stop, in the greeting", () => {
+    expect((lunaAssistant() as any).firstMessage).toBe("Thanks for calling Mangrove Air. This is Luna. How can I help you today?");
+  });
+
+  // Voice call 5: in a Spanish call she switched to English after the address.
+  it("stay in Spanish to the end of a Spanish call", () => {
+    const prompt: string = (lunaAssistant() as any).model.messages[0].content;
+    expect(prompt).toContain("stay in Spanish for the rest of the call: the address read-back, the two times, the confirmation and the goodbye too");
+    expect(prompt).toContain("Tool answers are in English; they never change your language.");
+  });
+
+  // Review: with no endCall tool, the goodbye phrase is her only way to hang up, booked or not.
+  it("say the goodbye after the dispatcher line too, when nothing is booked", () => {
+    const prompt: string = (lunaAssistant() as any).model.messages[0].content;
+    expect(prompt).toContain("If neither time works, say a dispatcher will call back to find a time, do not book, and end with the goodbye from step 6.");
   });
 
   it("tell Luna the call limit from MAX_CALL_SECONDS", () => {
