@@ -45,7 +45,7 @@ export function sampleCallFile(call: unknown, { audio, audioOffsetMs, recordedOn
   const c = record(call);
   const values = record(record(c.assistantOverrides).variableValues);
   return {
-    about: `The founder's recorded Test Call, ${recordedOn}. Pulled by \`npm run sample-call:pull\` (issue #8). Every caller detail is made up.`,
+    about: `A real call to Luna by an AI actor that plays the caller, ${recordedOn}. Pulled by \`npm run sample-call:pull\` (issue #8). Every caller detail is made up.`,
     audio,
     audioOffsetMs,
     endedReason: typeof c.endedReason === "string" ? c.endedReason : "",

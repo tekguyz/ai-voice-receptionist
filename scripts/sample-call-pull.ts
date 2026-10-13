@@ -1,4 +1,4 @@
-// Makes the founder's recorded Test Call the Sample Call (issue #8, ADR 0004).
+// Makes the AI actor's recorded call to Luna the Sample Call (issue #8, ADR 0004).
 //
 //   npm run sample-call:pull                         the newest recorded call
 //   npm run sample-call:pull -- <callId>             that call
@@ -67,7 +67,7 @@ async function main(): Promise<number> {
     const calls: any[] = await vapi(`/call?assistantId=${encodeURIComponent(assistantId)}&limit=50`);
     const recorded = calls.filter((c) => c.status === "ended" && hasRecording(c)).sort((a, b) => String(b.createdAt).localeCompare(String(a.createdAt)));
     if (recorded.length === 0) {
-      console.error("No recorded call found. Make the Test Call with SAMPLE_CALL_RECORDING=on first (README, \"Record the Sample Call\").");
+      console.error("No recorded call found. Make the call with SAMPLE_CALL_RECORDING=on first (README, \"Make the Sample Call\").");
       return 1;
     }
     callId = recorded[0].id;

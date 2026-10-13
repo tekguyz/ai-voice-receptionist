@@ -36,6 +36,12 @@ describe("the Sample Call file from a recorded Vapi call", () => {
     expect(text).not.toContain("tool_call_result");
   });
 
+  it("says the call was made by the AI actor, every detail made up", () => {
+    expect(file().about).toBe(
+      "A real call to Luna by an AI actor that plays the caller, 2026-10-09. Pulled by `npm run sample-call:pull` (issue #8). Every caller detail is made up.",
+    );
+  });
+
   it("takes the length from the call's start and end", () => {
     expect(callSeconds(vapiCall())).toBe(75.4);
     expect(callSeconds({})).toBe(0);
