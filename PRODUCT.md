@@ -83,7 +83,8 @@ in live as they talk.
 ## Evidence on Hand
 
 - A real, working Test Call once the Receptionist ships; it is the proof.
-- The Sample Call: one Test Call the founder records on purpose.
+- The Sample Call: one real call to the Receptionist, made by an AI actor that
+  plays the caller, recorded on purpose.
 - None measured: no calls recovered, no revenue, no customer quotes. Do not
   invent any, and do not reuse the old demo's unsourced industry statistics.
 

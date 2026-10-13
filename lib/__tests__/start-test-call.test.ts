@@ -217,7 +217,7 @@ describe("creating the Vapi web call", () => {
     expect(JSON.parse(String(init.body)).assistantOverrides).not.toHaveProperty("server");
   });
 
-  it("asks Vapi to record only when told to: the founder's Sample Call", async () => {
+  it("asks Vapi to record only when told to: the Sample Call", async () => {
     const fetchImpl = vi.fn(async (_url: string | URL | Request, _init?: RequestInit) => new Response(JSON.stringify(VAPI_CALL), { status: 201 }));
     const create = vapiWebCallCreator({ privateKey: PRIVATE_KEY, orgId: ORG_ID, assistantId: "asst-1", fetchImpl, record: true });
     await create({ visitorId: VISITOR, openTimes: OPEN_TIMES });

@@ -4,6 +4,7 @@ import { describe, expect, it } from "vitest";
 import { tellCallStory, type CallEvent } from "@/lib/call-story";
 import {
   SAMPLE_CALL_AUDIO,
+  SAMPLE_CALL_CREDIT,
   SAMPLE_CALL_EVENTS,
   SAMPLE_CALL_SUMMARY,
   createSampleCallPlayer,
@@ -31,6 +32,10 @@ describe("the Sample Call", () => {
     const times = SAMPLE_CALL_EVENTS.map((event) => event.atMs);
     expect(times).toEqual([...times].sort((a, b) => a - b));
     expect(SAMPLE_CALL_EVENTS.at(-1)?.type).toBe("ended");
+  });
+
+  it("says who the caller is while it plays", () => {
+    expect(SAMPLE_CALL_CREDIT).toBe("A real call to Luna. The caller is an AI actor.");
   });
 
   it("has a summary", () => {

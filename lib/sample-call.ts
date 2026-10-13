@@ -1,15 +1,20 @@
-// The Sample Call: one Test Call the founder recorded on purpose (ADR 0004),
-// and the player that emits its Call Story events in step with its sound.
+// The Sample Call: one real call to Luna, made by an AI actor that plays the
+// caller and recorded on purpose (ADR 0004), and the player that emits its
+// Call Story events in step with its sound.
 //
 // lib/sample-call.json keeps the shape of the call's Vapi report, so the same
 // code that reads a Test Call's report reads it. `npm run sample-call:pull`
-// writes it and the sound (public/). Until then it is a text-only placeholder
-// with no sound, played on a silent clock. Every caller detail is made up.
+// writes it and the sound (public/). Without sound it plays on a silent
+// clock. Every caller detail is made up.
 
 import type { CallHandlers, RunningCall } from "@/lib/call-source";
 import { callEventsFromReport, summaryOfReport } from "@/lib/call-notes-from-report";
 import { tellCallStory, type CallEvent } from "@/lib/call-story";
 import recorded from "@/lib/sample-call.json";
+import { SAMPLE_BUSINESS } from "@/lib/sample-business";
+
+/** One line on the call screen while the Sample Call plays. */
+export const SAMPLE_CALL_CREDIT = `A real call to ${SAMPLE_BUSINESS.receptionistName}. The caller is an AI actor.`;
 
 /** How much later each event comes in the sound than Vapi's clock says. */
 const offsetMs: number = recorded.audioOffsetMs;

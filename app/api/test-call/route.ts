@@ -19,7 +19,7 @@ export async function POST(request: Request) {
     );
     return Response.json({ reason: "unavailable" }, { status: 503, headers: { "Cache-Control": "no-store" } });
   }
-  // Off for every Visitor. On only for the founder's Sample Call, on the laptop.
+  // Off for every Visitor. On only for the Sample Call, on the laptop.
   const recording = sampleCallRecording(process.env);
   if (recording) console.warn("Start Test Call: SAMPLE_CALL_RECORDING is on. This call is recorded for the Sample Call.");
   else if (process.env.SAMPLE_CALL_RECORDING === "on") {

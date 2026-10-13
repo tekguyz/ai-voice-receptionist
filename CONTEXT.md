@@ -27,7 +27,8 @@ _Avoid_: Demo call, live call, outbound call
 **Sample Call**:
 A recorded call that plays on the same screens as a Test Call. It plays when a
 Test Call cannot happen, for example at a call limit or with no microphone.
-It is one real Test Call that the founder made and recorded on purpose.
+It is one real call to the Receptionist, made by an AI actor that plays the
+caller, recorded on purpose.
 _Avoid_: Scripted phone, simulator, fake call
 
 **Call Notes**:

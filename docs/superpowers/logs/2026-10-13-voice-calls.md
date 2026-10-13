@@ -30,3 +30,7 @@ Measured on the bridge page (it runs the same `/api/test-call`, SDK load and roo
 - Join to the end of Luna's greeting: about 5.4 s; the greeting itself lasts about 3 s, so she starts speaking about 2.4 s after the join.
 
 Not measured: the microphone prompt. The built-in browser has no microphone, and the bridge does not use one.
+
+## Deleted from Vapi (founder's yes, 2026-10-13)
+
+`01a13731-41c4-7000-823c-410bf1f48bae` (bridge check) and `01a13746-5699-7dd9-a485-862123c619fb` (keeper), with `npm run sample-call:pull -- --delete <callId>`. Checked after: the recording answers 404, and the call record keeps no transcript and no messages, only its times, cost and settings.

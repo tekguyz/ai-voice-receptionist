@@ -16,10 +16,10 @@ Live site: https://ai-voice-receptionist-tekguyz.vercel.app
 | | |
 |---|---|
 | Phase | Building |
-| Shipped | [#2 Step 1: setup and the Call Story](https://github.com/tekguyz/ai-voice-receptionist/issues/2) · [#3 Step 2: the look](https://github.com/tekguyz/ai-voice-receptionist/issues/3) · [#4 Step 3: live Test Call](https://github.com/tekguyz/ai-voice-receptionist/issues/4) · [#5 Step 4: Call Notes saved](https://github.com/tekguyz/ai-voice-receptionist/issues/5) · [#6 Step 5: Dashboard](https://github.com/tekguyz/ai-voice-receptionist/issues/6) · [#7 Step 6: landing page and design pass](https://github.com/tekguyz/ai-voice-receptionist/issues/7) |
-| Known issues | [#15 Tune Luna: model, hang-up, speed](https://github.com/tekguyz/ai-voice-receptionist/issues/15) |
-| Next | [#8 Step 7: record the real Sample Call](https://github.com/tekguyz/ai-voice-receptionist/issues/8) (built; waits for the founder's one recorded call, near the end of the build) |
-| Updated | 2026-10-08 |
+| Shipped | [#2 Step 1: setup and the Call Story](https://github.com/tekguyz/ai-voice-receptionist/issues/2) · [#3 Step 2: the look](https://github.com/tekguyz/ai-voice-receptionist/issues/3) · [#4 Step 3: live Test Call](https://github.com/tekguyz/ai-voice-receptionist/issues/4) · [#5 Step 4: Call Notes saved](https://github.com/tekguyz/ai-voice-receptionist/issues/5) · [#6 Step 5: Dashboard](https://github.com/tekguyz/ai-voice-receptionist/issues/6) · [#7 Step 6: landing page and design pass](https://github.com/tekguyz/ai-voice-receptionist/issues/7) · [#8 Step 7: the real Sample Call](https://github.com/tekguyz/ai-voice-receptionist/issues/8) · [#15 Tune Luna](https://github.com/tekguyz/ai-voice-receptionist/issues/15) |
+| Known issues | [#23 Luna in Spanish: ends in English, mishears short replies](https://github.com/tekguyz/ai-voice-receptionist/issues/23) |
+| Next | [#9 Step 8: Showcase and go live](https://github.com/tekguyz/ai-voice-receptionist/issues/9) |
+| Updated | 2026-10-13 |
 
 ## What it does
 
@@ -28,10 +28,11 @@ Built so far:
 - A landing page at `/` says what it does, shows a filled-in sample work order and has one "Try the demo" button. Only `/` is in search; demo screens are `noindex`. A link to it shows a preview card drawn by the app (`app/opengraph-image.tsx`). The demo banner has "Leave the demo" and "Built by TEKGUYZ". The Call Notes and the Dashboard end with "Want this answering for your shop? Talk to TEKGUYZ".
 - A Visitor presses "Try the demo" (a cookie, no sign-in). Then "Call now" talks to Luna through the browser microphone. Words and tags fill in live. A call stops at 3 minutes. Limits are 1 Test Call per Visitor a day, 2 per IP address a day, 5 per site a day, and 30 a month. At a limit, with a blocked microphone, or when the call cannot connect, the Sample Call is offered.
 - Turns a call's events (lines, captured details, a booking, the end) into the live call view and the Call Notes. This is the Call Story, in `lib/call-story.ts`.
-- Plays a Sample Call on a plain screen at `/demo`: lines and detail tags appear in time, then the Call Notes show a summary, the details, the booked time and a preview of the confirmation text. The Visitor can pause, resume or stop it. Once the founder's call is recorded, it plays with sound, and the words and tags follow the sound's own clock. Until then it is a text-only placeholder.
+- Plays a Sample Call on a plain screen at `/demo`: lines and detail tags appear in time, then the Call Notes show a summary, the details, the booked time and a preview of the confirmation text. The Visitor can pause, resume or stop it. It plays with sound: one real call to Luna made by an AI actor, and the words and tags follow the sound's own clock. One line says so: "A real call to Luna. The caller is an AI actor."
 - The Dashboard shows the Owner's side: three totals and recent calls, sample calls mixed with the Visitor's own.
 - After a Test Call, the Call Notes are saved for the Visitor and the screen fills in from the saved copy. Each entry is deleted after 7 days. The Vapi webhook (`app/api/vapi/webhook`) refuses any request without Vapi's secret.
-- The Receptionist answers in Spanish when the caller speaks Spanish (checked on test calls, 2026-10-05). The screens stay in English.
+- The Receptionist answers in Spanish when the caller speaks Spanish (checked on test calls, 2026-10-05). The screens stay in English. Known gap: she can end a Spanish call in English ([#23](https://github.com/tekguyz/ai-voice-receptionist/issues/23)).
+- Luna runs on `gpt-4.1-mini`. She confirms the booking, then ends the call by saying "Thanks for calling Mangrove Air, have a great day!" (no end-call tool). Average reply time on the 2026-10-13 calls: 1.6 to 1.9 s. The Test Call screen loads the Vapi SDK when it opens.
 
 ## What it never does
 
@@ -70,27 +71,33 @@ To test what would be sent without sending: `npm run vapi:sync -- --dry-run`.
 
 The Sample Business and Receptionist names live in one file, `lib/sample-business.ts`.
 
-## Record the Sample Call
+## Make the Sample Call
 
-The Sample Call is one real Test Call the founder makes with made-up details, recorded on purpose ([ADR 0004](docs/adr/0004-no-audio-kept.md)). Recording is off for every Visitor. It turns on only on the laptop's `npm run dev`, never on Vercel.
+The Sample Call is one real call to Luna, made by an AI actor that plays the caller ("Caller actor · Mangrove Air", `vapi/actor.ts`), recorded on purpose ([ADR 0004](docs/adr/0004-no-audio-kept.md)). Every detail is made up. Recording is off for every Visitor. It turns on only on the laptop's `npm run dev`, never on Vercel.
 
-1. Add two lines to `.env.local`. The second is the deployed site: Vapi cannot reach the laptop, so Luna's booking goes to its webhook.
+1. `npm run vapi:sync` sends Luna and the actor to Vapi. Put the `VAPI_ACTOR_ID` it prints in `.env.local`.
+2. Add the deployed site to `.env.local`. Vapi cannot reach the laptop, so Luna's tool calls go to its webhook:
 
    ```
-   SAMPLE_CALL_RECORDING=on
    SAMPLE_CALL_WEBHOOK_ORIGIN=https://ai-voice-receptionist-tekguyz.vercel.app
    ```
 
-2. Run `npm run dev`, open the demo and press "Call now". The terminal says "This call is recorded for the Sample Call." Make up every detail. Give all four (name, job, urgency, address) and book one of the two times Luna offers ("tomorrow at 9 AM" or "tomorrow at 2 PM"). Let Luna end the call.
-3. Delete the two lines from `.env.local`. Recording is off again.
-4. Pull the call. It writes `public/sample-call.mp3` and `lib/sample-call.json`:
+3. Run `npm run dev` and open `/dev/actor-call` (dev only; 404 everywhere else). Press "Start the call". The actor and Luna talk in that tab: each call's speaker feeds the other's microphone. `?lang=es` makes the actor speak Spanish; `?seconds=50` stops both calls early.
+4. Score the call (the page prints Luna's call ID):
 
    ```bash
-   npm run sample-call:pull
+   npm run luna:report -- <callId>
    ```
 
-5. Check it: `npx vitest run lib/__tests__/sample-call.test.ts` (the Call Story test and the file size), then play it on `/demo` and listen. If the words come early or late, pull again with `-- <callId> --offset-ms <ms>`.
-6. Commit both files. Then delete the call and its recording from Vapi:
+5. When Luna passes, add `SAMPLE_CALL_RECORDING=on` to `.env.local` and make one more call. The terminal says "This call is recorded for the Sample Call." Then delete that line. Recording is off again.
+6. Pull the call. It writes `public/sample-call.mp3` and `lib/sample-call.json`, and places lines that Vapi logged with no length at their real speech start:
+
+   ```bash
+   npm run sample-call:pull -- <callId>
+   ```
+
+7. Check it: `npx vitest run lib/__tests__/sample-call.test.ts`, then play it on `/demo`. If the words come early or late, pull again with `--offset-ms <ms>` (the 2026-10-13 call used `-230`).
+8. Commit both files. Then delete the call and its recording from Vapi:
 
    ```bash
    npm run sample-call:pull -- --delete <callId>
