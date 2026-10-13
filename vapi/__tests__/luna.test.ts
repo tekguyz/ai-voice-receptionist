@@ -77,6 +77,12 @@ describe("Luna's Vapi settings", () => {
     expect(prompt).toContain("Tool answers are in English; they never change your language.");
   });
 
+  // Review: with no endCall tool, the goodbye phrase is her only way to hang up, booked or not.
+  it("say the goodbye after the dispatcher line too, when nothing is booked", () => {
+    const prompt: string = (lunaAssistant() as any).model.messages[0].content;
+    expect(prompt).toContain("If neither time works, say a dispatcher will call back to find a time, do not book, and end with the goodbye from step 6.");
+  });
+
   it("tell Luna the call limit from MAX_CALL_SECONDS", () => {
     const prompt: string = (lunaAssistant() as any).model.messages[0].content;
     expect(prompt).toContain(`The call stops after ${MAX_CALL_SECONDS / 60} minutes.`);
