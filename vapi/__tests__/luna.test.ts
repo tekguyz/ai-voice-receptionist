@@ -65,6 +65,11 @@ describe("Luna's Vapi settings", () => {
     expect(prompt).toContain('Only if the call is in Spanish, end with exactly "Gracias por llamar a Mangrove Air, ¡que tenga un buen día!" instead.');
   });
 
+  // Voice calls 1-4: "Mangrove Air, this is Luna" ran together and was heard as "Mangrover".
+  it("say the business name, then stop, in the greeting", () => {
+    expect((lunaAssistant() as any).firstMessage).toBe("Thanks for calling Mangrove Air. This is Luna. How can I help you today?");
+  });
+
   it("tell Luna the call limit from MAX_CALL_SECONDS", () => {
     const prompt: string = (lunaAssistant() as any).model.messages[0].content;
     expect(prompt).toContain(`The call stops after ${MAX_CALL_SECONDS / 60} minutes.`);

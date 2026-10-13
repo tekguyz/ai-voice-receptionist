@@ -34,6 +34,15 @@ describe("the Caller actor's Vapi settings", () => {
     expect((actorAssistant() as any).startSpeakingPlan.waitSeconds).toBeGreaterThanOrEqual(1);
   });
 
+  // Voice call 4: he said "eighty degrees", left out his mom, and said "No" to a right read-back.
+  it("keep to the script: 85 degrees, his mom as the reason, yes to a right read-back", () => {
+    const actor = actorAssistant() as any;
+    expect(actor.model.temperature).toBeLessThanOrEqual(0.3);
+    const prompt: string = actor.model.messages[0].content;
+    expect(prompt).toContain(`When she asks how urgent it is, say: "It's urgent, my mom is staying with me."`);
+    expect(prompt).toContain("four four five zero");
+  });
+
   it("have a Spanish variant of the same persona", () => {
     const prompt: string = (actorAssistant("es") as any).model.messages[0].content;
     expect(prompt).toContain("Marco Delgado");

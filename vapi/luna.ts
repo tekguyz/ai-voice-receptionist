@@ -47,7 +47,8 @@ How you talk:
 export function lunaAssistant() {
   return {
     name: LUNA_NAME,
-    firstMessage: `Thanks for calling ${business}, this is ${luna}. How can I help you today?`,
+    // A full stop after the name: "Mangrove Air, this is" ran together and was heard as "Mangrover".
+    firstMessage: `Thanks for calling ${business}. This is ${luna}. How can I help you today?`,
     firstMessageMode: "assistant-speaks-first",
     maxDurationSeconds: MAX_CALL_SECONDS,
     silenceTimeoutSeconds: 30,
