@@ -12,7 +12,8 @@
     "test:unit": "vitest run",
     "test:e2e": "playwright test",
     "vapi:sync": "node --env-file-if-exists=.env.local scripts/vapi-sync.ts",
-    "sample-call:pull": "node --env-file-if-exists=.env.local scripts/sample-call-pull.ts"
+    "sample-call:pull": "node --env-file-if-exists=.env.local scripts/sample-call-pull.ts",
+    "luna:report": "node --env-file-if-exists=.env.local scripts/luna-report.ts"
   },
   "dependencies": {
     "@upstash/redis": "^1.39.0",

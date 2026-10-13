@@ -1,0 +1,74 @@
+import { describe, expect, it } from "vitest";
+import { formatLunaReport, lunaFailures, lunaReport, narrationIn } from "../luna-check";
+import { goodMessages, lunaCall } from "./luna-call-fixture";
+
+const withoutConfirmation = () => goodMessages().filter((m) => !String(m.message ?? "").startsWith("You're all set"));
+
+describe("luna:report", () => {
+  it("passes a good call: four details, a booking, the confirmation, quick turns", () => {
+    const report = lunaReport(lunaCall());
+    expect(report.details).toEqual({ name: "Marco Delgado", job: "AC not cooling", urgency: "Urgent, elderly mother at home", address: "4450 NE 18th Ave, Miami" });
+    expect(report.booked).toBe("tomorrow at 9 AM");
+    expect(report.confirmed).toBe(true);
+    expect(report.confirmation).toBe("You're all set for tomorrow at nine in the morning at forty-four fifty Northeast Eighteenth Avenue.");
+    expect(report.narration).toEqual([]);
+    expect(report.averageTurnMs).toBe(1620);
+    expect(report.slowestTurnMs).toBe(1900);
+    expect(report.seconds).toBe(40.5);
+    expect(report.cost).toBe(0.21);
+    expect(lunaFailures(report)).toEqual([]);
+    expect(formatLunaReport(report)).toMatch(/PASS$/);
+  });
+
+  it("fails a call where Luna books and hangs up with only a goodbye (finding 1)", () => {
+    const report = lunaReport(lunaCall({ messages: withoutConfirmation() }));
+    expect(report.confirmed).toBe(false);
+    expect(lunaFailures(report)).toContain("She did not speak the confirmation before the call ended.");
+  });
+
+  it("an offer of the times before booking is not a confirmation", () => {
+    // The offer names "nine in the morning" too, but it comes before the booking.
+    expect(lunaReport(lunaCall({ messages: withoutConfirmation() })).confirmation).toBeNull();
+  });
+
+  it("is not confirmed when the caller hung up, even after a confirmation", () => {
+    expect(lunaReport(lunaCall({ endedReason: "customer-ended-call" })).confirmed).toBe(false);
+  });
+
+  it("hears the hour in Spanish too", () => {
+    const messages = goodMessages().map((m) =>
+      String(m.message ?? "").startsWith("You're all set") ? { ...m, message: "Listo, queda agendado para mañana a las nueve de la mañana en su casa." } : m,
+    );
+    expect(lunaReport(lunaCall({ messages })).confirmed).toBe(true);
+  });
+
+  it("flags tool narration in English and Spanish (finding 2)", () => {
+    expect(narrationIn("Based on the user's input, I will record their name as Marco Delgado.")).toBe(true);
+    expect(narrationIn("Let's call the record detail tool.")).toBe(true);
+    expect(narrationIn("Voy a usar la herramienta para guardar su nombre.")).toBe(true);
+    expect(narrationIn("Thanks, Marco. What's the service address?")).toBe(false);
+    const messages = [...goodMessages(), { role: "bot", message: "Let's call the record detail tool.", secondsFromStart: 38 }];
+    expect(lunaFailures(lunaReport(lunaCall({ messages })))).toContain('Tool narration: "Let\'s call the record detail tool."');
+  });
+
+  it("fails slow turns (finding 3), and can skip the turn check for text rehearsal", () => {
+    const report = lunaReport(lunaCall({ turnLatencies: [2500, 3100] }));
+    expect(report.averageTurnMs).toBe(2800);
+    expect(lunaFailures(report)).toContain("Average turn 2800 ms; the bar is under 2000 ms.");
+    expect(lunaFailures(report, { checkTurns: false })).toEqual([]);
+  });
+
+  it("does not count a refused booking as booked", () => {
+    const messages = goodMessages().map((m) => (m.toolCallId === "t5" ? { ...m, result: "That time was not offered. Offer only these two: x or y." } : m));
+    const report = lunaReport(lunaCall({ messages }));
+    expect(report.booked).toBeNull();
+    expect(lunaFailures(report)).toContain("No time was booked.");
+  });
+
+  it("reads an empty call without throwing", () => {
+    const report = lunaReport({});
+    expect(report.details).toEqual({ name: null, job: null, urgency: null, address: null });
+    expect(report.averageTurnMs).toBeNull();
+    expect(lunaFailures(report)).toContain("Missing: name, job, urgency, address.");
+  });
+});
