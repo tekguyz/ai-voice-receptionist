@@ -31,7 +31,7 @@ import { fetchSavedNotes, watchSavedNotes } from "@/lib/saved-notes";
 import { SAMPLE_BUSINESS, TEST_CALL_TICKET } from "@/lib/sample-business";
 import { ticketNumberFor } from "@/lib/ticket-number";
 import { SITE_NAME } from "@/lib/site";
-import { browserVapiSourceDeps } from "@/lib/vapi-browser";
+import { browserVapiSourceDeps, preloadVapi } from "@/lib/vapi-browser";
 import { createVapiSource } from "@/lib/vapi-source";
 
 const FAILURE_NOTICES: Record<StartFailure, string> = {
@@ -87,6 +87,11 @@ export function CallScreen() {
     },
     [],
   );
+
+  // "Call now" should not wait for the SDK's download (issue #15).
+  useEffect(() => {
+    preloadVapi().catch(() => {});
+  }, []);
 
   const mode: Mode = phase.kind === "running" ? phase.mode : "test";
   // The Sample Call carries its own written summary, like the Dashboard's calls.
