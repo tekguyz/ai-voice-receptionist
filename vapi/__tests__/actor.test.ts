@@ -23,6 +23,12 @@ describe("the Caller actor's Vapi settings", () => {
     expect(prompt).toMatch(/let her end the call/i);
   });
 
+  // Voice call 2: read digit by digit, with pauses, the address let Luna talk over him.
+  it("say the address in one smooth phrase, the way people say it", () => {
+    expect((actorAssistant() as any).model.messages[0].content).toContain('"forty-four fifty Northeast Eighteenth Avenue, Miami"');
+    expect((actorAssistant("es") as any).model.messages[0].content).toContain('"cuarenta y cuatro cincuenta Northeast Eighteenth Avenue, Miami"');
+  });
+
   it("have a Spanish variant of the same persona", () => {
     const prompt: string = (actorAssistant("es") as any).model.messages[0].content;
     expect(prompt).toContain("Marco Delgado");

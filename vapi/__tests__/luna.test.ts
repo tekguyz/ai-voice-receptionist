@@ -19,11 +19,20 @@ describe("Luna's Vapi settings", () => {
   });
 
   // From the founder's test calls on 2026-10-05.
-  it("read the address back, write names as first and last, and confirm before hanging up", () => {
+  it("read the address back and write names as first and last", () => {
     const prompt: string = (lunaAssistant() as any).model.messages[0].content;
     expect(prompt).toMatch(/read it back/i);
     expect(prompt).toContain("a space between first and last name");
-    expect(prompt).toMatch(/Never call endCall in the same reply as/);
+  });
+
+  // Issue #15, finding 1: with an endCall tool she booked and hung up in one reply, with no confirmation.
+  it("end the call by her goodbye phrase, not a tool, so she cannot hang up before confirming", () => {
+    const luna = lunaAssistant() as any;
+    expect(luna.model.tools.some((t: any) => t.type === "endCall")).toBe(false);
+    expect(luna.endCallPhrases).toEqual(["have a great day", "que tenga un buen día"]);
+    expect(luna.model.messages[0].content).toContain('end with exactly "Thanks for calling Mangrove Air, have a great day!"');
+    expect(luna.model.messages[0].content).not.toContain("endCall");
+    expect(checkLuna({ ...luna, endCallPhrases: [] })).toContain("Luna must be able to end the call.");
   });
 
   it("flag recording, a longer call, a server URL or a missing tool", () => {
@@ -41,6 +50,13 @@ describe("Luna's Vapi settings", () => {
     const luna = lunaAssistant() as any;
     expect(luna).not.toHaveProperty("endCallMessage");
     expect(checkLuna({ ...luna, endCallMessage: "Goodbye!" })).toContain("Luna must not have an endCallMessage (she says goodbye herself).");
+  });
+
+  // Issue #15: Gemini 3.5 Flash hung up without confirming and read its notes aloud.
+  it("use a GPT-4.1-class mini model", () => {
+    const model = (lunaAssistant() as any).model;
+    expect(model.provider).toBe("openai");
+    expect(model.model).toBe("gpt-4.1-mini");
   });
 
   it("tell Luna the call limit from MAX_CALL_SECONDS", () => {
