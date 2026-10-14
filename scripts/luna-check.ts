@@ -4,8 +4,9 @@
 //
 // Vapi's call log stores every tool result as "Success.", and Luna's lines
 // say numbers as words ("four twenty six"). So a booking counts unless its
-// result says it was refused, and the confirmation is found by the booked
-// hour, said after the booking.
+// result says it was refused. The confirmation is a line said after the
+// booking's result (not in the same reply, before it ran) that names the
+// booked hour and a word from the street.
 
 import { TOOL } from "../lib/luna-tools.ts";
 import { callSeconds } from "./sample-call-file.ts";
@@ -61,13 +62,30 @@ function hourPattern(booked: string): RegExp | null {
 
 const CONFIRMATION_MIN_WORDS = 8;
 
+const STREET_WORDS: Record<string, string> = {
+  n: "north", s: "south", e: "east", w: "west", ne: "northeast", nw: "northwest", se: "southeast", sw: "southwest",
+  st: "street", ave: "avenue", av: "avenue", rd: "road", blvd: "boulevard", dr: "drive", ct: "court", ln: "lane",
+  pl: "place", ter: "terrace", cir: "circle", hwy: "highway", pkwy: "parkway",
+};
+
+/** Words of the street name, spelled out: "4450 NE 18th Ave, Miami" → northeast, avenue. Numbers are left out. */
+function streetWords(address: string | null): string[] {
+  const street = (address ?? "").split(",")[0].toLowerCase();
+  return street
+    .split(/\s+/)
+    .map((w) => w.replace(/[^\p{L}\d]/gu, ""))
+    .filter((w) => w && !/\d/.test(w))
+    .map((w) => STREET_WORDS[w] ?? w);
+}
+
 export function lunaReport(call: unknown): LunaReport {
   const c = record(call);
   const messages = list(record(c.artifact).messages ?? c.messages);
   const details: Record<Field, string | null> = { name: null, job: null, urgency: null, address: null };
   const spoken: { text: string; at: number }[] = [];
-  const bookings = new Map<string, { time: string; at: number }>();
-  let booking: { time: string; at: number } | null = null;
+  type Booking = { time: string; at: number; doneAt: number | null };
+  const bookings = new Map<string, Booking>();
+  let booking: Booking | null = null;
 
   for (const m of messages) {
     const at = typeof m.secondsFromStart === "number" ? m.secondsFromStart : 0;
@@ -78,19 +96,25 @@ export function lunaReport(call: unknown): LunaReport {
         const args = argsOf(fn.arguments);
         if (fn.name === TOOL.recordDetail && FIELDS.includes(args.field) && typeof args.value === "string") details[args.field as Field] = args.value;
         if (fn.name === TOOL.bookTime && typeof args.time === "string") {
-          booking = { time: args.time, at };
+          booking = { time: args.time, at, doneAt: null };
           bookings.set(String(toolCall.id ?? ""), booking);
         }
       }
     }
-    if (m.role === "tool_call_result" && /not offered/i.test(String(m.result ?? "")) && bookings.get(String(m.toolCallId ?? "")) === booking) booking = null;
+    if (m.role === "tool_call_result" && booking && bookings.get(String(m.toolCallId ?? "")) === booking) {
+      if (/not offered/i.test(String(m.result ?? ""))) booking = null;
+      else booking.doneAt = at;
+    }
   }
 
   const endedReason = typeof c.endedReason === "string" ? c.endedReason : "";
   const hour = booking ? hourPattern(booking.time) : null;
+  const after = booking ? (booking.doneAt ?? booking.at) : 0;
+  const street = streetWords(details.address);
+  const namesStreet = (text: string) => !street.length || street.some((w) => new RegExp(`\\b${w}\\b`, "iu").test(text));
   const confirmation =
     booking && hour
-      ? (spoken.find((s) => s.at >= booking!.at - 1 && s.text.split(/\s+/).length >= CONFIRMATION_MIN_WORDS && hour.test(s.text))?.text ?? null)
+      ? (spoken.find((s) => s.at > after && s.text.split(/\s+/).length >= CONFIRMATION_MIN_WORDS && hour.test(s.text) && namesStreet(s.text))?.text ?? null)
       : null;
 
   const turns = list(record(record(c.artifact).performanceMetrics).turnLatencies)

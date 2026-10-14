@@ -31,13 +31,28 @@ describe("luna:report", () => {
     expect(lunaReport(lunaCall({ messages: withoutConfirmation() })).confirmation).toBeNull();
   });
 
+  it("fails a confirmation said before the booking ran (#25 item 6)", () => {
+    // Same reply as bookTime: she says it, then the tool runs.
+    const messages = goodMessages().map((m) => (String(m.message ?? "").startsWith("You're all set") ? { ...m, secondsFromStart: 31.2 } : m));
+    const report = lunaReport(lunaCall({ messages }));
+    expect(report.confirmation).toBeNull();
+    expect(lunaFailures(report)).toContain("She did not speak the confirmation before the call ended.");
+  });
+
+  it("needs a word from the street name in the confirmation", () => {
+    const messages = goodMessages().map((m) =>
+      String(m.message ?? "").startsWith("You're all set") ? { ...m, message: "You're all set for tomorrow at nine in the morning, see you then." } : m,
+    );
+    expect(lunaReport(lunaCall({ messages })).confirmation).toBeNull();
+  });
+
   it("is not confirmed when the caller hung up, even after a confirmation", () => {
     expect(lunaReport(lunaCall({ endedReason: "customer-ended-call" })).confirmed).toBe(false);
   });
 
   it("hears the hour in Spanish too", () => {
     const messages = goodMessages().map((m) =>
-      String(m.message ?? "").startsWith("You're all set") ? { ...m, message: "Listo, queda agendado para mañana a las nueve de la mañana en su casa." } : m,
+      String(m.message ?? "").startsWith("You're all set") ? { ...m, message: "Listo, queda agendado para mañana a las nueve de la mañana en el 4450 Northeast 18th Avenue." } : m,
     );
     expect(lunaReport(lunaCall({ messages })).confirmed).toBe(true);
   });
