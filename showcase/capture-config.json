@@ -1,0 +1,21 @@
+{
+  "name": "ai-voice-receptionist",
+  "hideText": ["Built by TEKGUYZ", "Talk to TEKGUYZ"],
+  "themes": ["light"],
+  "enter": [{ "goto": "https://ai-voice-receptionist-tekguyz.vercel.app/" }],
+  "screens": [
+    { "name": "landing", "device": "desktop", "steps": [] },
+    { "name": "sample-call", "device": "desktop", "steps": [
+      { "click": "Try the demo" }, { "waitUrl": "**/demo" },
+      { "click": "Play the Sample Call" }, { "wait": 68000 }
+    ] },
+    { "name": "call-notes", "device": "desktop", "steps": [{ "wait": 26000 }, { "scroll": 0 }] },
+    { "name": "dashboard", "device": "desktop", "steps": [{ "goto": "https://ai-voice-receptionist-tekguyz.vercel.app/demo/dashboard" }] },
+    { "name": "landing", "device": "phone", "steps": [] },
+    { "name": "call-notes", "device": "phone", "steps": [
+      { "click": "Try the demo" }, { "waitUrl": "**/demo" },
+      { "click": "Play the Sample Call" }, { "wait": 84000 }, { "scroll": 0 }
+    ] }
+  ],
+  "video": { "device": "desktop", "seconds": 4.5, "steps": [{ "goto": "https://ai-voice-receptionist-tekguyz.vercel.app/" }] }
+}
