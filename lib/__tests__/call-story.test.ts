@@ -35,6 +35,20 @@ describe("Call Story", () => {
     expect(view.details).toEqual({ address: "21 Palm Way" });
   });
 
+  // Issue #29: the address is one field, so the zip at its end shows everywhere.
+  it("keeps the full address, zip code included, in the Call Notes, the summary and the confirmation text", () => {
+    const address = "12 Palm Way, Hialeah, FL 33012";
+    const { notes } = tellCallStory([
+      { type: "detail", field: "address", value: address, atMs: 1000 },
+      { type: "booked", time: "Tuesday 9:00 AM", atMs: 2000 },
+      { type: "ended", reason: "receptionist-finished", atMs: 3000 },
+    ]);
+
+    expect(notes?.details.address).toBe(address);
+    expect(notes?.summary).toContain(`Address: ${address}.`);
+    expect(notes?.confirmationText).toContain(`You're booked for Tuesday 9:00 AM at ${address}.`);
+  });
+
   it("writes Call Notes for a booking with no details", () => {
     const events: CallEvent[] = [
       { type: "booked", time: "Tuesday 9:00 AM", atMs: 8000 },

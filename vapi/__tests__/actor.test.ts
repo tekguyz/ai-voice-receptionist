@@ -24,9 +24,18 @@ describe("the Caller actor's Vapi settings", () => {
   });
 
   // Voice call 2: read digit by digit, with pauses, the address let Luna talk over him.
-  it("say the address in one smooth phrase, the way people say it", () => {
-    expect((actorAssistant() as any).model.messages[0].content).toContain('"forty-four fifty Northeast Eighteenth Avenue, Miami"');
-    expect((actorAssistant("es") as any).model.messages[0].content).toContain('"cuarenta y cuatro cincuenta Northeast Eighteenth Avenue, Miami"');
+  // Issue #29: the zip is part of it, said digit by digit, the way people say a zip.
+  it("say the address in one smooth phrase, the way people say it, zip code included", () => {
+    expect((actorAssistant() as any).model.messages[0].content).toContain('"forty-four fifty Northeast Eighteenth Avenue, Miami, three three one three seven"');
+    expect((actorAssistant("es") as any).model.messages[0].content).toContain(
+      '"cuarenta y cuatro cincuenta Northeast Eighteenth Avenue, Miami, tres tres uno tres siete"',
+    );
+  });
+
+  it("have a zip code in his address, in both languages", () => {
+    for (const lang of ["en", "es"] as const) {
+      expect((actorAssistant(lang) as any).model.messages[0].content).toContain("4450 Northeast 18th Avenue, Miami, FL 33137");
+    }
   });
 
   // Voice call 3: he answered into Luna's short pauses and talked over her time offer.

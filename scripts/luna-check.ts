@@ -6,7 +6,7 @@
 // say numbers as words ("four twenty six"). So a booking counts unless its
 // result says it was refused. The confirmation is a line said after the
 // booking's result (not in the same reply, before it ran) that names the
-// booked hour and a word from the street.
+// booked hour, a word from the street and the zip code (#29).
 
 import { TOOL } from "../lib/luna-tools.ts";
 import { callSeconds } from "./sample-call-file.ts";
@@ -78,6 +78,19 @@ function streetWords(address: string | null): string[] {
     .map((w) => STREET_WORDS[w] ?? w);
 }
 
+const DIGIT_WORDS = ["zero|oh|cero", "one|uno", "two|dos", "three|tres", "four|cuatro", "five|cinco", "six|seis", "seven|siete", "eight|ocho", "nine|nueve"];
+
+/** The 5-digit zip code at the end of an address, or null. */
+function zipOf(address: string | null): string | null {
+  return (address ?? "").match(/\b(\d{5})\s*$/)?.[1] ?? null;
+}
+
+/** Matches the zip as digits ("33137") or said digit by digit ("three three one three seven", "tres tres uno tres siete"). */
+function zipPattern(zip: string): RegExp {
+  const said = [...zip].map((d) => `(?:${d}|${DIGIT_WORDS[Number(d)]})`).join("[\\s,-]+");
+  return new RegExp(`\\b(?:${zip}|${said})\\b`, "i");
+}
+
 export function lunaReport(call: unknown): LunaReport {
   const c = record(call);
   const messages = list(record(c.artifact).messages ?? c.messages);
@@ -112,9 +125,11 @@ export function lunaReport(call: unknown): LunaReport {
   const after = booking ? (booking.doneAt ?? booking.at) : 0;
   const street = streetWords(details.address);
   const namesStreet = (text: string) => !street.length || street.some((w) => new RegExp(`\\b${w}\\b`, "iu").test(text));
+  const zip = zipOf(details.address);
+  const namesZip = (text: string) => !zip || zipPattern(zip).test(text);
   const confirmation =
     booking && hour
-      ? (spoken.find((s) => s.at > after && s.text.split(/\s+/).length >= CONFIRMATION_MIN_WORDS && hour.test(s.text) && namesStreet(s.text))?.text ?? null)
+      ? (spoken.find((s) => s.at > after && s.text.split(/\s+/).length >= CONFIRMATION_MIN_WORDS && hour.test(s.text) && namesStreet(s.text) && namesZip(s.text))?.text ?? null)
       : null;
 
   const turns = list(record(record(c.artifact).performanceMetrics).turnLatencies)
@@ -140,6 +155,7 @@ export function lunaFailures(report: LunaReport, { checkTurns = true }: { checkT
   const failures: string[] = [];
   const missing = FIELDS.filter((f) => !report.details[f]);
   if (missing.length) failures.push(`Missing: ${missing.join(", ")}.`);
+  if (report.details.address && !zipOf(report.details.address)) failures.push("The address has no zip code.");
   if (!report.booked) failures.push("No time was booked.");
   if (!report.confirmed) failures.push("She did not speak the confirmation before the call ended.");
   for (const line of report.narration) failures.push(`Tool narration: "${line}"`);

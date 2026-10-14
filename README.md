@@ -16,9 +16,9 @@ Live site: https://ai-voice-receptionist-tekguyz.vercel.app
 | | |
 |---|---|
 | Phase | Building |
-| Shipped | [#2 Step 1: setup and the Call Story](https://github.com/tekguyz/ai-voice-receptionist/issues/2) · [#3 Step 2: the look](https://github.com/tekguyz/ai-voice-receptionist/issues/3) · [#4 Step 3: live Test Call](https://github.com/tekguyz/ai-voice-receptionist/issues/4) · [#5 Step 4: Call Notes saved](https://github.com/tekguyz/ai-voice-receptionist/issues/5) · [#6 Step 5: Dashboard](https://github.com/tekguyz/ai-voice-receptionist/issues/6) · [#7 Step 6: landing page and design pass](https://github.com/tekguyz/ai-voice-receptionist/issues/7) · [#8 Step 7: the real Sample Call](https://github.com/tekguyz/ai-voice-receptionist/issues/8) · [#15 Tune Luna](https://github.com/tekguyz/ai-voice-receptionist/issues/15) |
+| Shipped | [#2 Step 1: setup and the Call Story](https://github.com/tekguyz/ai-voice-receptionist/issues/2) · [#3 Step 2: the look](https://github.com/tekguyz/ai-voice-receptionist/issues/3) · [#4 Step 3: live Test Call](https://github.com/tekguyz/ai-voice-receptionist/issues/4) · [#5 Step 4: Call Notes saved](https://github.com/tekguyz/ai-voice-receptionist/issues/5) · [#6 Step 5: Dashboard](https://github.com/tekguyz/ai-voice-receptionist/issues/6) · [#7 Step 6: landing page and design pass](https://github.com/tekguyz/ai-voice-receptionist/issues/7) · [#8 Step 7: the real Sample Call](https://github.com/tekguyz/ai-voice-receptionist/issues/8) · [#15 Tune Luna](https://github.com/tekguyz/ai-voice-receptionist/issues/15) · [#29 Zip code on every address](https://github.com/tekguyz/ai-voice-receptionist/issues/29) |
 | Known issues | [#23 Luna in Spanish: ends in English, mishears short replies](https://github.com/tekguyz/ai-voice-receptionist/issues/23) · [#25 Follow-ups from the AI actor PR](https://github.com/tekguyz/ai-voice-receptionist/issues/25) |
-| Next | [#9 Step 8: Showcase and go live](https://github.com/tekguyz/ai-voice-receptionist/issues/9): pictures and video taken 2026-10-14; handoff to `claude-config` and `tekguyz-one` left |
+| Next | [#9 Step 8: Showcase and go live](https://github.com/tekguyz/ai-voice-receptionist/issues/9): pictures and video retaken 2026-10-14 with the zip code; handoff to `claude-config` and `tekguyz-one` left |
 | Updated | 2026-10-14 |
 
 ## Screenshots
@@ -39,6 +39,7 @@ Built so far:
 - The Dashboard shows the Owner's side: three totals and recent calls, sample calls mixed with the Visitor's own.
 - After a Test Call, the Call Notes are saved for the Visitor and the screen fills in from the saved copy. Each entry is deleted after 7 days. The Vapi webhook (`app/api/vapi/webhook`) refuses any request without Vapi's secret.
 - The Receptionist answers in Spanish when the caller speaks Spanish (checked on test calls, 2026-10-05). The screens stay in English. Known gap: she can end a Spanish call in English ([#23](https://github.com/tekguyz/ai-voice-receptionist/issues/23)).
+- Luna asks for the zip code with the address, reads it back and says it in the confirmation. Every address on every screen ends with the zip.
 - Luna runs on `gpt-4.1-mini`. She confirms the booking, then ends the call by saying "Thanks for calling Mangrove Air, have a great day!" (no end-call tool). Average reply time on the 2026-10-13 calls: 1.6 to 1.9 s. The Test Call screen loads the Vapi SDK when it opens.
 
 ## What it never does
@@ -103,7 +104,7 @@ The Sample Call is one real call to Luna, made by an AI actor that plays the cal
    npm run sample-call:pull -- <callId>
    ```
 
-7. Check it: `npx vitest run lib/__tests__/sample-call.test.ts`, then play it on `/demo`. If the words come early or late, pull again with `--offset-ms <ms>` (the 2026-10-13 call used `-230`).
+7. Check it: `npx vitest run lib/__tests__/sample-call.test.ts`, then play it on `/demo`. If the words come early or late, pull again with `--offset-ms <ms>` (the 2026-10-13 and 2026-10-14 calls used `-230`).
 8. Commit both files. Then delete the call and its recording from Vapi:
 
    ```bash

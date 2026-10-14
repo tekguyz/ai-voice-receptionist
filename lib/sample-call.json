@@ -1,9 +1,9 @@
 {
-  "about": "A real call to Luna by an AI actor that plays the caller, 2026-10-13. Pulled by `npm run sample-call:pull` (issue #8). Every caller detail is made up.",
+  "about": "A real call to Luna by an AI actor that plays the caller, 2026-10-14. Pulled by `npm run sample-call:pull` (issue #8). Every caller detail is made up.",
   "audio": "/sample-call.mp3",
   "audioOffsetMs": -230,
   "endedReason": "assistant-said-end-call-phrase",
-  "durationSeconds": 77,
+  "durationSeconds": 79.2,
   "analysis": {
     "summary": ""
   },
@@ -20,37 +20,61 @@
       {
         "role": "bot",
         "message": "Thanks for calling Mangrove Air. This is Luna. How can I help you today?",
-        "secondsFromStart": 1.09
+        "secondsFromStart": 1.359
       },
       {
         "role": "user",
         "message": "My AC stopped cooling last night, and it is eighty five degrees in the house.",
-        "secondsFromStart": 6.399
+        "secondsFromStart": 6.8
       },
       {
         "role": "bot",
-        "message": "I'm sorry to hear that your AC stopped cooling. Would you say this is an urgent issue that needs to be fixed as soon as possible?",
-        "secondsFromStart": 11.971
+        "message": "That sounds uncomfortable. Is this something you need fixed as soon as possible?",
+        "secondsFromStart": 12.118
+      },
+      {
+        "role": "tool_calls",
+        "toolCalls": [
+          {
+            "function": {
+              "name": "recordDetail",
+              "arguments": "{\"field\": \"job\", \"value\": \"AC not cooling\"}"
+            }
+          }
+        ],
+        "secondsFromStart": 13.248
       },
       {
         "role": "user",
-        "message": "It's urgent. My mom is staying with me.",
-        "secondsFromStart": 20.846
+        "message": "Yes. It's urgent. My mom is staying with me.",
+        "secondsFromStart": 18.248
       },
       {
         "role": "bot",
-        "message": "Thank you for letting me know. May I have your name, please?",
-        "secondsFromStart": 23.739
+        "message": "May I have your name, please?",
+        "secondsFromStart": 21.999
+      },
+      {
+        "role": "tool_calls",
+        "toolCalls": [
+          {
+            "function": {
+              "name": "recordDetail",
+              "arguments": "{\"field\": \"urgency\", \"value\": \"urgent\"}"
+            }
+          }
+        ],
+        "secondsFromStart": 23.281
       },
       {
         "role": "user",
         "message": "Marco Delgado.",
-        "secondsFromStart": 28.847
+        "secondsFromStart": 25.521
       },
       {
         "role": "bot",
-        "message": "Thank you, Marco. What is the address where the service is needed?",
-        "secondsFromStart": 31.579
+        "message": "Thanks, Marco.",
+        "secondsFromStart": 28.721
       },
       {
         "role": "tool_calls",
@@ -62,12 +86,22 @@
             }
           }
         ],
-        "secondsFromStart": 31.803
+        "secondsFromStart": 30.076
+      },
+      {
+        "role": "bot",
+        "message": "What is the address where the service is needed? Please include the ZIP code.",
+        "secondsFromStart": 30.239
       },
       {
         "role": "user",
-        "message": "Forty four fifty Northeast eighteenth Avenue, Miami.",
-        "secondsFromStart": 36.847
+        "message": "Forty four fifty Northeast eighteenth Avenue, Miami. three three one three seven",
+        "secondsFromStart": 36.162
+      },
+      {
+        "role": "bot",
+        "message": "I have four four five zero Northeast eighteenth Avenue, Miami three three one three seven. Is that correct?",
+        "secondsFromStart": 42.531
       },
       {
         "role": "tool_calls",
@@ -75,33 +109,42 @@
           {
             "function": {
               "name": "recordDetail",
-              "arguments": "{\"field\": \"job\", \"value\": \"AC not cooling\"}"
+              "arguments": "{\n  \"field\": \"address\",\n  \"value\": \"4450 Northeast 18th Avenue, Miami, FL 33137\"\n}"
             }
           },
           {
             "function": {
               "name": "recordDetail",
-              "arguments": "{\"field\": \"urgency\", \"value\": \"urgent\"}"
-            }
-          },
-          {
-            "function": {
-              "name": "recordDetail",
-              "arguments": "{\n  \"field\": \"address\",\n  \"value\": \"4450 Northeast 18th Avenue, Miami\"\n}"
+              "arguments": "{\n  \"field\": \"address\",\n  \"value\": \"4450 Northeast 18th Avenue, Miami, FL 33137\"\n}"
             }
           }
         ],
-        "secondsFromStart": 42.108
-      },
-      {
-        "role": "bot",
-        "message": "Just to confirm, the address is four four five zero Northeast Eighteenth Avenue, Miami. Right? Also, I can offer you two open times for a technician to come. Tomorrow at nine in the morning or tomorrow at two in the afternoon, which works better for you?",
-        "secondsFromStart": 43.924
+        "secondsFromStart": 43.819
       },
       {
         "role": "user",
-        "message": "Yes. That's right. Tomorrow at nine in the morning works.",
-        "secondsFromStart": 62.159
+        "message": "Yes.",
+        "secondsFromStart": 51.181
+      },
+      {
+        "role": "bot",
+        "message": "We have two open times for you tomorrow, nine in the morning or two in the afternoon. Which works better?",
+        "secondsFromStart": 52.64
+      },
+      {
+        "role": "user",
+        "message": "Nine in the morning works.",
+        "secondsFromStart": 60.721
+      },
+      {
+        "role": "bot",
+        "message": "One moment.",
+        "secondsFromStart": 62.559
+      },
+      {
+        "role": "bot",
+        "message": "You're all set for tomorrow at nine in the morning at four four five zero Northeast eighteenth Avenue, Miami three three one three seven. Thanks for calling Mangrove Air. Have a great day.",
+        "secondsFromStart": 64.117
       },
       {
         "role": "tool_calls",
@@ -113,22 +156,7 @@
             }
           }
         ],
-        "secondsFromStart": 65.276
-      },
-      {
-        "role": "bot",
-        "message": "One moment.",
-        "secondsFromStart": 65.604
-      },
-      {
-        "role": "bot",
-        "message": "You're all set for tomorrow at nine in the morning at four four five zero Northeast Eighteenth Avenue, Miami. Thanks for calling Mangrove Air. Have a great day.",
-        "secondsFromStart": 67.217
-      },
-      {
-        "role": "user",
-        "message": "Okay.",
-        "secondsFromStart": 68.873
+        "secondsFromStart": 64.583
       }
     ]
   }

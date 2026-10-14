@@ -23,16 +23,16 @@ export function goodMessages(): Message[] {
     { role: "user", message: "Marco Delgado.", secondsFromStart: 17 },
     ...tool("t3", "recordDetail", { field: "name", value: "Marco Delgado" }, 18.5),
     { role: "bot", message: "Thanks, Marco. What's the service address?", secondsFromStart: 18.6 },
-    { role: "user", message: "4450 Northeast 18th Avenue, Miami.", secondsFromStart: 21 },
-    ...tool("t4", "recordDetail", { field: "address", value: "4450 NE 18th Ave, Miami" }, 24),
+    { role: "user", message: "4450 Northeast 18th Avenue, Miami, 33137.", secondsFromStart: 21 },
+    ...tool("t4", "recordDetail", { field: "address", value: "4450 NE 18th Ave, Miami, FL 33137" }, 24),
     {
       role: "bot",
-      message: "That's forty-four fifty Northeast Eighteenth Avenue in Miami. I can do tomorrow at nine in the morning, or tomorrow at two in the afternoon.",
+      message: "That's forty-four fifty Northeast Eighteenth Avenue in Miami, three three one three seven. I can do tomorrow at nine in the morning, or tomorrow at two in the afternoon.",
       secondsFromStart: 24.1,
     },
     { role: "user", message: "Tomorrow at 9 is great.", secondsFromStart: 30 },
     ...tool("t5", "bookTime", { time: "tomorrow at 9 AM" }, 31.5),
-    { role: "bot", message: "You're all set for tomorrow at nine in the morning at forty-four fifty Northeast Eighteenth Avenue.", secondsFromStart: 32.5 },
+    { role: "bot", message: "You're all set for tomorrow at nine in the morning at forty-four fifty Northeast Eighteenth Avenue, Miami, three three one three seven.", secondsFromStart: 32.5 },
     { role: "bot", message: "Thanks for calling Mangrove Air. Goodbye!", secondsFromStart: 37 },
   ];
 }
