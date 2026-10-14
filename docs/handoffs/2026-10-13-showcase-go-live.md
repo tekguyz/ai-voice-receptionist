@@ -13,6 +13,8 @@ The new demo:
 - Showcase: `showcase/` in the repo. 4 desktop pictures (landing, Sample Call,
   Call Notes, Dashboard), 2 phone pictures (landing, Call Notes), lossless WebP
   copies in `showcase/webp/`, a 4.5 s landing scroll in `showcase/video/`.
+  Social sizes (2026-10-14): 3 feed (1080 x 1350), 4 stories (1080 x 1920)
+  and a 4.5 s reel (`video/ai-voice-receptionist-reel.mp4`).
   Banner and TEKGUYZ credit hidden.
 - The capture config lives in the app repo: `showcase/capture-config.json`.
   Run it with
@@ -41,8 +43,12 @@ C:/Projects/ai-voice-receptionist/docs/handoffs/2026-10-13-showcase-go-live.md.
    `C:/Projects/ai-voice-receptionist/showcase/capture-config.json`. Delete
    `apps/ai-voice-receptionist.json` (it points at the old site) and update
    the voice row in the README's "Which apps work today" table: run end to
-   end 2026-10-14 on the live site, 4 desktop, 2 phone, landing video, config
-   in the app repo.
+   end 2026-10-14 on the live site, 4 desktop, 2 phone, 3 feed, 4 stories,
+   landing video and reel, config in the app repo.
+   In tekguyz/claude-config#46, tick the ai-voice-receptionist box:
+   "ai-voice-receptionist (2026-10-14). Feed: landing, Call Notes, Dashboard.
+   Stories: landing, Sample Call mid-play, Call Notes, Dashboard. Reel: the
+   landing page. Copied to Drive tekguyz-one/social/ai-voice-receptionist/."
 3. New tools/capture feature, wanted for this app: a clip of a screen while
    it plays, with sound. The Sample Call (on /demo, "Play the Sample Call")
    runs 77 s with its own recording (`public/sample-call.mp3` in the app). A

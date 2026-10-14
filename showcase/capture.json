@@ -1,12 +1,19 @@
 {
   "app": "ai-voice-receptionist",
-  "takenAt": "2026-10-14T06:16:28.382Z",
+  "takenAt": "2026-10-14T06:55:10.291Z",
   "pictures": [
     "landing-desktop-light",
     "sample-call-desktop-light",
     "call-notes-desktop-light",
     "dashboard-desktop-light",
     "landing-phone-light",
-    "call-notes-phone-light"
+    "call-notes-phone-light",
+    "landing-feed-light",
+    "call-notes-feed-light",
+    "dashboard-feed-light",
+    "landing-stories-light",
+    "sample-call-stories-light",
+    "call-notes-stories-light",
+    "dashboard-stories-light"
   ]
 }
