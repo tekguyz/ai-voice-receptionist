@@ -84,6 +84,12 @@ export function speechStarts(silencedetectLog: string): number[] {
  * and after the last line Vapi did time; never later than Vapi logged it.
  * `starts` are in the recording's clock, which runs `offsetMs` ahead of the
  * call's (the same offset as `--offset-ms`). Lines stay in time order.
+ *
+ * Only spoken lines move. A `tool_calls` entry keeps its own time, so a moved
+ * line can sort ahead of the tool call Vapi logged before it. Harmless today:
+ * `callEventsFromReport` reads the list in time order, so each tag still shows
+ * at its own time. If order ever matters more than time, keep each tool call
+ * after the line it followed.
  */
 export function alignUntimedLines(call: unknown, starts: { user: number[]; bot: number[] }, offsetMs: number): unknown {
   const c = record(call);
