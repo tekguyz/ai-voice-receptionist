@@ -60,6 +60,22 @@ describe("the Dashboard's sample calls", () => {
     expect(tuneUp.notes.booked).toBe("Tuesday, October 6 at 2 PM");
   });
 
+  // Issue #29: addresses ended at the city.
+  it("end every address with a zip code, which Luna asked for and the confirmation text shows", () => {
+    const withAddress = sampleCalls(NOW).filter((call) => call.notes.details.address);
+    expect(withAddress).toHaveLength(4);
+    for (const { notes } of withAddress) {
+      const address = notes.details.address!;
+      expect(address).toMatch(/, FL \d{5}$/);
+      const zip = address.slice(-5);
+      const askAt = notes.lines.findIndex((l) => l.speaker === "receptionist" && /zip code|código postal/i.test(l.text));
+      const sayAt = notes.lines.findIndex((l) => l.speaker === "caller" && l.text.includes(zip));
+      expect(askAt).toBeGreaterThan(-1);
+      expect(sayAt).toBeGreaterThan(askAt);
+      expect(notes.confirmationText).toContain(`at ${address}.`);
+    }
+  });
+
   it("capture nothing and book nothing when they are spam", () => {
     for (const call of sampleCalls(NOW).filter((c) => c.spam)) {
       expect(call.notes.details).toEqual({});

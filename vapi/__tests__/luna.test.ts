@@ -25,6 +25,22 @@ describe("Luna's Vapi settings", () => {
     expect(prompt).toContain("a space between first and last name");
   });
 
+  // Issue #29: addresses ended at the city.
+  it("ask for the zip code, read it back, write it down and say it in the confirmation", () => {
+    const prompt: string = (lunaAssistant() as any).model.messages[0].content;
+    expect(prompt).toContain("Get the service address with its zip code. If the caller leaves out the zip code, ask for it.");
+    expect(prompt).toContain("read it back once, zip code included,");
+    expect(prompt).toContain("the street address and the zip code");
+    expect(prompt).toContain('"You\'re all set for Tuesday at two in the afternoon at 4450 Northeast 18th Avenue, Miami, 33137."');
+    expect(prompt).toContain('ending with the city and the zip code (for example "4450 Northeast 18th Avenue, Miami, FL 33137")');
+    expect(prompt).toContain('Say a zip code digit by digit ("three three one three seven").');
+  });
+
+  it("say the zip code in a Spanish confirmation too", () => {
+    const prompt: string = (lunaAssistant() as any).model.messages[0].content;
+    expect(prompt).toContain('"Listo, queda agendado para el martes a las dos de la tarde en el 4450 Northeast 18th Avenue, Miami, 33137."');
+  });
+
   // Issue #15, finding 1: with an endCall tool she booked and hung up in one reply, with no confirmation.
   it("end the call by her goodbye phrase, not a tool, so she cannot hang up before confirming", () => {
     const luna = lunaAssistant() as any;
