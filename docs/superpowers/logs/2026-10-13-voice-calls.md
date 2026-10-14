@@ -34,3 +34,15 @@ Not measured: the microphone prompt. The built-in browser has no microphone, and
 ## Deleted from Vapi (founder's yes, 2026-10-13)
 
 `01a13731-41c4-7000-823c-410bf1f48bae` (bridge check) and `01a13746-5699-7dd9-a485-862123c619fb` (keeper), with `npm run sample-call:pull -- --delete <callId>`. Checked after: the recording answers 404, and the call record keeps no transcript and no messages, only its times, cost and settings.
+
+## The founder's own Test Call (not in the budget)
+
+`01a137d9-2700-7ff6-bfa2-c25da4e9292d`, 2026-10-13 20:39 local, on the `voice-demo-batch-11` preview, from a Pixel 9a. 111 s, $0.18. Ended: `customer-ended-call` (the founder pressed End Call at 1:58 in the recording).
+
+- All four details and the booking were right: Alfredo Gomez, AC not working, immediate, 4450 Northeast 18th Court, Deerfield Beach 33306, Wednesday, October 14 at 9 AM. Average turn 1763 ms.
+- `luna:report` FAIL only because the founder ended the call while she read the confirmation. Not a Luna bug.
+- She said "You're all set" at 95.9 s, before `bookTime` ran (100.2 s).
+- She said "We have two open times" twice in one reply.
+- Vapi heard "Mangrover" again, and wrote "Madam" and "the three of the better" for the caller.
+- The screen recording has no call sound (mean −60 dB). Android's recorder cannot take Chrome's call audio or the microphone while Chrome uses it. Not an app bug.
+- On a phone, "What was said" shows only the newest 2 lines during the call (`latest={2}`). Short lines ("De", "We have --", "Madam,") show, then the next line pushes them out. The full list shows at the end. It works as built, but it looked broken to the founder.
