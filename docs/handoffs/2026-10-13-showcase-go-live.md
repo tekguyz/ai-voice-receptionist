@@ -41,7 +41,8 @@ C:/Projects/ai-voice-receptionist/docs/handoffs/2026-10-13-showcase-go-live.md.
    `C:/Projects/ai-voice-receptionist/showcase/capture-config.json`. Delete
    `apps/ai-voice-receptionist.json` (it points at the old site) and update
    the voice row in the README's "Which apps work today" table: run end to
-   end 2026-10-13, 4 desktop, 2 phone, landing video, config in the app repo.
+   end 2026-10-14 on the live site, 4 desktop, 2 phone, landing video, config
+   in the app repo.
 3. New tools/capture feature, wanted for this app: a clip of a screen while
    it plays, with sound. The Sample Call (on /demo, "Play the Sample Call")
    runs 77 s with its own recording (`public/sample-call.mp3` in the app). A
