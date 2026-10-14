@@ -17,9 +17,16 @@ Live site: https://ai-voice-receptionist-tekguyz.vercel.app
 |---|---|
 | Phase | Building |
 | Shipped | [#2 Step 1: setup and the Call Story](https://github.com/tekguyz/ai-voice-receptionist/issues/2) · [#3 Step 2: the look](https://github.com/tekguyz/ai-voice-receptionist/issues/3) · [#4 Step 3: live Test Call](https://github.com/tekguyz/ai-voice-receptionist/issues/4) · [#5 Step 4: Call Notes saved](https://github.com/tekguyz/ai-voice-receptionist/issues/5) · [#6 Step 5: Dashboard](https://github.com/tekguyz/ai-voice-receptionist/issues/6) · [#7 Step 6: landing page and design pass](https://github.com/tekguyz/ai-voice-receptionist/issues/7) · [#8 Step 7: the real Sample Call](https://github.com/tekguyz/ai-voice-receptionist/issues/8) · [#15 Tune Luna](https://github.com/tekguyz/ai-voice-receptionist/issues/15) |
-| Known issues | [#23 Luna in Spanish: ends in English, mishears short replies](https://github.com/tekguyz/ai-voice-receptionist/issues/23) |
-| Next | [#9 Step 8: Showcase and go live](https://github.com/tekguyz/ai-voice-receptionist/issues/9) |
-| Updated | 2026-10-13 |
+| Known issues | [#23 Luna in Spanish: ends in English, mishears short replies](https://github.com/tekguyz/ai-voice-receptionist/issues/23) · [#25 Follow-ups from the AI actor PR](https://github.com/tekguyz/ai-voice-receptionist/issues/25) |
+| Next | [#9 Step 8: Showcase and go live](https://github.com/tekguyz/ai-voice-receptionist/issues/9): pictures and video taken 2026-10-14; handoff to `claude-config` and `tekguyz-one` left |
+| Updated | 2026-10-14 |
+
+## Screenshots
+
+<p align="center">
+  <img src="showcase/webp/sample-call-desktop-light.webp" alt="The Sample Call playing: the words on the left, the job details on the right" height="480">
+  <img src="showcase/webp/call-notes-phone-light.webp" alt="Call Notes on a phone: summary, name, job, urgency, address and booked time" height="480">
+</p>
 
 ## What it does
 

@@ -417,7 +417,7 @@ function TopSheet({ ticket, view, status, controls }: { ticket: string; view: Ca
             What was said
           </h2>
         )}
-        <Transcript lines={view.lines} receptionistName={SAMPLE_BUSINESS.receptionistName} live latest={2} />
+        <Transcript lines={view.lines} receptionistName={SAMPLE_BUSINESS.receptionistName} live latest={4} />
       </section>
     </article>
   );

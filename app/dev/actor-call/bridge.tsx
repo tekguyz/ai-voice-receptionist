@@ -63,6 +63,16 @@ export function ActorBridge() {
     const capSeconds = Number(params.get("seconds") ?? 170);
     const t0 = performance.now();
     const mark = (step: string) => say(`${Math.round(performance.now() - t0)} ms: ${step}`);
+    // Stops both calls, once, on any end or failure.
+    const calls: VapiCall[] = [];
+    let over = false;
+    const hangUp = (why: string) => {
+      if (over) return;
+      over = true;
+      say(why);
+      for (const call of calls) void Promise.resolve(call.stop()).catch(() => {});
+      setRunning(false);
+    };
     try {
       const context = new AudioContext();
       const toLuna = context.createMediaStreamDestination();
@@ -75,6 +85,7 @@ export function ActorBridge() {
         new Vapi("no-key-needed-for-reconnect", undefined, undefined, { audioSource: into.stream.getAudioTracks()[0] }) as unknown as VapiCall;
       const actor = make(toActor);
       const luna = make(toLuna);
+      calls.push(actor, luna);
 
       // ?check=1: can this page hold two calls? Joins a room that does not exist, twice. Costs nothing.
       if (params.has("check")) {
@@ -98,6 +109,7 @@ export function ActorBridge() {
       await fetch("/api/visit", { method: "POST", redirect: "manual" });
       // The Actor joins first: it waits for Luna to speak.
       const actorCall = await post(`/dev/actor-call/start?lang=${lang}`);
+      actor.on("call-end", () => hangUp("The Actor's call ended."));
       say(`Actor call ${actorCall.callId}`);
       await actor.reconnect({ webCallUrl: actorCall.webCallUrl, id: actorCall.callId });
       pipe(actor, context, toLuna);
@@ -115,23 +127,13 @@ export function ActorBridge() {
         }
         if (m?.type === "tool-calls") for (const t of m.toolCallList ?? []) say(`  [${t.function?.name}] ${JSON.stringify(t.function?.arguments)}`);
       });
-      let over = false;
-      const hangUp = (why: string) => {
-        if (over) return;
-        over = true;
-        say(why);
-        void Promise.resolve(actor.stop()).catch(() => {});
-        void Promise.resolve(luna.stop()).catch(() => {});
-        setRunning(false);
-      };
       luna.on("call-end", () => hangUp("Luna's call ended."));
       await luna.reconnect({ webCallUrl: lunaCall.webCallUrl, id: lunaCall.callId });
       pipe(luna, context, toActor);
       mark("Luna joined");
       setTimeout(() => hangUp(`Stopped at the ${capSeconds} s cap.`), capSeconds * 1000);
     } catch (error) {
-      say(`Failed: ${error instanceof Error ? error.message : String(error)}`);
-      setRunning(false);
+      hangUp(`Failed: ${error instanceof Error ? error.message : String(error)}`);
     }
   }
 
