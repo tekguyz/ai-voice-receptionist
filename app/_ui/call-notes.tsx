@@ -93,7 +93,7 @@ export function CallNotesSheet({
             {/* A spam call has nothing to capture: a column of empty rules would read as a failure. */}
             {!spam &&
               DETAIL_FIELDS.map((field) => (
-                <Field key={field} label={DETAIL_LABELS[field]} value={notes.details[field]} empty="Not captured" />
+                <Field key={field} label={DETAIL_LABELS[field]} value={notes.details[field]} empty="Not captured" twoLines={field === "address"} />
               ))}
             {!spam && <Field label="Booked" value={notes.booked} empty="Nothing booked" />}
             <Field label="Taken by" value={`${SAMPLE_BUSINESS.receptionistName}, Receptionist`} />

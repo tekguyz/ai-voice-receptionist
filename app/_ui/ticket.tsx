@@ -98,15 +98,27 @@ export function BusinessLine() {
   );
 }
 
-/** A printed label over a ruled line. A captured value is written onto the rule. */
-export function Field({ label, value, empty }: { label: string; value?: string | null; empty?: string }) {
+/**
+ * An address as it is mailed: the street, then "City, ST 12345" (no comma
+ * after the street: the line break does that job). No comma, one line.
+ */
+export function addressLines(address: string): string[] {
+  const i = address.indexOf(", ");
+  return i < 0 ? [address] : [address.slice(0, i), address.slice(i + 2)];
+}
+
+/**
+ * A printed label over a ruled line. A captured value is written onto the rule.
+ * `twoLines`: an address, written on two lines (addressLines).
+ */
+export function Field({ label, value, empty, twoLines }: { label: string; value?: string | null; empty?: string; twoLines?: boolean }) {
   return (
     <div className="grid">
       <dt className="font-form text-sm leading-tight font-bold tracking-wider text-form uppercase">{label}</dt>
       <dd className="min-h-[1.875rem] border-b border-form-rule font-hand text-2xl leading-tight break-words text-carbon">
         {value ? (
           <span key={value} className="write-in inline-block first-letter:uppercase">
-            {value}
+            {twoLines ? addressLines(value).map((line) => <span key={line} className="block">{line}</span>) : value}
           </span>
         ) : (
           empty && <span className="font-body text-base text-print-soft">{empty}</span>

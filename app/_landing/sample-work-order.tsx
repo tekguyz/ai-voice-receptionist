@@ -15,7 +15,7 @@ export function SampleWorkOrder() {
         <TicketHeader number={TEST_CALL_TICKET} as="p" />
         <dl className="grid gap-1.5 px-5 pt-4 pb-5">
           {DETAIL_FIELDS.map((field) => (
-            <Field key={field} label={DETAIL_LABELS[field]} value={view.details[field]} />
+            <Field key={field} label={DETAIL_LABELS[field]} value={view.details[field]} twoLines={field === "address"} />
           ))}
           <Field label="Booked" value={view.booked} />
         </dl>

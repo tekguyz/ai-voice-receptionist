@@ -398,7 +398,7 @@ function TopSheet({ ticket, view, status, controls }: { ticket: string; view: Ca
         <h2 className={`${SECTION_LABEL} mb-3 hidden border-b-2 border-form pb-2 md:block`}>Job details · No. {ticket}</h2>
         <dl className="grid gap-1.5 md:gap-4">
           {DETAIL_FIELDS.map((field) => (
-            <Field key={field} label={DETAIL_LABELS[field]} value={view.details[field]} />
+            <Field key={field} label={DETAIL_LABELS[field]} value={view.details[field]} twoLines={field === "address"} />
           ))}
           <Field label="Booked" value={view.booked} />
         </dl>
