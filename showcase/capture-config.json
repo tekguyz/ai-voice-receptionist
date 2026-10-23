@@ -16,19 +16,27 @@
       { "click": "Try the demo" }, { "waitUrl": "**/demo" },
       { "click": "Play the Sample Call" }, { "wait": 84000 }, { "scroll": 0 }
     ] },
-    { "name": "landing", "device": "feed", "steps": [] },
-    { "name": "call-notes", "device": "feed", "steps": [
+    { "name": "landing", "device": "feed", "steps": [{ "scrollTo": "answers when you can", "offset": 32 }] },
+    { "name": "sample-call", "device": "feed", "steps": [
       { "click": "Try the demo" }, { "waitUrl": "**/demo" },
-      { "click": "Play the Sample Call" }, { "wait": 84000 }, { "scroll": 0 }
+      { "click": "Play the Sample Call" }, { "wait": 45000 },
+      { "scrollTo": "A real call to Luna", "offset": 64 }
     ] },
-    { "name": "dashboard", "device": "feed", "steps": [{ "goto": "https://ai-voice-receptionist-tekguyz.vercel.app/demo/dashboard" }] },
-    { "name": "landing", "device": "stories", "steps": [] },
+    { "name": "call-notes", "device": "feed", "steps": [{ "wait": 40000 }, { "scrollTo": "Call notes" }] },
+    { "name": "landing", "device": "gbp", "steps": [{ "scrollTo": "answers when you can", "offset": 32 }] },
+    { "name": "sample-call", "device": "gbp", "steps": [
+      { "click": "Try the demo" }, { "waitUrl": "**/demo" },
+      { "click": "Play the Sample Call" }, { "wait": 45000 },
+      { "scrollTo": "A real call to Luna", "offset": 64 }
+    ] },
+    { "name": "call-notes", "device": "gbp", "steps": [{ "wait": 40000 }, { "scrollTo": "Call notes" }] },
+    { "name": "landing", "device": "stories", "steps": [{ "scrollTo": "answers when you can", "offset": 32 }] },
     { "name": "sample-call", "device": "stories", "steps": [
       { "click": "Try the demo" }, { "waitUrl": "**/demo" },
-      { "click": "Play the Sample Call" }, { "wait": 45000 }
+      { "click": "Play the Sample Call" }, { "wait": 45000 },
+      { "scrollTo": "A real call to Luna", "offset": 64 }
     ] },
-    { "name": "call-notes", "device": "stories", "steps": [{ "wait": 40000 }, { "scroll": 0 }] },
-    { "name": "dashboard", "device": "stories", "steps": [{ "goto": "https://ai-voice-receptionist-tekguyz.vercel.app/demo/dashboard" }] }
+    { "name": "call-notes", "device": "stories", "steps": [{ "wait": 40000 }, { "scrollTo": "Call notes" }] }
   ],
   "video": { "device": "desktop", "seconds": 4.5, "steps": [{ "goto": "https://ai-voice-receptionist-tekguyz.vercel.app/" }] },
   "reel": { "seconds": 4.5, "steps": [{ "goto": "https://ai-voice-receptionist-tekguyz.vercel.app/" }] }
