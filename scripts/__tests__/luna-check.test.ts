@@ -62,6 +62,15 @@ describe("luna:report", () => {
     expect(confirm("You're all set for tomorrow at nine in the morning at forty-four fifty Northeast Eighteenth Avenue, three-three-one-three-seven.")).not.toBeNull();
   });
 
+  // Issue #32: the actor prompt allows "thirty-three one thirty-seven".
+  it("hears the zip code said in groups, the way people say it", () => {
+    const confirm = (message: string) =>
+      lunaReport(lunaCall({ messages: goodMessages().map((m) => (String(m.message ?? "").startsWith("You're all set") ? { ...m, message } : m)) })).confirmation;
+    expect(confirm("You're all set for tomorrow at nine in the morning at forty-four fifty Northeast Eighteenth Avenue, Miami, thirty-three one thirty-seven.")).not.toBeNull();
+    expect(confirm("You're all set for tomorrow at nine in the morning at forty-four fifty Northeast Eighteenth Avenue, Miami, thirty three one thirty seven.")).not.toBeNull();
+    expect(confirm("You're all set for tomorrow at nine in the morning at forty-four fifty Northeast Eighteenth Avenue, Miami, thirty-three one forty-seven.")).toBeNull();
+  });
+
   it("is not confirmed when the caller hung up, even after a confirmation", () => {
     expect(lunaReport(lunaCall({ endedReason: "customer-ended-call" })).confirmed).toBe(false);
   });

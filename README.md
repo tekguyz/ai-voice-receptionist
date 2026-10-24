@@ -1,7 +1,7 @@
 <p align="center"><img src="docs/banner.svg" alt="AI Voice Receptionist" width="100%"></p>
 
 <p align="center">
-  <img alt="status" src="https://img.shields.io/badge/status-building-a8221a?style=flat&labelColor=17171a">
+  <img alt="status" src="https://img.shields.io/badge/status-live-a8221a?style=flat&labelColor=17171a">
   <img alt="Next.js" src="https://img.shields.io/badge/Next.js-16-faf08a?style=flat&labelColor=17171a">
   <img alt="storage" src="https://img.shields.io/badge/storage-Upstash%20Redis-a8221a?style=flat&labelColor=17171a">
   <img alt="tests" src="https://img.shields.io/badge/tests-Vitest-a8221a?style=flat&labelColor=17171a">
@@ -15,11 +15,11 @@ Live site: https://ai-voice-receptionist-tekguyz.vercel.app
 
 | | |
 |---|---|
-| Phase | Building |
-| Shipped | [#2 Step 1: setup and the Call Story](https://github.com/tekguyz/ai-voice-receptionist/issues/2) · [#3 Step 2: the look](https://github.com/tekguyz/ai-voice-receptionist/issues/3) · [#4 Step 3: live Test Call](https://github.com/tekguyz/ai-voice-receptionist/issues/4) · [#5 Step 4: Call Notes saved](https://github.com/tekguyz/ai-voice-receptionist/issues/5) · [#6 Step 5: Dashboard](https://github.com/tekguyz/ai-voice-receptionist/issues/6) · [#7 Step 6: landing page and design pass](https://github.com/tekguyz/ai-voice-receptionist/issues/7) · [#8 Step 7: the real Sample Call](https://github.com/tekguyz/ai-voice-receptionist/issues/8) · [#15 Tune Luna](https://github.com/tekguyz/ai-voice-receptionist/issues/15) · [#29 Zip code on every address](https://github.com/tekguyz/ai-voice-receptionist/issues/29) |
-| Known issues | [#23 Luna in Spanish: ends in English, mishears short replies](https://github.com/tekguyz/ai-voice-receptionist/issues/23) · [#25 Follow-ups from the AI actor PR](https://github.com/tekguyz/ai-voice-receptionist/issues/25) |
-| Next | [#9 Step 8: Showcase and go live](https://github.com/tekguyz/ai-voice-receptionist/issues/9): pictures and video retaken 2026-10-14 with the zip code; handoff to `claude-config` and `tekguyz-one` left |
-| Updated | 2026-10-14 |
+| Phase | Live |
+| Shipped | [#2 Step 1: setup and the Call Story](https://github.com/tekguyz/ai-voice-receptionist/issues/2) · [#3 Step 2: the look](https://github.com/tekguyz/ai-voice-receptionist/issues/3) · [#4 Step 3: live Test Call](https://github.com/tekguyz/ai-voice-receptionist/issues/4) · [#5 Step 4: Call Notes saved](https://github.com/tekguyz/ai-voice-receptionist/issues/5) · [#6 Step 5: Dashboard](https://github.com/tekguyz/ai-voice-receptionist/issues/6) · [#7 Step 6: landing page and design pass](https://github.com/tekguyz/ai-voice-receptionist/issues/7) · [#8 Step 7: the real Sample Call](https://github.com/tekguyz/ai-voice-receptionist/issues/8) · [#15 Tune Luna](https://github.com/tekguyz/ai-voice-receptionist/issues/15) · [#29 Zip code on every address](https://github.com/tekguyz/ai-voice-receptionist/issues/29) · [#9 Step 8: showcase and go live](https://github.com/tekguyz/ai-voice-receptionist/issues/9) · [#10 Step 9: old app retired](https://github.com/tekguyz/ai-voice-receptionist/issues/10) |
+| Known issues | [#23 Luna in Spanish: ends in English, mishears short replies](https://github.com/tekguyz/ai-voice-receptionist/issues/23) |
+| Next | Nothing planned. The rebuild ([#1](https://github.com/tekguyz/ai-voice-receptionist/issues/1)) is done. |
+| Updated | 2026-10-24 |
 
 ## Screenshots
 

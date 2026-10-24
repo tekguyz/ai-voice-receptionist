@@ -142,11 +142,6 @@
         "secondsFromStart": 62.559
       },
       {
-        "role": "bot",
-        "message": "You're all set for tomorrow at nine in the morning at four four five zero Northeast eighteenth Avenue, Miami three three one three seven. Thanks for calling Mangrove Air. Have a great day.",
-        "secondsFromStart": 64.117
-      },
-      {
         "role": "tool_calls",
         "toolCalls": [
           {
@@ -156,7 +151,12 @@
             }
           }
         ],
-        "secondsFromStart": 64.583
+        "secondsFromStart": 63.5
+      },
+      {
+        "role": "bot",
+        "message": "You're all set for tomorrow at nine in the morning at four four five zero Northeast eighteenth Avenue, Miami three three one three seven. Thanks for calling Mangrove Air. Have a great day.",
+        "secondsFromStart": 64.117
       }
     ]
   }

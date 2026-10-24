@@ -85,10 +85,25 @@ function zipOf(address: string | null): string | null {
   return (address ?? "").match(/\b(\d{5})\s*$/)?.[1] ?? null;
 }
 
-/** Matches the zip as digits ("33137") or said digit by digit ("three three one three seven", "tres tres uno tres siete"). */
+const ONES = ["", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine"];
+const TEENS = ["ten", "eleven", "twelve", "thirteen", "fourteen", "fifteen", "sixteen", "seventeen", "eighteen", "nineteen"];
+const TENS = ["", "", "twenty", "thirty", "forty", "fifty", "sixty", "seventy", "eighty", "ninety"];
+
+/** Two digits said as one English number: "37" → "thirty-seven", "05" → "oh five". */
+function pairSaid(pair: string): string {
+  const [t, o] = [...pair].map(Number);
+  if (t === 0) return `(?:zero|oh)[\\s-]+${ONES[o] || "zero"}`;
+  if (t === 1) return TEENS[o];
+  return o ? `${TENS[t]}[\\s-]+${ONES[o]}` : TENS[t];
+}
+
+/** Matches the zip as digits ("33137"), said digit by digit ("three three one three seven", "tres tres uno tres siete")
+ * or in groups ("thirty-three one thirty-seven"). */
 function zipPattern(zip: string): RegExp {
-  const said = [...zip].map((d) => `(?:${d}|${DIGIT_WORDS[Number(d)]})`).join("[\\s,-]+");
-  return new RegExp(`\\b(?:${zip}|${said})\\b`, "i");
+  const digit = (d: string) => `(?:${d}|${DIGIT_WORDS[Number(d)]})`;
+  const said = [...zip].map(digit).join("[\\s,-]+");
+  const grouped = [pairSaid(zip.slice(0, 2)), digit(zip[2]), pairSaid(zip.slice(3))].join("[\\s,-]+");
+  return new RegExp(`\\b(?:${zip}|${said}|${grouped})\\b`, "i");
 }
 
 export function lunaReport(call: unknown): LunaReport {

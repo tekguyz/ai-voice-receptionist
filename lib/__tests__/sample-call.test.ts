@@ -12,6 +12,8 @@ import {
   type Playback,
 } from "@/lib/sample-call";
 import { SAMPLE_BUSINESS } from "@/lib/sample-business";
+import recorded from "@/lib/sample-call.json";
+import { lunaReport } from "../../scripts/luna-check";
 
 describe("the Sample Call", () => {
   it("tells a whole Call Story: all four details, a booked time, finished by the Receptionist", () => {
@@ -40,6 +42,11 @@ describe("the Sample Call", () => {
 
   it("has a summary", () => {
     expect(SAMPLE_CALL_SUMMARY.length).toBeGreaterThan(20);
+  });
+
+  // Issue #32: "You're all set" came before the booking showed.
+  it("books the time before Luna confirms it, so luna:report passes it", () => {
+    expect(lunaReport(recorded).confirmed).toBe(true);
   });
 
   it.skipIf(SAMPLE_CALL_AUDIO === null)("has its sound in public/, small enough for a phone on mobile data", () => {
