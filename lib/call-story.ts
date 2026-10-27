@@ -5,6 +5,7 @@
 // replaces the earlier one in **arrival order**, not by `atMs`.
 
 import { SAMPLE_BUSINESS } from "@/lib/sample-business";
+import { writtenNumbers } from "@/lib/written-numbers";
 
 export type Speaker = "caller" | "receptionist";
 export type DetailField = "name" | "job" | "urgency" | "address";
@@ -61,9 +62,18 @@ export function tellCallStory(
   for (const event of events) {
     if (!endReason) elapsedMs = Math.max(elapsedMs, event.atMs);
     switch (event.type) {
-      case "line":
-        lines.push({ speaker: event.speaker, text: event.text, atMs: event.atMs });
+      case "line": {
+        const text = writtenNumbers(event.text);
+        const last = lines.at(-1);
+        // Vapi sends a cut-off line ("I have two open —") when Luna stops
+        // mid-sentence, then the whole sentence. Keep only the whole one.
+        if (last?.speaker === event.speaker && isCutOffStartOf(last.text, text)) {
+          lines[lines.length - 1] = { ...last, text };
+        } else {
+          lines.push({ speaker: event.speaker, text, atMs: event.atMs });
+        }
         break;
+      }
       case "detail":
         details[event.field] = event.value;
         break;
@@ -94,6 +104,12 @@ export function tellCallStory(
       confirmationText: buildConfirmationText(details, booked),
     },
   };
+}
+
+/** True when `earlier` is the start of `later`, cut off (a trailing dash or dots do not count). */
+function isCutOffStartOf(earlier: string, later: string): boolean {
+  const start = earlier.replace(/[\s—–\-.…]+$/u, "").toLowerCase();
+  return start.length > 0 && start.length < later.length && later.toLowerCase().startsWith(start);
 }
 
 function buildSummary(details: CallDetails, booked: string | null): string {

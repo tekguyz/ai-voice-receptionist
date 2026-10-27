@@ -179,3 +179,29 @@ describe("a corrected detail", () => {
     expect(view.details.name).toBe("Rose");
   });
 });
+
+describe("Call Story transcript lines", () => {
+  it("shows spoken numbers as digits", () => {
+    const { view } = tellCallStory([
+      { type: "line", speaker: "caller", text: "Four four five zero Northeast eighteenth Avenue, three three zero six three.", atMs: 1000 },
+    ]);
+    expect(view.lines[0].text).toBe("4450 Northeast 18th Avenue, 33063.");
+  });
+
+  it("drops a cut-off line when the same speaker then says it in full", () => {
+    const { view } = tellCallStory([
+      { type: "line", speaker: "receptionist", text: "I have two open —", atMs: 1000 },
+      { type: "line", speaker: "receptionist", text: "I have two open times: nine AM, or two PM.", atMs: 1500 },
+    ]);
+    expect(view.lines.map((line) => line.text)).toEqual(["I have two open times: 9 AM, or 2 PM."]);
+    expect(view.lines[0].atMs).toBe(1000);
+  });
+
+  it("keeps two different lines in a row from the same speaker", () => {
+    const { view } = tellCallStory([
+      { type: "line", speaker: "receptionist", text: "Thanks, Marco.", atMs: 1000 },
+      { type: "line", speaker: "receptionist", text: "What is the address?", atMs: 1500 },
+    ]);
+    expect(view.lines).toHaveLength(2);
+  });
+});
