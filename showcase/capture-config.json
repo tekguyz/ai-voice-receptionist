@@ -23,13 +23,13 @@
       { "scrollTo": "A real call to Luna", "offset": 64 }
     ] },
     { "name": "call-notes", "device": "feed", "steps": [{ "wait": 40000 }, { "scrollTo": "Call notes" }] },
-    { "name": "landing", "device": "gbp", "steps": [{ "scrollTo": "answers when you can", "offset": 32 }] },
-    { "name": "sample-call", "device": "gbp", "steps": [
+    { "name": "landing", "device": "phone-card", "steps": [{ "scrollTo": "answers when you can", "offset": 32 }] },
+    { "name": "sample-call", "device": "phone-card", "steps": [
       { "click": "Try the demo" }, { "waitUrl": "**/demo" },
       { "click": "Play the Sample Call" }, { "wait": 45000 },
       { "scrollTo": "A real call to Luna", "offset": 64 }
     ] },
-    { "name": "call-notes", "device": "gbp", "steps": [{ "wait": 40000 }, { "scrollTo": "Call notes" }] },
+    { "name": "call-notes", "device": "phone-card", "steps": [{ "wait": 40000 }, { "scrollTo": "Call notes" }] },
     { "name": "landing", "device": "stories", "steps": [{ "scrollTo": "answers when you can", "offset": 32 }] },
     { "name": "sample-call", "device": "stories", "steps": [
       { "click": "Try the demo" }, { "waitUrl": "**/demo" },
