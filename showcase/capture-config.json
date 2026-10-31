@@ -39,5 +39,5 @@
     { "name": "call-notes", "device": "stories", "steps": [{ "wait": 40000 }, { "scrollTo": "Call notes" }] }
   ],
   "video": { "device": "desktop", "seconds": 4.5, "steps": [{ "goto": "https://ai-voice-receptionist-tekguyz.vercel.app/" }] },
-  "reel": { "seconds": 4.5, "steps": [{ "goto": "https://ai-voice-receptionist-tekguyz.vercel.app/" }] }
+  "reel": { "steps": [{ "goto": "https://ai-voice-receptionist-tekguyz.vercel.app/" }] }
 }
