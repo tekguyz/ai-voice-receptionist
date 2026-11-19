@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Barlow, Barlow_Condensed, Kalam } from "next/font/google";
 import { SITE_DESCRIPTION, SITE_NAME, siteUrl } from "@/lib/site";
+import Script from "next/script";
 import "./globals.css";
 
 // The Service Ticket faces (DESIGN.md): condensed caps for the printed form,
@@ -24,7 +25,11 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en" className={`${form.variable} ${body.variable} ${hand.variable}`}>
-      <body>{children}</body>
+      <body>{children}<Script src="https://www.googletagmanager.com/gtag/js?id=G-NH1HKS344J" strategy="afterInteractive" />
+        <Script id="ga4-init" strategy="afterInteractive">
+          {`window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-NH1HKS344J');`}
+        </Script>
+      </body>
     </html>
   );
 }
